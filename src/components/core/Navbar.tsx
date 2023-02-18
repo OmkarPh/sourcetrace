@@ -2,7 +2,9 @@ import React from 'react'
 
 const Navbar = () => {
   return (
-    <div>Navbar</div>
+    <div className='p-1 text-center w-screen'>
+      Navbar
+    </div>
   )
 }
 

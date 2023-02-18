@@ -2,7 +2,9 @@ export default function Home() {
   return (
     <>
       <div>
-        Landing page
+        <h1 className="text-3xl font-bold">
+          Landing page
+        </h1>
       </div>
     </>
   )

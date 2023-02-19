@@ -1,21 +1,19 @@
 import React from "react";
-import useMetamaskAuth from "../../hooks/useMetamaskAuth";
+import useMetamaskAuth from "../../auth/useMetamaskAuth";
 
 const Web3Test = () => {
   const values = useMetamaskAuth();
   const { isLoggedIn, isProcessingLogin, metaState, profile, connect } = values;
   
-  console.log("auth changed", values);
-
   return (
-    <div className="p-4 border-2">
+    <div className="p-4">
       <h3>
         Web3Test
         {isProcessingLogin ? (
           <div>
             <button
               type="button"
-              className="py-2 px-4 flex justify-center items-center  bg-blue-600 hover:bg-blue-700 focus:ring-blue-500 focus:ring-offset-blue-200 text-white w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg "
+              className="py-2 px-4 flex justify-center items-center  bg-blue-600 hover:bg-blue-700 focus:ring-blue-500 focus:ring-offset-blue-200 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg "
             >
               <svg
                 width="20"
@@ -41,7 +39,7 @@ const Web3Test = () => {
             <button
               type="button"
               onClick={connect}
-              className="py-2 px-4 flex justify-center items-center  bg-green-500 hover:bg-green-700 focus:ring-green-500 focus:ring-offset-green-200 text-white w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-full"
+              className="py-2 px-4 flex justify-center items-center  bg-green-500 hover:bg-green-700 focus:ring-green-500 focus:ring-offset-green-200 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-full"
             >
               <svg
                 width="20"

@@ -1,43 +1,25 @@
-import { useRouter } from "next/router";
 import { resolve } from "path";
 import React, {
-  PropsWithChildren,
-  useCallback,
   useEffect,
   useState,
 } from "react";
-import { Type } from "typescript";
 import { MetamaskStateProvider, useMetamask } from "use-metamask";
 import Web3 from "web3";
 
-/**
- * Change here for customizations
- */
+// Change here for customizations
 export enum Roles {
   PRODUCER = "PRODUCER",
   WAREHOUSE = "WAREHOUSE",
 }
-interface CustomContextValues {
-  isLoggedIn: boolean;
-  isProcessingLogin: boolean;
-  // profile: CustomProfile | null;
-  profile: null | {
-    address: string;
-    name: string;
-    license: string;
-    role: Roles;
-  };
-}
-interface AdditionalContextValues {
-  refreshAuthStatus: () => void;
-  connect: () => void;
+export interface ProfileData {
+  address: string;
+  name: string;
+  license: string;
+  role: Roles;
 }
 
-/**
- *
- */
+
 interface MetamaskOgValues {
-  // connect?: (Web3Interface: any, settings?: {}) => Promise<void>;
   getAccounts?: (options?: { requestPermission: boolean }) => Promise<any>;
   getChain?: () => Promise<{
     id: string;
@@ -53,6 +35,15 @@ interface MetamaskOgValues {
     isConnected: boolean;
     web3: any;
   };
+}
+interface CustomContextValues {
+  isLoggedIn: boolean;
+  isProcessingLogin: boolean;
+  profile: ProfileData | null;
+}
+interface AdditionalContextValues {
+  refreshAuthStatus: () => void;
+  connect: () => void;
 }
 const MetaMaskAuthContext = React.createContext<
   MetamaskOgValues & CustomContextValues & AdditionalContextValues
@@ -73,15 +64,15 @@ const MetaMaskAuthContext = React.createContext<
   refreshAuthStatus: () => {},
 });
 
-function getLibrary(provider?: any, connector?: any) {
-  return new Web3(provider);
-}
+// function getLibrary(provider?: any, connector?: any) {
+//   return new Web3(provider);
+// }
 
 // Provide these explicitly
 export interface MetamaskAuthProviderProps {
   hasAccount: (
     address: string
-  ) => Promise<{ loggedIn: boolean; profile?: any }>;
+  ) => Promise<{ loggedIn: boolean; profile?: ProfileData }>;
   onConnected: () => void;
   onLoggedIn: () => void;
   onCancelledConnection: () => void;
@@ -99,7 +90,7 @@ const MetamaskAuthProviderUtil = (
     profile: null,
   });
 
-  const refreshAuthStatus = async () => {
+  const refreshAuthStatus = async (redirect=false) => {
     if (!getAccounts) {
       setAuthState((prev) => ({ ...prev, isProcessingLogin: false }));
       return;
@@ -121,7 +112,9 @@ const MetamaskAuthProviderUtil = (
           profile: null,
           isProcessingLogin: false,
         }));
-        onConnected();
+        if(redirect){
+          onConnected();
+        }
         return;
       }
 
@@ -130,12 +123,14 @@ const MetamaskAuthProviderUtil = (
         isProcessingLogin: false,
         profile: user.profile,
       });
-      onLoggedIn();
+      if(redirect){
+        onLoggedIn();
+      }
     });
   };
 
   useEffect(() => {
-    refreshAuthStatus();
+    refreshAuthStatus(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -145,7 +140,7 @@ const MetamaskAuthProviderUtil = (
     getAccounts().then((accounts) => {
       if (accounts.length) {
         console.log("Already Connected to ", accounts);
-        refreshAuthStatus();
+        refreshAuthStatus(true);
         onConnected();
         return;
       }
@@ -153,7 +148,7 @@ const MetamaskAuthProviderUtil = (
       getAccounts({ requestPermission: true })
         .then(async (accounts) => {
           console.log("Connected to ", accounts);
-          refreshAuthStatus();
+          refreshAuthStatus(true);
         })
         .catch(onCancelledConnection);
     });
@@ -193,6 +188,5 @@ export default function useMetamaskAuth() {
       "useMetaMask hook must be used with a MetaMaskProvider component"
     );
   }
-
   return context;
 }

@@ -1,5 +1,5 @@
 import React from "react";
-import useMetamaskAuth from "../../auth/useMetamaskAuth";
+import { useMetamaskAuth } from "../../auth/authConfig";
 
 const Web3Test = () => {
   const values = useMetamaskAuth();

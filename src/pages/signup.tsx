@@ -1,7 +1,6 @@
 import { useRouter } from 'next/router';
 import React from 'react'
-import withConnectedRoute from '../auth/ConnectedRoute'
-import useMetamaskAuth from '../auth/useMetamaskAuth'
+import { withConnectedRoute, useMetamaskAuth  } from '../auth/authConfig'
 import { DASHBOARD } from '../constants/routes';
 
 const Signup = () => {

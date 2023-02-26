@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React from 'react'
-import useMetamaskAuth from '../../auth/useMetamaskAuth'
-import { ONLY_CONNECTED_ROUTE } from '../../constants/routes';
+import { useMetamaskAuth } from '../../auth/authConfig'
+import { ONBOARDING_ROUTE } from '../../constants/routes';
 
 const Navbar = () => {
   const { connect, isLoggedIn, metaState, isProcessingLogin } = useMetamaskAuth();
@@ -31,7 +31,7 @@ const Navbar = () => {
         <>
           <button
             type="button"
-            onClick={() => router.push(ONLY_CONNECTED_ROUTE)}
+            onClick={() => router.push(ONBOARDING_ROUTE)}
             className="py-2 px-4 flex justify-center items-center  bg-blue-600 hover:bg-blue-800 focus:ring-blue-800 focus:ring-offset-blue-200 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-full h-8"
           >
             <svg

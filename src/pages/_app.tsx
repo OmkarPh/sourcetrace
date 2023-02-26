@@ -1,19 +1,21 @@
 import type { AppProps } from "next/app";
 import Head from "next/head";
+import 'regenerator-runtime/runtime';
 import { useRouter } from "next/router";
 import { toast, ToastContainer } from "react-toastify";
 
 import {
-  MetamaskAuthProvider,
-  MetamaskAuthProviderProps,
-} from "../auth/useMetamaskAuth";
+  MetamaskAuthProviderProps
+} from "../lib/useMetamaskAuth";
+import { MetamaskAuthProvider } from "../auth/authConfig";
 import Navbar from "../components/core/Navbar";
 
 import "@/styles/globals.css";
 import "react-toastify/dist/ReactToastify.css";
 
+
 export default function App({ Component, pageProps }: AppProps) {
-  const { push } = useRouter();
+  const router = useRouter();
   // const {} = useToast();
 
   const TestProps: MetamaskAuthProviderProps = {
@@ -44,10 +46,10 @@ export default function App({ Component, pageProps }: AppProps) {
     },
     onConnected: () => {
       // Redirect to signup / onboarding page here
-      push("signup");
+      router.push("signup");
     },
     onLoggedIn: () => {
-      push("dashboard");
+      router.push("dashboard");
     },
     onCancelledConnection: () => {
       toast("Connection request cancelled !", { type: "error" });

@@ -27,7 +27,7 @@ contract AdminAuthorized{
     // function getAdminInfo() public view returns (Data.AdminData memory){
     //     return adminInfo;
     // }
-    
+
     // Stores the identity of admin when contract it is deployed
     constructor(){
         adminAddress = msg.sender;
@@ -38,14 +38,14 @@ contract AdminAuthorized{
         return adminAddress;
     }
 
-    // onlyAdmin modifier validates only if function caller is admin 
+    // onlyAdmin modifier validates only if function caller is admin
     // This can be reused wherever admin authority needs to be verified
     modifier onlyAdmin(){
         require(msg.sender == adminAddress, "Admin authorization required for this action !!");
         _;
     }
-    
-    // function for the admin to verify their ownership. 
+
+    // function for the admin to verify their ownership.
     // Returns true for admin otherwise false
     function isAdmin() public view returns(bool) {
         return msg.sender == adminAddress;

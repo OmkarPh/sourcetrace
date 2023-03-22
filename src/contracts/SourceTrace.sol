@@ -27,6 +27,8 @@ contract SourceTrace {
         uint256 inTime;
         uint256 outTime;
         Warehouse warehouse;
+        uint256 temperature;
+        uint256 humidity;
     }
 
     struct ProductLot {
@@ -187,32 +189,46 @@ contract SourceTrace {
     //     // return productsInfo[msg.sender][0].producer != 0x0000000000000000000000000000000000000000;
     // }
     function createProductLot(
-        uint256 _quantity,
-        uint256 _product_id,
-        string memory _source_factory_name,
-        string memory _source_factory_location
-    ) public mustBeProducer(msg.sender) returns (uint256) {
-        require(
-            _product_id < productsInfo[msg.sender].length,
-            "This product doesn't exist, Invent it first !"
-        );
+    uint256 _quantity,
+    uint256 _product_id,
+    string memory _source_factory_name,
+    string memory _source_factory_location,
+    uint256 _temperature,
+    uint256 _humidity
+) public mustBeProducer(msg.sender) returns (uint256) {
+    require(
+        _product_id < productsInfo[msg.sender].length,
+        "This product doesn't exist, Invent it first !"
+    );
+    uint256 newProductLotId = productLots[msg.sender].length;
+    uint256 createdAt = block.timestamp;
 
-        uint256 newProductLotId = productLots[msg.sender].length;
-        productLots[msg.sender].push();
+    ProductLot memory newProductLot = ProductLot({
+        productId: _product_id,
+        productLotId: newProductLotId,
+        producerAddress: msg.sender,
+        quantity: _quantity,
+        createdAt: createdAt,
+        sourceFactoryName: _source_factory_name,
+        sourceFactoryLocation: _source_factory_location,
+        checkpoints: new Checkpoint[](0)
+    });
 
-        ProductLot storage newProductLot = productLots[msg.sender][
-            newProductLotId
-        ];
-        newProductLot.productId = _product_id;
-        newProductLot.productLotId = newProductLotId;
-        newProductLot.producerAddress = msg.sender;
-        newProductLot.quantity = _quantity;
-        newProductLot.createdAt = block.timestamp;
-        newProductLot.sourceFactoryName = _source_factory_name;
-        newProductLot.sourceFactoryLocation = _source_factory_location;
-        // newProductLot.checkpoints = [];
-        return newProductLotId;
-    }
+    productLots[msg.sender].push(newProductLot);
+
+    // add the check-in checkpoint
+    Checkpoint memory checkIn = Checkpoint({
+        inTime: block.timestamp,
+        outTime: 0,
+        warehouse: warehouses[msg.sender],
+        temperature: _temperature,
+        humidity: _humidity
+    });
+
+    productLots[msg.sender][newProductLotId].checkpoints.push(checkIn);
+
+    return newProductLotId;
+}
 
     function createCheckIn(
         address _producer_address,

@@ -1,0 +1,30 @@
+{
+  "name": "driver",
+  "version": "1.0.0",
+  "description": "Driver server to emulate sensors for temperature, humidity, etc",
+  "main": "index.js",
+  "dependencies": {
+    "axios": "^0.26.0",
+    "body-parser": "^1.19.2",
+    "connect-slashes": "^1.4.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.17.3",
+    "follow-redirects": "^1.14.9",
+    "request": "^2.88.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OmkarPh/sourcetrace.git"
+  },
+  "author": "Omkar Phansopkar <omkarphansopkar@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "nodemon": "^2.0.21"
+  }
+}

@@ -1,6 +1,6 @@
-import Contract, { linkFromTxHash } from "./SourceTraceContract";
+import { linkFromTxHash } from "./SourceTraceContract";
 
-export function CallerFn(method: string, debug: boolean, ...params: any[]){
+export function CallerFn(Contract: any, method: string, debug: boolean, ...params: any[]){
   return new Promise((resolve, reject) => {
     Contract.methods[method](...params)
       .call()
@@ -16,9 +16,9 @@ export function CallerFn(method: string, debug: boolean, ...params: any[]){
   });
 }
 
-export function SenderFn(method: string, senderAddress: string, debug: boolean, ...params: any[]){
-  return new Promise((resolve, reject) => {
-    const tx = Contract.methods.addPost(...params);
+export function SenderFn(Contract: any, method: string, senderAddress: string, debug: boolean, ...params: any[]){
+  return new Promise(async (resolve, reject) => {
+    const tx = Contract.methods[method](...params);
     if(debug){
       console.log("Prepared transaction: ", tx);
     }
@@ -43,9 +43,9 @@ export function SenderFn(method: string, senderAddress: string, debug: boolean, 
   });
 }
 
-export function CallerFactory(method: string, debug: boolean){
-  return (...params: any[]) => CallerFn(method, debug, ...params);
+export function CallerFactory(Contract: any, method: string, debug: boolean){
+  return (...params: any[]) => CallerFn(Contract, method, debug, ...params);
 }
-export function SenderFactory(method: string, debug: boolean){
-  return (address: string, ...params: any[]) => SenderFn(method, address, debug, ...params)
+export function SenderFactory(Contract: any, method: string, debug: boolean){
+  return (address: string, ...params: any[]) => SenderFn(Contract, method, address, debug, ...params)
 }

@@ -16,7 +16,7 @@ export const linkFromTxHash = (txHash: string) => `${chainExplorerBaseAddress}/t
 
 export const web3 = new Web3(Web3.givenProvider);
 
-const SourceTraceContract = new web3.eth.Contract(SourceTraceABI, contractAddress);
+const SourceTraceContract = new web3.eth.Contract(SourceTraceABI as any, contractAddress);
 
 // console.log("Web3", web3);
 // console.log("SourceTrace contract address: ", contractAddress);

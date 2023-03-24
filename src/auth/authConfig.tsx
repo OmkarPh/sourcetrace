@@ -8,8 +8,10 @@ export enum Roles {
 export interface ProfileData {
   address: string;
   name: string;
-  license: string;
+  // license: string;
   role: Roles;
+  id: string;
+  location: string;
 }
 
 const routingConfig: RoutingConfig = {

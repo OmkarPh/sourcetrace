@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { producerAccounts, warehouseAccounts } from '../../apis/setup/entities'
+import { producerAccounts, warehouseAccounts, SETUP_TOOL } from '../../apis/setup/entities'
 
 const Setup = () => {
   useEffect(() => {
@@ -12,6 +12,13 @@ const Setup = () => {
         Setup
       </h3>
       <br/>
+      <button onClick={SETUP_TOOL.createProducers} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
+        Create Producer accounts
+      </button>
+      <br/><br/>
+      <button onClick={SETUP_TOOL.createWarehouses} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
+        Create warehouse accounts
+      </button>
     </div>
   )
 }

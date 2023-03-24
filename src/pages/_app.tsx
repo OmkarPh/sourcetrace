@@ -7,16 +7,20 @@ import { toast, ToastContainer } from "react-toastify";
 import {
   MetamaskAuthProviderProps
 } from "../lib/useMetamaskAuth";
-import { MetamaskAuthProvider } from "../auth/authConfig";
+import { MetamaskAuthProvider, Roles } from "../auth/authConfig";
 import Navbar from "../components/core/Navbar";
 
 import "@/styles/globals.css";
 import "react-toastify/dist/ReactToastify.css";
+import { GetProducer, GetWarehouse } from "../apis/apis";
 
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
-  // const {} = useToast();
 
   const TestProps: MetamaskAuthProviderProps = {
     hasAccount: (address: string) => {
@@ -24,23 +28,55 @@ export default function App({ Component, pageProps }: AppProps) {
         console.log(`Checking if ${address} has an account ....`);
 
         setTimeout(() => {
+          GetProducer(address)
+          .then((response: any) => {
+            console.log(`Registered as producer `, response);
+            resolve({
+              loggedIn: true,
+              profile: {
+                ...response,
+                role: Roles.PRODUCER,
+              },
+            })
+          })
+          .catch(err => {
+            console.log("Not registered as producer");
+
+            GetWarehouse(address)
+              .then((response: any) => {
+                console.log(`Registered as warehouse `, response);
+                resolve({
+                  loggedIn: true,
+                  profile: {
+                    ...response,
+                    role: Roles.WAREHOUSE,
+                  },
+                })
+              })
+              .catch(err => {
+                console.log("Not registered as warehouse");
+                reject("Not registered !");
+              });
+          })
+
           const response = localStorage.getItem(address);
           console.log(`Checking if ${address} has an account ....  => `, response);
-          if (response && response === "yes")
+          // if (response && response === "yes")
             resolve({
               loggedIn: true,
               profile: {
                 address,
                 name: "Nestle",
-                license: "SJIWE23",
+                location: "Bindal Industrial Estate, Sakinaka Tel. Exchange Lane, Andheri E, Maharashtra 400072",
+                // license: "SJIWE23",
                 role: "Producer",
               },
             });
-          else
-            resolve({
-              loggedIn: false,
-              profile: null,
-            });
+          // else
+          //   resolve({
+          //     loggedIn: false,
+          //     profile: null,
+          //   });
         }, 2000);
       });
     },

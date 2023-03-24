@@ -6,5 +6,6 @@ declare global {
     customWeb3: any,
     web3: any;
     SourceTraceContract: Contract;
+    SETUP_TOOL: any,
   }
 }

@@ -1,7 +1,7 @@
 import { useMetamaskAuth } from "../auth/authConfig";
 
 export default function Home() {
-  const { isLoggedIn, isProcessingLogin, metaState, profile, connect } = useMetamaskAuth();
+  const { connect } = useMetamaskAuth();
 
   return (
     <>

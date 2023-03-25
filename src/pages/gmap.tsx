@@ -12,12 +12,13 @@ interface Props {
 
 const GMap: React.FC<Props> = ({ locations }) => {
   const [map, setMap] = useState<google.maps.Map | null>(null);
-
+  console.log(process.env.NEXT_PUBLIC_GOOGLE_KEY);
+  
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
-    googleMapsApiKey: process.env.REACT_APP_GOOGLE_KEY || "AIzaSyBHHRrlEe96sS_ELvWDVPhx3CuUBBlJFlI",
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_KEY || "",
   });
-  // console.log(isLoaded, process.env.REACT_APP_GOOGLE_KEY);
+  // console.log(isLoaded, process.env.NEXT_PUBLIC_GOOGLE_KEY);
   
   const onLoad = (map: google.maps.Map) => {
     setMap(map);

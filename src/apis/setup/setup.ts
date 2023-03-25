@@ -1,6 +1,6 @@
 import Web3 from "web3";
 import customWeb3 from "./customWeb3"
-import { hasWindow } from "../../utils/general";
+import { hasWindow, weiToEth } from "../../utils/general";
 import SourceTraceABI from '../../contracts/SourceTraceABI.json';
 import {
     contractAddress,
@@ -8,64 +8,10 @@ import {
     // contractDeploymentTxLink,
     chainExplorerBaseAddress
 } from '../../contracts/deploymentDetails'
+import { producerAccounts, warehouseAccounts } from "./details";
 
 const linkFromTxHash = (txHash: string) => `${chainExplorerBaseAddress}/tx/` + txHash;
 
-interface AccountKeys {
-  pk: string,
-  address: string,
-  name: string,
-}
-interface ProducerDetails extends AccountKeys {
-  physicalAddress: string,
-}
-interface WarehouseDetails extends AccountKeys {
-  physicalAddress: string,
-  certifications: { title: string, url: string }[],
-
-}
-export const producerAccounts: {[key: string]: ProducerDetails} = {
-  nestle: {
-    pk: '0fd9949357465ea9dc776d416fafe782772ef27baad8abdb4e5e64323b0618cc',
-    address: '0xabd8EeD5b630578F72eEB06c637dB7179576A811',
-    name: "Nestle India Ltd.",
-    physicalAddress: "ICC Chambers, Marol, Andheri East, Mumbai, Maharashtra 400072",
-  },
-  wibs: {
-    pk: '47bdfd22594b27d21f279ce22d0b9d673ceae68960ac358892a3381ded8e70e7',
-    address: '0xCCCA8B3c76a6bE3CB933109855f4956E5F6Dd776',
-    name: "Western India Bakers Pvt. Ltd.",
-    physicalAddress: "Western India Bakers Pvt. Ltd A.P.M., Mafco Market Yard, Turbhe, Navi Mumbai-400703."
-  },
-}
-export const warehouseAccounts: {[key: string]: WarehouseDetails} = {
-  antophyll: {
-    pk: "50df0b6a495e75aaa31f04f27bffdc380772b483d41a4826b7c854f434e086dd",
-    address: "0x1FCC6B2778417cf0eD82f6e45f2be015f0742ECa",
-    name: "Antophyll warehousing complex ltd.",
-    physicalAddress: "Dosti Acres, Antop Hill, Wadala west, Mumbai, Maharashtra 400037",
-    certifications: [],
-  },
-  eskimo: {
-    pk: "f506511bdee935fd4e030c423edc51905b0f2b3956bb7be07ab3f7c05df1a65c",
-    address: "0xD766DF5CcD4F7C73e0d2dc4d9f9a32616fdD7400",
-    name: "Eskimo cold distribution",
-    physicalAddress: "Bindal Industrial Estate, Sakinaka Tel. Exchange Lane, Andheri E, Maharashtra 400072",
-    certifications: [
-      {
-        title: "Pollution control board certificate",
-        url: "https://img.yumpu.com/17979570/1/500x640/part-2-maharashtra-pollution-control-board.jpg",
-      },
-    ],
-  },
-  welspun: {
-    pk: "1d009ea92c976fd7db91281fc00f194e108daf4673f4be1d52389cfa2e6ae9d5",
-    address: "0xB72bcAA4ecCD4fED4CB92f890be6d1ed0eC6cc08",
-    name: "Welspun One logistics solution.",
-    physicalAddress: "Kamala Mills Compound, Welspun House, Lower Parel, Mumbai, Maharashtra 400013",
-    certifications: [],
-  },
-}
 
 
 customWeb3.eth.accounts.wallet.clear();
@@ -77,12 +23,12 @@ Object.entries(warehouseAccounts).forEach(([_, warehouse]) => {
 });
 
 
-console.log("All Accounts:", customWeb3.eth.accounts.wallet);
-for(let i=0; i<customWeb3.eth.accounts.wallet.length; i++){
-  const account = customWeb3.eth.accounts.wallet[i];
-  customWeb3.eth.getBalance(account.address)
-  .then(balance => console.log(`${i}. ${account.address} -> `, balance, Number(Web3.utils.fromWei(balance)).toPrecision(4), "eth" ));
-}
+// console.log("All Accounts:", customWeb3.eth.accounts.wallet);
+// for(let i=0; i<customWeb3.eth.accounts.wallet.length; i++){
+//   const account = customWeb3.eth.accounts.wallet[i];
+//   customWeb3.eth.getBalance(account.address)
+//     .then(balance => console.log(`${i}. ${account.address} -> `, balance, Number(Web3.utils.fromWei(balance)).toPrecision(4), "eth" ));
+// }
 
 
 function CallerFn(Contract: any, method: string, debug: boolean, ...params: any[]){
@@ -150,6 +96,7 @@ const GetProducer = CallerFactory(SourceTraceContract, 'getProducer', false);
 const GetWarehouse = CallerFactory(SourceTraceContract, 'getWarehouse', false);
 const CreateProducerFn = SenderFactory(SourceTraceContract, 'createProducer', true);
 const CreateWarehouseFn = SenderFactory(SourceTraceContract, 'createWarehouse', true);
+const InventProduct = SenderFactory(SourceTraceContract, 'inventProduct', true);
 
 
 function createProducers(){
@@ -165,7 +112,7 @@ function createProducers(){
         })
         .catch(err => {{
           console.log(`${idx}. ${key} Producer not registered, Creating ... `, producer.address);
-          CreateProducerFn(producer.address, producer.name, producer.physicalAddress)
+          CreateProducerFn(producer.address, producer.name, producer.phone, producer.reg_no, producer.physicalAddress)
             .then(receipt => {
               console.log(`${idx}. Created producer ${key} with receipt: `, receipt);
               return resolve(receipt);
@@ -205,7 +152,7 @@ function createWarehouses(){
         })
         .catch(err => {{
           console.log(`${idx}. ${key} Warehouse not registered, Creating ... `, warehouse.address);
-          CreateWarehouseFn(warehouse.address, warehouse.name, warehouse.physicalAddress)
+          CreateWarehouseFn(warehouse.address, warehouse.name, warehouse.phone, warehouse.reg_no, warehouse.physicalAddress)
             .then(receipt => {
               console.log(`${idx}. Created Warehouse ${key} with receipt: `, receipt);
               return resolve(receipt);
@@ -233,11 +180,73 @@ function createWarehouses(){
   });
 }
 
+async function generateTestAccounts(count=10){
+  console.log("Generating test accounts ...");
+
+  const faucetKey = "d2f595c7f9e65d9d3f67098c9143e646c097bab946808ab52d720a194e00c8b3";
+  const faucetAccount = customWeb3.eth.accounts.wallet.add(customWeb3.eth.accounts.privateKeyToAccount(faucetKey));
+  console.log("Faucet account: ", faucetAccount);
+  
+  const gasPrice = await customWeb3.eth.getGasPrice();
+  const gas = 21000;
+  console.log("Gas", { gasPrice, gas });
+  
+  count = 9;
+  const accounts: any[] = [];
+  console.log("Generated accounts", accounts);
+
+  for(let i=0; i<count; i++){
+    const account = customWeb3.eth.accounts.create()
+    const toAddress = account.address;
+    const amountToSend = Web3.utils.toWei("0.02", "ether"); // Convert to wei value
+    await customWeb3.eth.sendTransaction({
+      from: faucetAccount.address,
+      to: toAddress,
+      value: amountToSend,
+      gas: customWeb3.utils.toHex(gas), 
+      gasPrice:  customWeb3.utils.toHex(gasPrice),
+    });
+    const balance = await customWeb3.eth.getBalance(account.address);
+    accounts.push({
+      ...account,
+      balanceWei: balance,
+      balanceEth: weiToEth(balance),
+    });
+    console.log(`${i}. ${account.address} -> `, weiToEth(balance) , "eth" );
+  }
+  
+    console.log(JSON.stringify(accounts));
+    accounts.forEach((account: any, idx) => {
+      console.log(`${idx}. ${account.address} -> `, account.balanceEth , "eth" );
+    })
+}
+
+async function createProducts(){
+  const params = ["temperature", "humidity"];
+  console.log("Creating products ....");
+  for(let entry of Object.entries(producerAccounts)){
+    const [_, producer] = entry;
+    for(let product of producer.products){
+      const minValues = [product.temperature.min, product.humidity.min];
+      const maxValues = [product.temperature.max, product.humidity.max];
+      console.log("Creation params", {
+        add: producer.address, name: product.name, price: String(product.price), params, minValues, maxValues
+      });
+      const receipt = await InventProduct(producer.address, product.name, String(product.price), params, minValues, maxValues);
+      console.log(`Invented product ${product.name} `, receipt);
+    }
+  }
+}
+
 export const SETUP_TOOL = {
   SourceTraceContract,
   createProducers,
   createWarehouses,
+  generateTestAccounts,
+  createProducts,
 }
 if(hasWindow()){
   window.SETUP_TOOL = SETUP_TOOL;
 }
+
+

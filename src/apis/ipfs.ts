@@ -32,7 +32,7 @@ export async function uploadFilesToIPFS(fileList: FileList) {
 // // Using web3.storage
 // import { Web3Storage } from 'web3.storage'
 
-// const IPFS_TOKEN = process.env.REACT_APP_IPFS_TOKEN || null;
+// const IPFS_TOKEN = process.env.NEXT_PUBLIC_IPFS_TOKEN || null;
 
 // const ipfsStorage = new Web3Storage({ IPFS_TOKEN });
 

@@ -30,7 +30,7 @@ const Web3Test = () => {
           </div>
         ) : isLoggedIn && profile ? (
           <div>
-            Logged in as {profile.name} <br />@ {profile.address}
+            Logged in as {profile.name} <br />@ {profile.id}
           </div>
         ) : metaState.isConnected ? (
           <div>Connected @ {metaState.account[0]}</div>

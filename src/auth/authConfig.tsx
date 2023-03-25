@@ -6,11 +6,10 @@ export enum Roles {
   WAREHOUSE = "WAREHOUSE",
 }
 export interface ProfileData {
-  address: string;
+  id: string;
   name: string;
   // license: string;
   role: Roles;
-  id: string;
   location: string;
 }
 

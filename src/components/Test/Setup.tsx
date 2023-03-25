@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react'
-import { producerAccounts, warehouseAccounts, SETUP_TOOL } from '../../apis/setup/entities'
+import { SETUP_TOOL } from '../../apis/setup/setup'
 
 const Setup = () => {
   useEffect(() => {
-    console.log({ producerAccounts, warehouseAccounts});
+    console.log(SETUP_TOOL);
   }, [])
   
   return (
@@ -18,6 +18,10 @@ const Setup = () => {
       <br/><br/>
       <button onClick={SETUP_TOOL.createWarehouses} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
         Create warehouse accounts
+      </button>
+      <br/><br/>
+      <button onClick={SETUP_TOOL.createProducts} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
+        Create all products
       </button>
     </div>
   )

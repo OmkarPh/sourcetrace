@@ -31,6 +31,14 @@ export default function App({ Component, pageProps }: AppProps) {
           GetProducer(address)
           .then((response: any) => {
             console.log(`Registered as producer `, response);
+            console.log("Resolve obj:", {
+              loggedIn: true,
+              profile: {
+                ...response,
+                role: Roles.PRODUCER,
+              },
+            });
+            
             resolve({
               loggedIn: true,
               profile: {
@@ -55,28 +63,13 @@ export default function App({ Component, pageProps }: AppProps) {
               })
               .catch(err => {
                 console.log("Not registered as warehouse");
-                reject("Not registered !");
+                // reject("Not registered !");
+                resolve({
+                  loggedIn: false,
+                  profile: null,
+                });
               });
           })
-
-          const response = localStorage.getItem(address);
-          console.log(`Checking if ${address} has an account ....  => `, response);
-          // if (response && response === "yes")
-            resolve({
-              loggedIn: true,
-              profile: {
-                address,
-                name: "Nestle",
-                location: "Bindal Industrial Estate, Sakinaka Tel. Exchange Lane, Andheri E, Maharashtra 400072",
-                // license: "SJIWE23",
-                role: "Producer",
-              },
-            });
-          // else
-          //   resolve({
-          //     loggedIn: false,
-          //     profile: null,
-          //   });
         }, 2000);
       });
     },

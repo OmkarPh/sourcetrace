@@ -12,14 +12,14 @@
 				"type": "uint256"
 			},
 			{
-				"internalType": "uint256",
+				"internalType": "int256",
 				"name": "_temperature",
-				"type": "uint256"
+				"type": "int256"
 			},
 			{
-				"internalType": "uint256",
+				"internalType": "int256",
 				"name": "_humidity",
-				"type": "uint256"
+				"type": "int256"
 			}
 		],
 		"name": "createCheckIn",
@@ -40,14 +40,14 @@
 				"type": "uint256"
 			},
 			{
-				"internalType": "uint256",
+				"internalType": "int256",
 				"name": "_temperature",
-				"type": "uint256"
+				"type": "int256"
 			},
 			{
-				"internalType": "uint256",
+				"internalType": "int256",
 				"name": "_humidity",
-				"type": "uint256"
+				"type": "int256"
 			}
 		],
 		"name": "createCheckOut",
@@ -106,14 +106,14 @@
 				"type": "string"
 			},
 			{
-				"internalType": "uint256",
+				"internalType": "int256",
 				"name": "_temperature",
-				"type": "uint256"
+				"type": "int256"
 			},
 			{
-				"internalType": "uint256",
+				"internalType": "int256",
 				"name": "_humidity",
-				"type": "uint256"
+				"type": "int256"
 			}
 		],
 		"name": "createProductLot",
@@ -152,6 +152,45 @@
 		],
 		"name": "createWarehouse",
 		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_name",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_price",
+				"type": "string"
+			},
+			{
+				"internalType": "string[]",
+				"name": "_params",
+				"type": "string[]"
+			},
+			{
+				"internalType": "int256[]",
+				"name": "_minValues",
+				"type": "int256[]"
+			},
+			{
+				"internalType": "int256[]",
+				"name": "_maxValues",
+				"type": "int256[]"
+			}
+		],
+		"name": "inventProduct",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
 		"stateMutability": "nonpayable",
 		"type": "function"
 	},
@@ -249,14 +288,14 @@
 						"type": "string[]"
 					},
 					{
-						"internalType": "uint256[]",
+						"internalType": "int256[]",
 						"name": "minValues",
-						"type": "uint256[]"
+						"type": "int256[]"
 					},
 					{
-						"internalType": "uint256[]",
+						"internalType": "int256[]",
 						"name": "maxValues",
-						"type": "uint256[]"
+						"type": "int256[]"
 					}
 				],
 				"internalType": "struct SourceTrace.ProductInfo[]",
@@ -356,14 +395,14 @@
 						"type": "string[]"
 					},
 					{
-						"internalType": "uint256[]",
+						"internalType": "int256[]",
 						"name": "minValues",
-						"type": "uint256[]"
+						"type": "int256[]"
 					},
 					{
-						"internalType": "uint256[]",
+						"internalType": "int256[]",
 						"name": "maxValues",
-						"type": "uint256[]"
+						"type": "int256[]"
 					}
 				],
 				"internalType": "struct SourceTrace.ProductInfo",
@@ -500,24 +539,24 @@
 						"type": "tuple"
 					},
 					{
-						"internalType": "uint256",
+						"internalType": "int256",
 						"name": "in_temperature",
-						"type": "uint256"
+						"type": "int256"
 					},
 					{
-						"internalType": "uint256",
+						"internalType": "int256",
 						"name": "in_humidity",
-						"type": "uint256"
+						"type": "int256"
 					},
 					{
-						"internalType": "uint256",
+						"internalType": "int256",
 						"name": "out_temperature",
-						"type": "uint256"
+						"type": "int256"
 					},
 					{
-						"internalType": "uint256",
+						"internalType": "int256",
 						"name": "out_humidity",
-						"type": "uint256"
+						"type": "int256"
 					}
 				],
 				"internalType": "struct SourceTrace.Checkpoint",
@@ -588,24 +627,24 @@
 						"type": "tuple"
 					},
 					{
-						"internalType": "uint256",
+						"internalType": "int256",
 						"name": "in_temperature",
-						"type": "uint256"
+						"type": "int256"
 					},
 					{
-						"internalType": "uint256",
+						"internalType": "int256",
 						"name": "in_humidity",
-						"type": "uint256"
+						"type": "int256"
 					},
 					{
-						"internalType": "uint256",
+						"internalType": "int256",
 						"name": "out_temperature",
-						"type": "uint256"
+						"type": "int256"
 					},
 					{
-						"internalType": "uint256",
+						"internalType": "int256",
 						"name": "out_humidity",
-						"type": "uint256"
+						"type": "int256"
 					}
 				],
 				"internalType": "struct SourceTrace.Checkpoint[]",
@@ -660,45 +699,6 @@
 			}
 		],
 		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "_name",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_price",
-				"type": "string"
-			},
-			{
-				"internalType": "string[]",
-				"name": "_params",
-				"type": "string[]"
-			},
-			{
-				"internalType": "uint256[]",
-				"name": "_minValues",
-				"type": "uint256[]"
-			},
-			{
-				"internalType": "uint256[]",
-				"name": "_maxValues",
-				"type": "uint256[]"
-			}
-		],
-		"name": "inventProduct",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "nonpayable",
 		"type": "function"
 	}
 ]

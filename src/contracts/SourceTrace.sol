@@ -46,18 +46,18 @@ contract SourceTrace {
         string name;
         string price;
         string[] params;
-        uint256[] minValues;
-        uint256[] maxValues;
+        int[] minValues;
+        int[] maxValues;
     }
 
     struct Checkpoint {
         uint256 inTime;
         uint256 outTime;
         Warehouse warehouse;
-        uint256 in_temperature;
-        uint256 in_humidity;
-        uint256 out_temperature;
-        uint256 out_humidity;
+        int in_temperature;
+        int in_humidity;
+        int out_temperature;
+        int out_humidity;
     }
 
     struct ProductLot {
@@ -238,8 +238,8 @@ contract SourceTrace {
         string memory _name,
         string memory _price,
         string[] memory _params,
-        uint256[] memory _minValues,
-        uint256[] memory _maxValues
+        int[] memory _minValues,
+        int[] memory _maxValues
     ) public mustBeProducer(msg.sender) returns (uint256) {
         uint256 newProductId = productsInfo[msg.sender].length;
         ProductInfo memory newProductInfo = ProductInfo({
@@ -260,8 +260,8 @@ contract SourceTrace {
         uint256 _product_id,
         string memory _source_factory_name,
         string memory _source_factory_location,
-        uint256 _temperature,
-        uint256 _humidity
+        int _temperature,
+        int _humidity
     )
         public
         mustBeProducer(msg.sender)
@@ -317,8 +317,8 @@ contract SourceTrace {
     function createCheckIn(
         address _producer_address,
         uint256 _product_lot_id,
-        uint256 _temperature,
-        uint256 _humidity
+        int _temperature,
+        int _humidity
     ) public mustBeWarehouse(msg.sender) {
         // retrieve the warehouse by its address
         Warehouse memory warehouse = warehouses[msg.sender];
@@ -353,8 +353,8 @@ contract SourceTrace {
     function createCheckOut(
         address _producer_address,
         uint256 _product_lot_id,
-        uint256 _temperature,
-        uint256 _humidity
+        int _temperature,
+        int _humidity
     ) public {
         // retrieve the product lot
         // ProductLot storage productLot = productLots[_producer_address][_product_lot_id];

@@ -10,7 +10,8 @@ export function CallerFn(Contract: any, method: string, debug: boolean, ...param
         }
         resolve(res);
       }).catch((err: any) => {
-          console.log(`Some error calling ${method} with params \n`, params, err);
+          if(debug)
+            console.log(`Some error calling ${method} with params \n`, params, err);
           reject(new Error(`Couldn't fetch results for ${method}`));
       });
   });
@@ -37,6 +38,7 @@ export function SenderFn(Contract: any, method: string, senderAddress: string, d
       return resolve(receipt);
     })
     .catch((err: any) => {
+      if(debug)
       console.log(`Some error sending ${method} with params \n`, params, err);
       reject(new Error(`Couldn't send tx for ${method}`));
     });

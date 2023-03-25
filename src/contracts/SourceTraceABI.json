@@ -12,9 +12,14 @@
 				"type": "uint256"
 			},
 			{
-				"internalType": "address",
-				"name": "_warehouseAddress",
-				"type": "address"
+				"internalType": "uint256",
+				"name": "_temperature",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_humidity",
+				"type": "uint256"
 			}
 		],
 		"name": "createCheckIn",
@@ -33,6 +38,16 @@
 				"internalType": "uint256",
 				"name": "_product_lot_id",
 				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_temperature",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_humidity",
+				"type": "uint256"
 			}
 		],
 		"name": "createCheckOut",
@@ -45,6 +60,16 @@
 			{
 				"internalType": "string",
 				"name": "_name",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_phone",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_reg_no",
 				"type": "string"
 			},
 			{
@@ -94,9 +119,9 @@
 		"name": "createProductLot",
 		"outputs": [
 			{
-				"internalType": "uint256",
+				"internalType": "string",
 				"name": "",
-				"type": "uint256"
+				"type": "string"
 			}
 		],
 		"stateMutability": "nonpayable",
@@ -107,6 +132,16 @@
 			{
 				"internalType": "string",
 				"name": "_name",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_phone",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_reg_no",
 				"type": "string"
 			},
 			{
@@ -166,55 +201,6 @@
 						"internalType": "string",
 						"name": "sourceFactoryLocation",
 						"type": "string"
-					},
-					{
-						"components": [
-							{
-								"internalType": "uint256",
-								"name": "inTime",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "outTime",
-								"type": "uint256"
-							},
-							{
-								"components": [
-									{
-										"internalType": "address",
-										"name": "id",
-										"type": "address"
-									},
-									{
-										"internalType": "string",
-										"name": "name",
-										"type": "string"
-									},
-									{
-										"internalType": "string",
-										"name": "location",
-										"type": "string"
-									}
-								],
-								"internalType": "struct SourceTrace.Warehouse",
-								"name": "warehouse",
-								"type": "tuple"
-							},
-							{
-								"internalType": "uint256",
-								"name": "temperature",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "humidity",
-								"type": "uint256"
-							}
-						],
-						"internalType": "struct SourceTrace.Checkpoint[]",
-						"name": "checkpoints",
-						"type": "tuple[]"
 					}
 				],
 				"internalType": "struct SourceTrace.ProductLot[]",
@@ -256,6 +242,21 @@
 						"internalType": "string",
 						"name": "price",
 						"type": "string"
+					},
+					{
+						"internalType": "string[]",
+						"name": "params",
+						"type": "string[]"
+					},
+					{
+						"internalType": "uint256[]",
+						"name": "minValues",
+						"type": "uint256[]"
+					},
+					{
+						"internalType": "uint256[]",
+						"name": "maxValues",
+						"type": "uint256[]"
 					}
 				],
 				"internalType": "struct SourceTrace.ProductInfo[]",
@@ -286,6 +287,16 @@
 					{
 						"internalType": "string",
 						"name": "name",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "phone",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "reg_no",
 						"type": "string"
 					},
 					{
@@ -338,6 +349,21 @@
 						"internalType": "string",
 						"name": "price",
 						"type": "string"
+					},
+					{
+						"internalType": "string[]",
+						"name": "params",
+						"type": "string[]"
+					},
+					{
+						"internalType": "uint256[]",
+						"name": "minValues",
+						"type": "uint256[]"
+					},
+					{
+						"internalType": "uint256[]",
+						"name": "maxValues",
+						"type": "uint256[]"
 					}
 				],
 				"internalType": "struct SourceTrace.ProductInfo",
@@ -399,60 +425,192 @@
 						"internalType": "string",
 						"name": "sourceFactoryLocation",
 						"type": "string"
-					},
-					{
-						"components": [
-							{
-								"internalType": "uint256",
-								"name": "inTime",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "outTime",
-								"type": "uint256"
-							},
-							{
-								"components": [
-									{
-										"internalType": "address",
-										"name": "id",
-										"type": "address"
-									},
-									{
-										"internalType": "string",
-										"name": "name",
-										"type": "string"
-									},
-									{
-										"internalType": "string",
-										"name": "location",
-										"type": "string"
-									}
-								],
-								"internalType": "struct SourceTrace.Warehouse",
-								"name": "warehouse",
-								"type": "tuple"
-							},
-							{
-								"internalType": "uint256",
-								"name": "temperature",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "humidity",
-								"type": "uint256"
-							}
-						],
-						"internalType": "struct SourceTrace.Checkpoint[]",
-						"name": "checkpoints",
-						"type": "tuple[]"
 					}
 				],
 				"internalType": "struct SourceTrace.ProductLot",
 				"name": "",
 				"type": "tuple"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_producer_address",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_product_lot_id",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_idx",
+				"type": "uint256"
+			}
+		],
+		"name": "getProductLotCheckpoint",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "inTime",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "outTime",
+						"type": "uint256"
+					},
+					{
+						"components": [
+							{
+								"internalType": "address",
+								"name": "id",
+								"type": "address"
+							},
+							{
+								"internalType": "string",
+								"name": "name",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "phone",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "reg_no",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "location",
+								"type": "string"
+							}
+						],
+						"internalType": "struct SourceTrace.Warehouse",
+						"name": "warehouse",
+						"type": "tuple"
+					},
+					{
+						"internalType": "uint256",
+						"name": "in_temperature",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "in_humidity",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "out_temperature",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "out_humidity",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct SourceTrace.Checkpoint",
+				"name": "",
+				"type": "tuple"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_producer_address",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_product_lot_id",
+				"type": "uint256"
+			}
+		],
+		"name": "getProductLotCheckpoints",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "inTime",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "outTime",
+						"type": "uint256"
+					},
+					{
+						"components": [
+							{
+								"internalType": "address",
+								"name": "id",
+								"type": "address"
+							},
+							{
+								"internalType": "string",
+								"name": "name",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "phone",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "reg_no",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "location",
+								"type": "string"
+							}
+						],
+						"internalType": "struct SourceTrace.Warehouse",
+						"name": "warehouse",
+						"type": "tuple"
+					},
+					{
+						"internalType": "uint256",
+						"name": "in_temperature",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "in_humidity",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "out_temperature",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "out_humidity",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct SourceTrace.Checkpoint[]",
+				"name": "",
+				"type": "tuple[]"
 			}
 		],
 		"stateMutability": "view",
@@ -482,6 +640,16 @@
 					},
 					{
 						"internalType": "string",
+						"name": "phone",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "reg_no",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
 						"name": "location",
 						"type": "string"
 					}
@@ -505,6 +673,21 @@
 				"internalType": "string",
 				"name": "_price",
 				"type": "string"
+			},
+			{
+				"internalType": "string[]",
+				"name": "_params",
+				"type": "string[]"
+			},
+			{
+				"internalType": "uint256[]",
+				"name": "_minValues",
+				"type": "uint256[]"
+			},
+			{
+				"internalType": "uint256[]",
+				"name": "_maxValues",
+				"type": "uint256[]"
 			}
 		],
 		"name": "inventProduct",

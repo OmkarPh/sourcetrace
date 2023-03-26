@@ -1,5 +1,8 @@
+import { ProductLotWithCheckpoints } from './../components/Dashboard/productTypes';
+import { ProductLot, ProductInfo, Checkpoint } from "../components/Dashboard/productTypes";
 import { CallerFactory, SenderFactory } from "./factory";
 import SourceTraceContract from "./SourceTraceContract";
+import { productIdentifierToDetails } from '../utils/general';
 
 export const GetProducer = CallerFactory(SourceTraceContract, 'getProducer', false);
 export const GetWarehouse = CallerFactory(SourceTraceContract, 'getWarehouse', false);
@@ -21,4 +24,25 @@ export const CreateCheckIn = SenderFactory(SourceTraceContract, 'createCheckIn',
 export const CreateCheckOut = SenderFactory(SourceTraceContract, 'createCheckOut', true);
 // export const  = SenderFactory(SourceTraceContract, '', false);
 
+export const GetWarehouseProductLots = CallerFactory(SourceTraceContract, 'getWarehouseProductLots', false);
 
+export const GetWarehouseProductLotsWithCheckpoints = async (warehouse: string) => {
+  const lots = await GetWarehouseProductLots(warehouse) as string[];
+  const productLots: ProductLotWithCheckpoints[] = [];
+  for(const lot of lots){
+    const { producer, id } = productIdentifierToDetails(lot)
+    productLots.push(await GetProductLotWithCheckpoints(producer, id));
+  }
+  return productLots;
+}
+
+export const GetProductLotWithCheckpoints = async (producer: string, id: number) => {
+  const lot = await GetProductLot(producer, id) as ProductLot;
+  const productInfo = await GetProductInfo(producer, lot.productId) as ProductInfo;
+  const checkpoints = await GetProductLotCheckpoints(producer, lot.productLotId) as Checkpoint[];
+  return {
+    ...lot,
+    productInfo,
+    checkpoints,
+  }
+}

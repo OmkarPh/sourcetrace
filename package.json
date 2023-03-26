@@ -31,6 +31,8 @@
     "next": "13.1.6",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-qr-reader": "^3.0.0-beta-1",
+    "react-qr-scanner": "^1.0.0-alpha.11",
     "react-toastify": "^9.1.1",
     "styled-components": "^5.3.9",
     "tw-elements": "^1.0.0-beta1",

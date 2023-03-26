@@ -2,22 +2,31 @@ import {
   Button,
   FormControl,
   FormGroup,
-  Input,
-  InputLabel,
   TextField,
 } from "@mui/material";
 import axios from "axios";
 import React, { FormEvent, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { CreateProductLot, GetAllProductsInfo } from "../../apis/apis";
-import { useMetamaskAuth } from "../../auth/authConfig";
-import { humidityToUnits, temperatureToUnits, unitsToHumidity, unitsToTemperature } from "../../utils/general";
-import Loader from "../core/Loader";
-import { ProductInfo, Scan } from "./productTypes";
+import { CreateProductLot, GetAllProductsInfo } from "../../../apis/apis";
+import { useMetamaskAuth } from "../../../auth/authConfig";
+import { humidityToUnits, temperatureToUnits, unitsToHumidity, unitsToTemperature } from "../../../utils/general";
+import Loader from "../../core/Loader";
 
+export interface ProductInfo {
+  productId: number;
+  producer: string;
+  name: string;
+  price: string;
+  params: string[];
+  minValues: number[];
+  maxValues: number[];
+}
+interface Scan {
+  temperature: number;
+  humidity: number;
+}
 
-
-const ProductList = () => {
+const PastWarehouse = () => {
   const { profile, isProcessingLogin } = useMetamaskAuth();
   const [isFetchingProducts, setIsFetchingProducts] = useState(true);
   const [products, setProducts] = useState<ProductInfo[]>([]);
@@ -35,21 +44,23 @@ const ProductList = () => {
   }
 
   function scanDriver() {
-    axios
-      .get("http://localhost:5000/driver/sensor")
-      .then((res: any) => {
-        const data = res.data;
-        setScan({
-          temperature: data.temperature,
-          humidity: data.humidity,
+    setTimeout(() => {
+      axios
+        .get("http://localhost:5000/driver/sensor")
+        .then((res: any) => {
+          const data = res.data;
+          setScan({
+            temperature: data.temperature,
+            humidity: data.humidity,
+          });
+        })
+        .catch((err) => {
+          setScan({
+            temperature: 26,
+            humidity: 55,
+          });
         });
-      })
-      .catch((err) => {
-        setScan({
-          temperature: 26,
-          humidity: 55,
-        });
-      });
+    });
   }
 
   useEffect(() => {
@@ -262,4 +273,4 @@ const ProductList = () => {
   );
 };
 
-export default ProductList;
+export default PastWarehouse;

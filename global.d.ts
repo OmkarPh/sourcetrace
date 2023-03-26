@@ -7,5 +7,6 @@ declare global {
     web3: any;
     SourceTraceContract: Contract;
     SETUP_TOOL: any,
+    prevText: string;
   }
 }

@@ -20,7 +20,7 @@ enum SECTIONS {
   LOTS="LOTS"
 }
 const ProducerDashboard = () => {
-  const { isLoggedIn, isProcessingLogin, profile, refreshAuthStatus } = useMetamaskAuth();
+  const { isProcessingLogin, profile, refreshAuthStatus } = useMetamaskAuth();
   const [selectedSection, setSelectedSection] = useState<SECTIONS>(SECTIONS.PRODUCTS);
   const [showNewProductModal, setShowNewProductModal] = useState(false);
 

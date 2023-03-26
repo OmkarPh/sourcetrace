@@ -31,9 +31,9 @@ function ProducerRegister() {
   };
 
   return (
-    <div className="p-2">
-      <label className="Projecttitle p-2 text-center">
-        Register as producer
+    <div className="p-5">
+      <label className="Projecttitle p-2 text-center p-10 ml-12">
+        Register as Producer
       </label>
       <br />
       <br />
@@ -43,24 +43,25 @@ function ProducerRegister() {
         <div className="w-1/2">
           <img
             src="/illustrations/Producer.svg"
-            className="Producer-logo"
+            className="Producer-logo ml-10 pb-10"
             alt="Producerlogo"
           />
         </div>
         <div className="w-1/2">
           <form onSubmit={onSubmits}>
-            {/* NAME */}
-            <label htmlFor="name" className="Name">
-              Name:{" "}
-            </label>
+            
+            <div>
+              {/* NAME */}
+              <label className="Name">Name: </label>
             <TextField
-              className="Namebox"
+              className="Namebox mt-11"
               onChange={inputEvent}
               id="Name"
               label="Name"
               variant="filled"
               autoComplete="off"
             />
+            </div>
             <br />
 
             <div className="flex flex-row overflow-hidden box-borderr m-2">
@@ -68,7 +69,7 @@ function ProducerRegister() {
               <div className="w-1/2">
                 <label className="Phoneno">Phone no: </label>
                 <TextField
-                  className="Phonenobox"
+                  className="Phonenobox mt-2"
                   onChange={inputEvent}
                   id="Phoneno"
                   label="Phone no"
@@ -80,8 +81,10 @@ function ProducerRegister() {
               <div className="w-1/2">
                 {/* Registration No */}
                 <label className="Regno w-1/2">Registeration No: </label>
+                <br/>
+              
                 <TextField
-                  className="Regnobox"
+                  className="Regnobox mt-2"
                   onChange={inputEvent}
                   id="Regno"
                   label="Registeration No"
@@ -108,7 +111,7 @@ function ProducerRegister() {
 
             <br />
             <br />
-            <div className="w-100 flex flex-row center text-center justify-center items-center">
+            <div className="w-100 flex flex-row center text-center justify-center items-center mt-2">
               {/* Button */}
               <Button
                 className="Confirmbtn self-center"

@@ -3,20 +3,22 @@
 .Name{
   width: 412px;
   height: 74px;
+  margin-left: 71px;
+  
   
   font-style: normal;
   font-weight: 700;
   font-size: 24px;
-  line-height: 29px;
 
   color: #000000;
 }
 
 .Namebox{
+  margin-left: -4.9rem;
   width: 565px;
   height: 56px;
 
-  /* background: #D9D9D9; */
+  background: white;
 }
 
 
@@ -24,6 +26,7 @@
 .Phoneno{
   width: 412px;
   height: 74px;
+  margin-left: 4.2rem;
 
   /* font-family: 'Inter'; */
   font-style: normal;
@@ -37,14 +40,16 @@
 .Phonenobox{
   width: 273px;
   height: 56px;
+  margin-left: 4.2rem;
 
-  /* background: #D9D9D9; */
+  background: white;
 }
 
 /* Register no */
 .Regno{
   width: 412px;
   height: 74px;
+  margin-left: 0.7rem;
   
   /* font-family: 'Inter'; */
   font-style: normal;
@@ -58,14 +63,16 @@
 .Regnobox{
   width: 261px;
   height: 56px;
+  margin-left: 0.7rem;
 
-  /* background: #D9D9D9; */
+  background: white;
 }
 
 /* Address */
 .Address{
   width: 412px;
   height: 74px;
+  margin-left: 5rem;
 
   /* font-family: 'Inter'; */
   font-style: normal;
@@ -77,10 +84,11 @@
 }
 
 .Addressbox{
+  margin-left: 5rem;
   width: 565px;
   height: 56px;
 
-  /* background: #D9D9D9; */
+  background: white;
 }
 
 /* Confirm Button */
@@ -100,21 +108,6 @@
 
 /* ***************************************** */
 
-/* Design style */
-.Sourcetraceheading{
-  position: absolute;
-  width: 189px;
-  height: 109px;
-
-  /* font-family: 'Inter'; */
-  font-style: normal;
-  font-weight: 700;
-  font-size: 40px;
-  line-height: 48px;
-
-  color: #000000;
-}
-
 .Projecttitle{
   position: absolute;
   width: 546px;
@@ -132,49 +125,10 @@
 /* Producer logo */
 
 .Producer-logo{
-  position: absolute;
   width: 581px;
   height: 548px;
 }
 
-
-/* ************************************************************************************** */
-.warehousecard{
-  position: absolute;
-  width: 310px;
-  height: 164px;
-
-  background: lightsteelblue;
-  border-radius: 10px;
-}
-
-.warehousename{
-  /* position: absolute; */
-  width: 228px;
-  height: 38px;
-  padding-top: 1rem;
-  padding-left: 1rem;
-
-  font-style: normal;
-  font-weight: 700;
-  font-size: 24px;
-  line-height: 29px;
-
-  color: #000000;
-}
-
-.details{
-  width: 314px;
-  height: 106px;
-  padding-left: 1rem;
-  
-  font-style: normal;
-  font-weight: 400;
-  font-size: 24px;
-  line-height: 29px;
-
-  color: #000000;
-}
 /* Main body */
 body {
   margin: 0;

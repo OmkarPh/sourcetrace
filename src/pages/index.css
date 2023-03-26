@@ -1,0 +1,225 @@
+
+/* Name */
+.Name{
+  /* font-family: 'Inter'; */
+  position: absolute;
+  width: 412px;
+  height: 74px;
+  left: 821px;
+  top: 214px;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 29px;
+
+  color: #000000;
+}
+
+.Namebox{
+  /* position: absolute; */
+  width: 565px;
+  height: 56px;
+  left: 821px;
+  top: 260px;
+
+  /* background: #D9D9D9; */
+}
+
+
+/* Phone no */
+.Phoneno{
+  position: absolute;
+  width: 412px;
+  height: 74px;
+  left: 821px;
+  top: 359px;
+
+  /* font-family: 'Inter'; */
+  font-style: normal;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 29px;
+
+  color: #000000;
+}
+
+.Phonenobox{
+  position: absolute;
+  width: 273px;
+  height: 56px;
+  left: 256px;
+  top: 398px;
+  
+  /* background: #D9D9D9; */
+}
+
+/* Register no */
+.Regno{
+  position: absolute;
+  width: 412px;
+  height: 74px;
+  left: 1123px;
+  top: 359px;
+  
+  /* font-family: 'Inter'; */
+  font-style: normal;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 29px;
+  
+  color: #000000;
+}
+
+.Regnobox{
+  position: absolute;
+  width: 261px;
+  height: 56px;
+  left: 280px;
+  top: 398px;
+
+  /* background: #D9D9D9; */
+}
+
+/* Address */
+.Address{
+  position: absolute;
+  width: 412px;
+  height: 74px;
+  left: 821px;
+  top: 503px;
+
+  /* font-family: 'Inter'; */
+  font-style: normal;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 29px;
+
+  color: #000000;
+}
+
+.Addressbox{
+  position: absolute;
+  width: 565px;
+  height: 56px;
+  left: 823px;
+  top: 490px;
+
+  /* background: #D9D9D9; */
+}
+
+/* Confirm Button */
+.Confirmbtn{
+  font-size: large;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  sans-serif;
+  position: absolute;
+  width: 219px;
+  height: 55px;
+  left: 440px;
+  top: 580px;
+
+  background: #68A6C8;
+  border-radius: 50px;
+}
+
+
+/* ***************************************** */
+
+/* Design style */
+.Sourcetraceheading{
+  position: absolute;
+  width: 189px;
+  height: 109px;
+  left: 168px;
+  top: 54px;
+
+  /* font-family: 'Inter'; */
+  font-style: normal;
+  font-weight: 700;
+  font-size: 40px;
+  line-height: 48px;
+
+  color: #000000;
+}
+
+.Projecttitle{
+  position: absolute;
+  width: 546px;
+  height: 65px;
+  left: 168px;
+  top: 163px;
+
+  /* font-family: 'Inter'; */
+  font-style: normal;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 29px;
+
+  color: #000000;
+}
+
+/* Producer logo */
+
+.Producer-logo{
+  position: absolute;
+  width: 581px;
+  height: 548px;
+  left: 150px;
+  top: 160px;
+}
+
+
+/* ************************************************************************************** */
+.warehousecard{
+  position: absolute;
+  width: 310px;
+  height: 164px;
+  left: 847px;
+  top: 74px;
+
+  background: lightsteelblue;
+  border-radius: 10px;
+}
+
+.warehousename{
+  /* position: absolute; */
+  width: 228px;
+  height: 38px;
+  padding-top: 1rem;
+  padding-left: 1rem;
+
+  font-style: normal;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 29px;
+
+  color: #000000;
+}
+
+.details{
+  width: 314px;
+  height: 106px;
+  padding-left: 1rem;
+  
+  font-style: normal;
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 29px;
+
+  color: #000000;
+}
+/* Main body */
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}

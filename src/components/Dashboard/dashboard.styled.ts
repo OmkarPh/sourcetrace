@@ -13,7 +13,7 @@ export const LeftContainer = styled.div`
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
-    padding: 40px 15px 25px 30px;
+    padding: 50px 15px 25px 30px;
 `
 
 export const RightContainer = styled.div`
@@ -22,5 +22,5 @@ export const RightContainer = styled.div`
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
-    padding: 40px 30px 25px 15px;
+    padding: 0px 30px 25px 15px;
 `

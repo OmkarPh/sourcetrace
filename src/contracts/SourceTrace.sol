@@ -1,13 +1,12 @@
 pragma solidity >=0.7.0 <0.9.0;
 pragma experimental ABIEncoderV2;
+// SPDX-License-Identifier: MIT
 
 import "@openzeppelin/contracts/utils/Strings.sol";
 
-// SPDX-License-Identifier: MIT
 
 function toString(bytes memory data) pure returns (string memory) {
     bytes memory alphabet = "0123456789abcdef";
-
     bytes memory str = new bytes(2 + data.length * 2);
     str[0] = "0";
     str[1] = "x";
@@ -45,6 +44,7 @@ contract SourceTrace {
         address producer;
         string name;
         string price;
+        string imageURL;
         string[] params;
         int[] minValues;
         int[] maxValues;
@@ -68,7 +68,6 @@ contract SourceTrace {
         uint256 createdAt;
         string sourceFactoryName;
         string sourceFactoryLocation;
-        // Checkpoint[] checkpoints;
     }
 
     // Producer_productlotIndex => Checkpoint[]
@@ -85,21 +84,30 @@ contract SourceTrace {
 
     // producer 0x923abc..332 => [P1_lot1, P1_lot2, P2_lot5]
     mapping(address => ProductLot[]) productLots;
+    mapping(address => string[]) warehouseProductLots;
 
-    modifier mustBeProducer(address _entity_address) {
+    function _mustBeProducer(address _entity_address) private view {
         require(
             producers[_entity_address].id !=
                 0x0000000000000000000000000000000000000000,
-            "Producer doesn't exist with this address"
+            "Producer not exist"
         );
+    }
+    modifier mustBeProducer(address _entity_address) {
+        _mustBeProducer(_entity_address);
         _;
     }
-    modifier mustBeWarehouse(address _entity_address) {
+
+
+    function _mustBeWarehouse(address _entity_address) private view {
         require(
             warehouses[_entity_address].id !=
                 0x0000000000000000000000000000000000000000,
-            "Warehouse doesn't exist with this address"
+            "Warehouse not exist"
         );
+    }
+    modifier mustBeWarehouse(address _entity_address) {
+        _mustBeWarehouse(_entity_address);
         _;
     }
 
@@ -138,7 +146,7 @@ contract SourceTrace {
     {
         require(
             _product_id < productsInfo[_producer_address].length,
-            "This product doesn't exist, Invent it first !"
+            "Product not exist"
         );
         return productsInfo[_producer_address][_product_id];
     }
@@ -160,9 +168,15 @@ contract SourceTrace {
     {
         require(
             _product_lot_id < productLots[_producer_address].length,
-            "This product lot doesn't exist, manufacture it first ;) !"
+            "Product lot not exist"
         );
         return productLots[_producer_address][_product_lot_id];
+    }
+
+    function getWarehouseProductLots(address _warehouse_address)
+        public view returns (string[] memory)
+    {
+        return warehouseProductLots[_warehouse_address];
     }
 
     function getProductLotCheckpoints(
@@ -200,7 +214,7 @@ contract SourceTrace {
         // Ensure a producer with the same address does not already exist
         require(
             producers[msg.sender].id == address(0),
-            "A producer with this address already exists"
+            "Producer already registered"
         );
 
         // Create the new producer
@@ -220,7 +234,7 @@ contract SourceTrace {
         // Ensure a warehouse with the same address does not already exist
         require(
             warehouses[msg.sender].id == address(0),
-            "A warehouse with this address already exists"
+            "Warehouse already registered"
         );
 
         // Create the new warehouse
@@ -237,6 +251,7 @@ contract SourceTrace {
     function inventProduct(
         string memory _name,
         string memory _price,
+        string memory _imageURL,
         string[] memory _params,
         int[] memory _minValues,
         int[] memory _maxValues
@@ -247,6 +262,7 @@ contract SourceTrace {
             producer: msg.sender,
             name: _name,
             price: _price,
+            imageURL: _imageURL,
             params: _params,
             minValues: _minValues,
             maxValues: _maxValues
@@ -270,7 +286,7 @@ contract SourceTrace {
     {
         require(
             _product_id < productsInfo[msg.sender].length,
-            "This product doesn't exist, Invent it first !"
+            "This product not exist"
         );
         uint256 newProductLotId = productLots[msg.sender].length;
         uint256 createdAt = block.timestamp;
@@ -311,7 +327,6 @@ contract SourceTrace {
                 "_",
                 Strings.toString(newProductLotId)
             );
-        // return newProductLotId;
     }
 
     function createCheckIn(
@@ -348,6 +363,14 @@ contract SourceTrace {
         newCheckpoint.in_humidity = _humidity;
         newCheckpoint.out_temperature = 0;
         newCheckpoint.out_humidity = 0;
+
+        warehouseProductLots[msg.sender].push(
+            string.concat(
+                addressToString(_producer_address),
+                "_",
+                Strings.toString(_product_lot_id)
+            )
+        );
     }
 
     function createCheckOut(
@@ -374,23 +397,23 @@ contract SourceTrace {
             // 0th Checkout from producer only
             require(
                 _producer_address == msg.sender,
-                "Only original producer can checkout from factory !"
+                "only producer can checkout factory"
             );
         } else {
             require(
                 warehouses[msg.sender].id !=
                     0x0000000000000000000000000000000000000000,
-                "Warehouse doesn't exist with this address"
+                "Warehouse not exist"
             );
             require(
                 checkpoint.warehouse.id == msg.sender,
-                "Can't checkout from someone else's checkpoint !!"
+                "Can't checkout else's checkpoint"
             );
         }
 
         require(
             checkpoint.outTime == 0,
-            "This checkpoint has already been checked out"
+            "Already checked out"
         );
 
         // set the out params for the checkpoint

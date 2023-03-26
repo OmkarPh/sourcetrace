@@ -19,9 +19,18 @@ import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import './styles/register.css';
+import { useEffect } from "react";
+
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
+
+  useEffect(() => {
+    const use = async () => {
+      (await import('tw-elements' as any)).default;
+    };
+    use();
+  }, []);
 
   const TestProps: MetamaskAuthProviderProps = {
     hasAccount: (address: string) => {

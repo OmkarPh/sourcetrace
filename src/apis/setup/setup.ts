@@ -1,6 +1,6 @@
 import Web3 from "web3";
 import customWeb3 from "./customWeb3"
-import { hasWindow, weiToEth } from "../../utils/general";
+import { DEFAULT_PRODUCT_IMAGE, hasWindow, params, temperatureToUnits, weiToEth } from "../../utils/general";
 import SourceTraceABI from '../../contracts/SourceTraceABI.json';
 import {
     contractAddress,
@@ -222,17 +222,17 @@ async function generateTestAccounts(count=10){
 }
 
 async function createProducts(){
-  const params = ["temperature", "humidity"];
   console.log("Creating products ....");
   for(let entry of Object.entries(producerAccounts)){
     const [_, producer] = entry;
     for(let product of producer.products){
-      const minValues = [product.temperature.min, product.humidity.min];
-      const maxValues = [product.temperature.max, product.humidity.max];
+      const minValues = [product.temperature.min, product.humidity.min].map(val => temperatureToUnits(val))
+      const maxValues = [product.temperature.max, product.humidity.max].map(val => temperatureToUnits(val));
       console.log("Creation params", {
-        add: producer.address, name: product.name, price: String(product.price), params, minValues, maxValues
+        add: producer.address, name: product.name, price: String(product.price), DEFAULT_PRODUCT_IMAGE, params, minValues, maxValues
       });
-      const receipt = await InventProduct(producer.address, product.name, String(product.price), params, minValues, maxValues);
+      const imageURL = product.image || DEFAULT_PRODUCT_IMAGE;
+      const receipt = await InventProduct(producer.address, product.name, String(product.price), imageURL, params, minValues, maxValues);
       console.log(`Invented product ${product.name} `, receipt);
     }
   }

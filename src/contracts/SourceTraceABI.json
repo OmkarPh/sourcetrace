@@ -158,45 +158,6 @@
 	{
 		"inputs": [
 			{
-				"internalType": "string",
-				"name": "_name",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_price",
-				"type": "string"
-			},
-			{
-				"internalType": "string[]",
-				"name": "_params",
-				"type": "string[]"
-			},
-			{
-				"internalType": "int256[]",
-				"name": "_minValues",
-				"type": "int256[]"
-			},
-			{
-				"internalType": "int256[]",
-				"name": "_maxValues",
-				"type": "int256[]"
-			}
-		],
-		"name": "inventProduct",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
 				"internalType": "address",
 				"name": "_producer_address",
 				"type": "address"
@@ -280,6 +241,11 @@
 					{
 						"internalType": "string",
 						"name": "price",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "imageURL",
 						"type": "string"
 					},
 					{
@@ -387,6 +353,11 @@
 					{
 						"internalType": "string",
 						"name": "price",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "imageURL",
 						"type": "string"
 					},
 					{
@@ -699,6 +670,69 @@
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_warehouse_address",
+				"type": "address"
+			}
+		],
+		"name": "getWarehouseProductLots",
+		"outputs": [
+			{
+				"internalType": "string[]",
+				"name": "",
+				"type": "string[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_name",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_price",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_imageURL",
+				"type": "string"
+			},
+			{
+				"internalType": "string[]",
+				"name": "_params",
+				"type": "string[]"
+			},
+			{
+				"internalType": "int256[]",
+				"name": "_minValues",
+				"type": "int256[]"
+			},
+			{
+				"internalType": "int256[]",
+				"name": "_maxValues",
+				"type": "int256[]"
+			}
+		],
+		"name": "inventProduct",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	}
 ]

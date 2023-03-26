@@ -3,6 +3,7 @@ import { GetAllProductLots, GetAllProductsInfo } from '../../apis/apis';
 import { useMetamaskAuth } from '../../auth/authConfig';
 import { timestampToDate } from '../../utils/general';
 import Loader from '../core/Loader';
+import { ProductInfo } from './ProductList';
 
 interface ProducLot {
   productId: number;
@@ -12,6 +13,7 @@ interface ProducLot {
   createdAt: number;
   sourceFactoryName: string;
   sourceFactoryLocation: string;
+  productInfo: ProductInfo;
 }
 
 const ProductLotList = () => {
@@ -23,17 +25,32 @@ const ProductLotList = () => {
     if(!profile)
       return;
     console.log("My address", profile.id);
-    
-    GetAllProductLots(profile.id)
-      .then(products => {
-        console.log("All product lots", products);
-        setProductLots(products as any);
+
+    const promises = [GetAllProductLots(profile.id), GetAllProductsInfo(profile.id)];
+    Promise.all(promises)
+    .then((result: any[]) => {
+        console.log("Received", result);
+        const ProductInfoMap = new Map<number, ProductInfo>(result[1].map((product: ProductInfo) => [product.productId, product]))
+        const newProductLots: ProducLot[] = result[0].map((lot: ProducLot) => ({
+          ...lot,
+          productInfo: ProductInfoMap.get(lot.productId) as ProductInfo
+        }));
+        setProductLots(newProductLots);
+        console.log("All product lots", newProductLots);
         setIsFetchingProducts(false);
       })
       .catch(err => {
         console.log("Err", err);
         setIsFetchingProducts(false);
       })
+
+    
+    // GetAllProductLots(profile.id)
+    //   .then(products => {
+    //     setProductLots(products as any);
+    //   })
+    //   .catch(err => {
+    //   })
   }, [profile])
   
 
@@ -49,13 +66,13 @@ const ProductLotList = () => {
           <thead className="bg-gray-200">
             <tr>
               <th className="w-1/4 py-3 px-4 text-left font-semibold">
-                Product ID
+                Product
               </th>
               <th className="w-1/4 py-3 px-4 text-left font-semibold">
                 Quantity
               </th>
               <th className="w-1/4 py-3 px-4 text-left font-semibold">
-                Date
+                Production Date
               </th>
               <th className="w-1/4 py-3 px-4 text-left font-semibold">
                 Factory location
@@ -66,7 +83,7 @@ const ProductLotList = () => {
             {productLots.map((productLot) => (
               <tr key={productLot.producerAddress+productLot.productLotId} className="border-b hover:bg-gray-100">
                 <td className="py-3 px-4">
-                  # {productLot.productId}
+                  {productLot.productInfo.name}
                 </td>
                 <td className="py-3 px-4">{productLot.quantity}</td>
                 <td className="py-3 px-4">{timestampToDate(productLot.createdAt).toLocaleDateString()}</td>

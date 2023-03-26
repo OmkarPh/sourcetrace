@@ -1,0 +1,26 @@
+{
+  "0": "0",
+  "1": "0",
+  "2": "0xabd8EeD5b630578F72eEB06c637dB7179576A811",
+  "3": "50",
+  "4": "1679833319",
+  "5": "Nestle India Ltd.",
+  "6": "ICC Chambers, Marol, Andheri East, Mumbai, Maharashtra 400072",
+  "productId": "0",
+  "productLotId": "0",
+  "producerAddress": "0xabd8EeD5b630578F72eEB06c637dB7179576A811",
+  "quantity": "50",
+  "createdAt": "1679833319",
+  "sourceFactoryName": "Nestle India Ltd.",
+  "sourceFactoryLocation": "ICC Chambers, Marol, Andheri East, Mumbai, Maharashtra 400072",
+  "productInfo": [
+    "0",
+    "0xabd8EeD5b630578F72eEB06c637dB7179576A811",
+    "Nestle Kitkat",
+    "400",
+    "https://res.cloudinary.com/dp0ayty6p/image/upload/v1679820531/kitkat_rmwi0o.jpg",
+    ["temperature", "humidity"],
+    ["-1000", "-2300"],
+    ["2000", "1900"]
+  ]
+}

@@ -1,10 +1,12 @@
+import { Button } from "@mui/material";
 import Head from "next/head";
 import React, { useState } from "react";
 import { Roles, useMetamaskAuth } from "../../auth/authConfig";
-import Loader from "../../components/core/Loader";
-import AccountInfo from "../../components/Dasboard/AccountInfo";
-import ProductList from "../../components/Dasboard/ProductList";
+import Loader from "../core/Loader";
+import AccountInfo from "./AccountInfo";
+import ProductList from "./ProductList";
 import { Container, LeftContainer, RightContainer } from "./dashboard.styled";
+import NewProductModal from "./NewProductModal";
 import ProductLotList from "./ProductLotList";
 
 const locations = [
@@ -20,7 +22,9 @@ enum SECTIONS {
 const ProducerDashboard = () => {
   const { isLoggedIn, isProcessingLogin, profile, refreshAuthStatus } = useMetamaskAuth();
   const [selectedSection, setSelectedSection] = useState<SECTIONS>(SECTIONS.PRODUCTS);
+  const [showNewProductModal, setShowNewProductModal] = useState(false);
 
+  
   function deleteAccount(){
     if(profile)
       localStorage.removeItem(profile.id);
@@ -43,6 +47,9 @@ const ProducerDashboard = () => {
         <Container>
           <LeftContainer>
             <AccountInfo />
+            <Button variant="contained" onClick={() => setShowNewProductModal(true)}>
+              New product <span className="pl-3 text-2xl">+</span>
+            </Button>
           </LeftContainer>
           <RightContainer>
             <div className="w-[100%] h-[100%] overflow-hidden">
@@ -81,7 +88,11 @@ const ProducerDashboard = () => {
         </Container>
         </div>
       <div>
-
+        <NewProductModal
+          show={showNewProductModal}
+          closeModal={() => setShowNewProductModal(false)}
+        />
+        {/* 
         {isProcessingLogin ? (
           <>Loading ....</>
         ) : (
@@ -100,7 +111,7 @@ const ProducerDashboard = () => {
               </button>
             </div>
           )
-        )}
+        )} */}
         {/* <GMap locations={locations} /> */}
       </div>
     </div>

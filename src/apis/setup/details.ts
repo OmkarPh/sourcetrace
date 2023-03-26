@@ -14,6 +14,7 @@ interface ProducerDetails extends AccountKeys {
     temperature: { min: number; max: number };
     humidity: { min: number; max: number };
     producer_name: string;
+    image?: string
   }[];
 }
 interface WarehouseDetails extends AccountKeys {
@@ -35,8 +36,9 @@ export const producerAccounts: { [key: string]: ProducerDetails } = {
         name: "Nestle Kitkat",
         price: 400,
         temperature: { min: -10, max: 20 },
-        humidity: { min: -23, max: 19 },
+        humidity: { min: 15, max: 75 },
         producer_name: "Nestle Pvt Ltd",
+        image: 'https://res.cloudinary.com/dp0ayty6p/image/upload/v1679820531/kitkat_rmwi0o.jpg',
       },
       {
         name: "Munch",
@@ -44,6 +46,7 @@ export const producerAccounts: { [key: string]: ProducerDetails } = {
         temperature: { min: -10, max: 30 },
         humidity: { min: 20, max: 70 },
         producer_name: "Nestle Pvt Ltd",
+        image: 'https://res.cloudinary.com/dp0ayty6p/image/upload/v1679820693/munch_b3wmt7.jpg',
       },
     ],
   },
@@ -58,9 +61,9 @@ export const producerAccounts: { [key: string]: ProducerDetails } = {
         name: " Bru Coffee",
         price: 240,
         temperature: { min: -10, max: 20 },
-
         humidity: { min: -23, max: 19 },
         producer_name: "Hindustan Unilever Limited",
+        image: 'https://res.cloudinary.com/dp0ayty6p/image/upload/v1679820787/bru_niyzbv.jpg',
       },
     ],
     reg_no: "34374789392@$WE323S@#@#42",

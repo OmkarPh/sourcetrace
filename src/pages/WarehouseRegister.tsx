@@ -2,7 +2,6 @@ import { useState } from "react";
 // import React, { useState} from "react";
 import { TextField } from '@mui/material';
 import { Button } from '@mui/material';
-import Warehouse from './Warehouse.svg'
 
 
 function WarehouseRegister(){
@@ -14,7 +13,7 @@ function WarehouseRegister(){
         address: '',
     })
 
-    const inputEvent = (event) => {
+    const inputEvent = (event: any) => {
         console.log(event.target.value); 
 
         const value = event.target.value;
@@ -27,7 +26,7 @@ function WarehouseRegister(){
         // })
     }
 
-    const onSubmits = (event) =>
+    const onSubmits = (event: any) =>
     {
         event.preventDefault();
         // console.log(setInfo.name)
@@ -38,7 +37,7 @@ function WarehouseRegister(){
         <div>
         <label className="Sourcetraceheading">Source Trace</label>
         <label className="Projecttitle">Supply chain management software</label>
-        <img src={Warehouse} className="Producer-logo" alt="Warehouselogo" />
+        <img src='/illustrations/Warehouse.svg' className="Producer-logo" alt="Warehouselogo" />
         
         <form onSubmit={onSubmits}>
         {/* NAME */}

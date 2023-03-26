@@ -4,6 +4,7 @@ import { TextField } from "@mui/material";
 import { Button } from "@mui/material";
 
 function ProducerRegister() {
+
   const [info, setInfo] = useState({
     name: "",
     phoneno: "",
@@ -12,25 +13,24 @@ function ProducerRegister() {
   });
 
   const inputEvent = (event: any) => {
-    console.log(event.target.value);
-
+    const name = event.target.name;
     const value = event.target.value;
-    const name = event.target.value;
+  
+    setInfo((prev)=>{
+      event.preventDefault();
+      return {...prev, [name]:value}
+    })
 
-    setInfo({ ...info, [name]: value });
-    // setInfo((prev) => {
-    //     // console.log(prev)
-    //     return {...prev, [name]: value};
-    // })
-  };
+  }
 
   const onSubmits = (event: any) => {
     event.preventDefault();
-    // console.log(setInfo.name)
-    // console.log(setInfo.name)
+    console.log(info);
+    
   };
 
   return (
+    
     <div className="p-5">
       <label className="Projecttitle p-2 text-center p-10 ml-12">
         Register as Producer
@@ -57,6 +57,7 @@ function ProducerRegister() {
               className="Namebox mt-11"
               onChange={inputEvent}
               id="Name"
+              name="name"
               label="Name"
               variant="filled"
               autoComplete="off"
@@ -72,6 +73,7 @@ function ProducerRegister() {
                   className="Phonenobox mt-2"
                   onChange={inputEvent}
                   id="Phoneno"
+                  name="phoneno"
                   label="Phone no"
                   variant="filled"
                   autoComplete="off"
@@ -85,8 +87,10 @@ function ProducerRegister() {
               
                 <TextField
                   className="Regnobox mt-2"
+                  value={info.regno}
                   onChange={inputEvent}
                   id="Regno"
+                  name="regno"
                   label="Registeration No"
                   variant="filled"
                   autoComplete="off"
@@ -101,8 +105,10 @@ function ProducerRegister() {
               <br />
               <TextField
                 className="Addressbox mt-2"
+                value={info.address}
                 onChange={inputEvent}
                 id="Address"
+                name="address"
                 label="Address"
                 variant="filled"
                 autoComplete="off"

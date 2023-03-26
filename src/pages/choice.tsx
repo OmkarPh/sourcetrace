@@ -12,8 +12,7 @@ function Choice(){
         </div>
         </div>
         <div className="container">
-            <div>   
-                
+            <div>    
                 <button className="card">
                     <img src="/illustrations/Producercard.svg"></img>
                 </button>

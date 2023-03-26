@@ -2,14 +2,11 @@ import { FormEvent, useState } from "react";
 // import React, { useState} from "react";
 import { TextField } from "@mui/material";
 import { Button } from "@mui/material";
-import { CreateProducerFn } from "../apis/apis";
-import { useMetamaskAuth } from "../auth/authConfig";
-import { toast } from "react-toastify";
-import { useRouter } from "next/router";
-import { DASHBOARD } from "../constants/routes";
 import Loader from "../components/core/Loader";
+import { useMetamaskAuth } from "../auth/authConfig";
+import { useRouter } from "next/router";
 
-const ProducerRegister = () => {
+function ProducerRegister() {
   const { metaState, refreshAuthStatus } = useMetamaskAuth();
   const router = useRouter();
   const [processing, setProcessing] = useState(false);
@@ -21,55 +18,58 @@ const ProducerRegister = () => {
   });
 
   const inputEvent = (event: any) => {
-    console.log(event.target.value);
-
+    const name = event.target.name;
     const value = event.target.value;
-    const name = event.target.value;
+  
+    setInfo((prev)=>{
+      event.preventDefault();
+      return {...prev, [name]:value}
+    })
 
-    setInfo({ ...info, [name]: value });
-  };
+  }
 
   const onSubmits = (event: FormEvent) => {
     event.preventDefault();
     event.stopPropagation();
-    const name = event.target.Name.value;
-    const phoneno = event.target.Name.value;
-    const regno = event.target.Name.value;
-    console.log(
-      "Create producer params",
-      metaState.account[0],
-      info,
-      info.name,
-      info.phoneno,
-      info.regno,
-      info.address
-    );
+    console.log(info);
+    // const name = event.target.Name.value;
+    // const phoneno = event.target.Name.value;
+    // const regno = event.target.Name.value;
+    // console.log(
+    //   "Create producer params",
+    //   metaState.account[0],
+    //   info,
+    //   info.name,
+    //   info.phoneno,
+    //   info.regno,
+    //   info.address
+    // );
     
-    setProcessing(true);
-    return;
-    CreateProducerFn(
-      metaState.account[0],
-      info.name,
-      info.phoneno,
-      info.regno,
-      info.address
-    ).then(res => {
-      toast.success("Registered successfuly !");
-      setProcessing(false);
-      refreshAuthStatus();
-      router.push(DASHBOARD);
-    })
-    .catch(err => {
-      toast.error(<>Please approve metamask tx</>);
-      setProcessing(false);
-    })
+    // setProcessing(true);
+    // return;
+    // CreateProducerFn(
+    //   metaState.account[0],
+    //   info.name,
+    //   info.phoneno,
+    //   info.regno,
+    //   info.address
+    // ).then(res => {
+    //   toast.success("Registered successfuly !");
+    //   setProcessing(false);
+    //   refreshAuthStatus();
+    //   router.push(DASHBOARD);
+    // })
+    // .catch(err => {
+    //   toast.error(<>Please approve metamask tx</>);
+    //   setProcessing(false);
+    // })
   };
 
   if(processing){
     return <Loader />
   }
-  
-  return (
+
+  return (    
     <div className="p-5">
       <label className="Projecttitle p-2 text-center p-10 ml-12">
         Register as Producer
@@ -88,17 +88,19 @@ const ProducerRegister = () => {
         </div>
         <div className="w-1/2">
           <form onSubmit={onSubmits}>
+            
             <div>
               {/* NAME */}
               <label className="Name">Name: </label>
-              <TextField
-                className="Namebox mt-11"
-                onChange={inputEvent}
-                id="Name"
-                // label="Name"
-                variant="outlined"
-                autoComplete="off"
-              />
+            <TextField
+              className="Namebox mt-11"
+              onChange={inputEvent}
+              id="Name"
+              name="name"
+              // label="Name"
+              variant="outlined"
+              autoComplete="off"
+            />
             </div>
             <br />
 
@@ -110,6 +112,7 @@ const ProducerRegister = () => {
                   className="Phonenobox mt-2"
                   onChange={inputEvent}
                   id="Phoneno"
+                  name="phoneno"
                   // label="Phone no"
                   variant="outlined"
                   autoComplete="off"
@@ -119,12 +122,14 @@ const ProducerRegister = () => {
               <div className="w-1/2">
                 {/* Registration No */}
                 <label className="Regno w-1/2">Registeration No: </label>
-                <br />
-
+                <br/>
+              
                 <TextField
                   className="Regnobox mt-2"
+                  value={info.regno}
                   onChange={inputEvent}
                   id="Regno"
+                  name="regno"
                   // label="Registeration No"
                   variant="outlined"
                   autoComplete="off"
@@ -139,8 +144,10 @@ const ProducerRegister = () => {
               <br />
               <TextField
                 className="Addressbox mt-2"
+                value={info.address}
                 onChange={inputEvent}
                 id="Address"
+                name="address"
                 // label="Address"
                 variant="outlined"
                 autoComplete="off"
@@ -150,6 +157,7 @@ const ProducerRegister = () => {
             <br />
             <br />
             <div className="w-100 flex flex-row center text-center justify-center items-center mt-2">
+              {/* Button */}
               <Button
                 className="Confirmbtn self-center"
                 type="submit"
@@ -163,6 +171,6 @@ const ProducerRegister = () => {
       </div>
     </div>
   );
-};
+}
 
 export default ProducerRegister;

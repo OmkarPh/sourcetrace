@@ -3,7 +3,8 @@ import { FormEvent, useState } from "react";
 import { TextField } from "@mui/material";
 import { Button } from "@mui/material";
 
-const WarehouseRegister = () => {
+function WarehouseRegister() {
+
   const [info, setInfo] = useState({
     name: "",
     phoneno: "",
@@ -12,27 +13,24 @@ const WarehouseRegister = () => {
   });
 
   const inputEvent = (event: any) => {
-    console.log(event.target.value);
-
+    const name = event.target.name;
     const value = event.target.value;
-    const name = event.target.value;
+  
+    setInfo((prev)=>{
+      event.preventDefault();
+      return {...prev, [name]:value}
+    })
 
-    setInfo({ ...info, [name]: value });
-    // setInfo((prev) => {
-    //     // console.log(prev)
-    //     return {...prev, [name]: value};
-    // })
-  };
+  }
 
-  const onSubmits = (event: FormEvent) => {
+  const onSubmits = (event: any) => {
     event.preventDefault();
-    event.stopPropagation();
+    console.log(info);
     
-    console.log(info.name)
-    console.log(setInfo.name)
   };
 
   return (
+    
     <div className="p-5">
       <label className="Projecttitle p-2 text-center p-10 ml-12">
         Register as Warehouse
@@ -46,7 +44,7 @@ const WarehouseRegister = () => {
           <img
             src="/illustrations/Warehouse.svg"
             className="Producer-logo ml-10 pb-10"
-            alt="Producerlogo"
+            alt="Warehouse illustration"
           />
         </div>
         <div className="w-1/2">
@@ -86,6 +84,7 @@ const WarehouseRegister = () => {
 
                 <TextField
                   className="Regnobox mt-2"
+                  value={info.regno}
                   onChange={inputEvent}
                   id="Regno"
                   // label="Registeration No"
@@ -102,6 +101,7 @@ const WarehouseRegister = () => {
               <br />
               <TextField
                 className="Addressbox mt-2"
+                value={info.address}
                 onChange={inputEvent}
                 id="Address"
                 // label="Address"
@@ -113,7 +113,6 @@ const WarehouseRegister = () => {
             <br />
             <br />
             <div className="w-100 flex flex-row center text-center justify-center items-center mt-2">
-              {/* Button */}
               <Button
                 className="Confirmbtn self-center"
                 type="submit"
@@ -127,6 +126,6 @@ const WarehouseRegister = () => {
       </div>
     </div>
   );
-};
+}
 
 export default WarehouseRegister;

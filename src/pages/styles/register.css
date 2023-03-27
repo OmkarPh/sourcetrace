@@ -14,10 +14,10 @@
 }
 
 .Namebox{
-  margin-left: -4.5rem;
   width: 565px;
   height: 56px;
-
+  margin-left: -4.5rem !important;
+  margin-top: 2.75rem !important;
   background: white;
 }
 
@@ -26,7 +26,8 @@
 .Phoneno{
   width: 412px;
   height: 74px;
-  margin-left: 4.2rem;
+  margin-left: 4.2rem !important;
+  margin-top: 2.75rem !important;
 
   /* font-family: 'Inter'; */
   font-style: normal;
@@ -40,7 +41,7 @@
 .Phonenobox{
   width: 273px;
   height: 56px;
-  margin-left: 4.1rem;
+  margin-left: 4.1rem !important;
 
   background: white;
 }
@@ -49,7 +50,8 @@
 .Regno{
   width: 412px;
   height: 74px;
-  margin-left: 0.7rem;
+  margin-left: 0.7rem !important;
+  margin-top: 2.75rem !important;
   
   /* font-family: 'Inter'; */
   font-style: normal;
@@ -63,7 +65,7 @@
 .Regnobox{
   width: 261px;
   height: 56px;
-  margin-left: 0.7rem;
+  margin-left: 0.7rem !important;
 
   background: white;
 }
@@ -72,7 +74,8 @@
 .Address{
   width: 412px;
   height: 74px;
-  margin-left: 5rem;
+  margin-left: 5rem !important;
+  margin-top: 2.75rem !important;
 
   /* font-family: 'Inter'; */
   font-style: normal;
@@ -84,7 +87,7 @@
 }
 
 .Addressbox{
-  margin-left: 4.5rem;
+  margin-left: 4.5rem !important;
   width: 565px;
   height: 56px;
 

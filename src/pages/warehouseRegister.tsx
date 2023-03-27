@@ -2,14 +2,22 @@ import { FormEvent, useState } from "react";
 // import React, { useState} from "react";
 import { TextField } from "@mui/material";
 import { Button } from "@mui/material";
+import { CreateWarehouseFn } from "../apis/apis";
+import { toast } from "react-toastify";
+import { DASHBOARD } from "../constants/routes";
+import { useRouter } from "next/router";
+import { useMetamaskAuth } from "../auth/authConfig";
+import Loader from "../components/core/Loader";
 
 function WarehouseRegister() {
-
+  const { metaState, refreshAuthStatus } = useMetamaskAuth();
+  const router = useRouter();
+  const [processing, setProcessing] = useState(false);
   const [info, setInfo] = useState({
     name: "",
     phoneno: "",
     regno: "",
-    address: "",
+    location: "",
   });
 
   const inputEvent = (event: any) => {
@@ -23,14 +31,48 @@ function WarehouseRegister() {
 
   }
 
-  const onSubmits = (event: any) => {
+  const onSubmits = (event: FormEvent) => {
     event.preventDefault();
-    console.log(info);
+    event.stopPropagation();
+    console.log({
+      entityAddress: metaState.account[0],
+      ...info,
+    });
+    console.log(
+      "Create warehouse params",
+      metaState.account[0],
+      info,
+      info.name,
+      info.phoneno,
+      info.regno,
+      info.location
+    );
     
+    setProcessing(true);
+
+    CreateWarehouseFn(
+      metaState.account[0],
+      info.name,
+      info.phoneno,
+      info.regno,
+      info.location
+    ).then(res => {
+      toast.success("Registered successfuly !");
+      setProcessing(false);
+      refreshAuthStatus();
+      router.push(DASHBOARD);
+    })
+    .catch(err => {
+      toast.error(<>Please approve metamask tx</>);
+      setProcessing(false);
+    })
   };
 
+  if(processing){
+    return <Loader />
+  }
+
   return (
-    
     <div className="p-5">
       <label className="Projecttitle p-2 text-center p-10 ml-12">
         Register as Warehouse
@@ -44,22 +86,24 @@ function WarehouseRegister() {
           <img
             src="/illustrations/Warehouse.svg"
             className="Producer-logo ml-10 pb-10"
-            alt="Warehouse illustration"
+            alt="Warehouselogo"
           />
         </div>
         <div className="w-1/2">
           <form onSubmit={onSubmits}>
+            
             <div>
               {/* NAME */}
               <label className="Name">Name: </label>
-              <TextField
-                className="Namebox mt-11"
-                onChange={inputEvent}
-                id="Name"
-                // label="Name"
-                variant="outlined"
-                autoComplete="off"
-              />
+            <TextField
+              className="Namebox mt-11"
+              onChange={inputEvent}
+              id="Name"
+              name="name"
+              // label="Name"
+              variant="outlined"
+              autoComplete="off"
+            />
             </div>
             <br />
 
@@ -71,6 +115,7 @@ function WarehouseRegister() {
                   className="Phonenobox mt-2"
                   onChange={inputEvent}
                   id="Phoneno"
+                  name="phoneno"
                   // label="Phone no"
                   variant="outlined"
                   autoComplete="off"
@@ -80,13 +125,14 @@ function WarehouseRegister() {
               <div className="w-1/2">
                 {/* Registration No */}
                 <label className="Regno w-1/2">Registeration No: </label>
-                <br />
-
+                <br/>
+              
                 <TextField
                   className="Regnobox mt-2"
                   value={info.regno}
                   onChange={inputEvent}
                   id="Regno"
+                  name="regno"
                   // label="Registeration No"
                   variant="outlined"
                   autoComplete="off"
@@ -101,9 +147,10 @@ function WarehouseRegister() {
               <br />
               <TextField
                 className="Addressbox mt-2"
-                value={info.address}
+                value={info.location}
                 onChange={inputEvent}
-                id="Address"
+                id="Location"
+                name="location"
                 // label="Address"
                 variant="outlined"
                 autoComplete="off"
@@ -113,6 +160,7 @@ function WarehouseRegister() {
             <br />
             <br />
             <div className="w-100 flex flex-row center text-center justify-center items-center mt-2">
+              {/* Button */}
               <Button
                 className="Confirmbtn self-center"
                 type="submit"

@@ -5,6 +5,9 @@ import { Button } from "@mui/material";
 import Loader from "../components/core/Loader";
 import { useMetamaskAuth } from "../auth/authConfig";
 import { useRouter } from "next/router";
+import { CreateProducerFn } from "../apis/apis";
+import { toast } from "react-toastify";
+import { DASHBOARD } from "../constants/routes";
 
 function ProducerRegister() {
   const { metaState, refreshAuthStatus } = useMetamaskAuth();
@@ -14,7 +17,7 @@ function ProducerRegister() {
     name: "",
     phoneno: "",
     regno: "",
-    address: "",
+    location: "",
   });
 
   const inputEvent = (event: any) => {
@@ -31,38 +34,38 @@ function ProducerRegister() {
   const onSubmits = (event: FormEvent) => {
     event.preventDefault();
     event.stopPropagation();
-    console.log(info);
-    // const name = event.target.Name.value;
-    // const phoneno = event.target.Name.value;
-    // const regno = event.target.Name.value;
-    // console.log(
-    //   "Create producer params",
-    //   metaState.account[0],
-    //   info,
-    //   info.name,
-    //   info.phoneno,
-    //   info.regno,
-    //   info.address
-    // );
+    console.log({
+      entityAddress: metaState.account[0],
+      ...info,
+    });
+    console.log(
+      "Create producer params",
+      metaState.account[0],
+      info,
+      info.name,
+      info.phoneno,
+      info.regno,
+      info.location
+    );
     
-    // setProcessing(true);
-    // return;
-    // CreateProducerFn(
-    //   metaState.account[0],
-    //   info.name,
-    //   info.phoneno,
-    //   info.regno,
-    //   info.address
-    // ).then(res => {
-    //   toast.success("Registered successfuly !");
-    //   setProcessing(false);
-    //   refreshAuthStatus();
-    //   router.push(DASHBOARD);
-    // })
-    // .catch(err => {
-    //   toast.error(<>Please approve metamask tx</>);
-    //   setProcessing(false);
-    // })
+    setProcessing(true);
+
+    CreateProducerFn(
+      metaState.account[0],
+      info.name,
+      info.phoneno,
+      info.regno,
+      info.location
+    ).then(res => {
+      toast.success("Registered successfuly !");
+      setProcessing(false);
+      refreshAuthStatus();
+      router.push(DASHBOARD);
+    })
+    .catch(err => {
+      toast.error(<>Please approve metamask tx</>);
+      setProcessing(false);
+    })
   };
 
   if(processing){
@@ -144,10 +147,10 @@ function ProducerRegister() {
               <br />
               <TextField
                 className="Addressbox mt-2"
-                value={info.address}
+                value={info.location}
                 onChange={inputEvent}
-                id="Address"
-                name="address"
+                id="Location"
+                name="location"
                 // label="Address"
                 variant="outlined"
                 autoComplete="off"

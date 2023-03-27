@@ -7,7 +7,7 @@ import { Container, LeftContainer, RightContainer } from "./dashboard.styled";
 import InWarehouse from "./Warehouse/InWarehouse";
 import PastWarehouse from "./Warehouse/PastWarehouse";
 import { Button, Modal } from "@mui/material";
-import { productIdentifierToDetails } from "../../utils/general";
+import { canCheckoutLot, productIdentifierToDetails } from "../../utils/general";
 import { GetProductLotWithCheckpoints, GetWarehouseProductLotsWithCheckpoints } from "../../apis/apis";
 import { ProductLot, ProductLotWithCheckpoints } from "./productTypes";
 import ProductPreviewModal from "./Warehouse/ProductPrevieModal";
@@ -27,7 +27,10 @@ const WarehouseDashboard = () => {
   const [previewProductLot, setPreviewProductLot] = useState<ProductLotWithCheckpoints | null>(null);
   const ref = useRef(null);
   const [loading, setLoading] = useState(false);
-  const [warehouseLots, setWarehouseLots] = useState<ProductLotWithCheckpoints[]>([]);
+  const [refreshIndicator, setRefresh] = useState(Math.random());
+  const refresh = () => setRefresh(Math.random());
+  const [inWarehouseLots, setInWarehouseLots] = useState<ProductLotWithCheckpoints[]>([]);
+  const [pastWarehouseLots, setPastWarehouseLots] = useState<ProductLotWithCheckpoints[]>([]);
   
   const handleScan: OnResultFunction = (data) => {
     if (!data) return;
@@ -72,15 +75,17 @@ const WarehouseDashboard = () => {
     GetWarehouseProductLotsWithCheckpoints(profile.id)
       .then(lots => {
         console.log("Warehouse lots", lots);
-        setWarehouseLots(lots)
+        const newInWarehouseLots = lots.filter(lot => canCheckoutLot(profile.id, lot));
+        const newPastWarehouseLots = lots.filter(lot => !canCheckoutLot(profile.id, lot));
+        setPastWarehouseLots(newPastWarehouseLots);
+        setInWarehouseLots(newInWarehouseLots);
         setLoading(false);
       })
       .catch(err => {
         toast.error("Some error fetching product lots of warehouse !");
         setLoading(false);
       })
-
-  }, [profile]);
+  }, [profile, refreshIndicator]);
 
   return (
     <div className="px-4">
@@ -101,7 +106,7 @@ const WarehouseDashboard = () => {
                 window.prevText = "gg";
               }}
             >
-              New product <span className="pl-3 text-2xl">+</span>
+              Check in product <span className="pl-3 text-2xl">+</span>
             </Button>
           </LeftContainer>
           <RightContainer>
@@ -129,11 +134,10 @@ const WarehouseDashboard = () => {
               </div>
               <div className="w-[100%] h-auto max-h-[calc(100vh-199px)] rounded-xl overflow-auto">
                 {selectedSection == SECTIONS.IN_WAREHOUSE ? (
-                  <></>
-                  // <InWarehouse />
+                  <InWarehouse productLots={inWarehouseLots} refresh={refresh} />
                 ) : (
-                  <></>
-                  // <PastWarehouse />
+                  // <></>
+                  <PastWarehouse productLots={pastWarehouseLots} />
                 )}
               </div>
             </div>

@@ -4,7 +4,12 @@ import React, { useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { CreateCheckIn, CreateCheckOut } from "../../../apis/apis";
 import { useMetamaskAuth } from "../../../auth/authConfig";
-import { humidityToUnits, temperatureToUnits, timestampToDate } from "../../../utils/general";
+import {
+  humidityToUnits,
+  isCheckinPossible,
+  temperatureToUnits,
+  timestampToDate,
+} from "../../../utils/general";
 import Loader from "../../core/Loader";
 import { ProductLot, ProductLotWithCheckpoints, Scan } from "../productTypes";
 
@@ -19,11 +24,10 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
   const [scan, setScan] = useState<Scan | null>(null);
   console.log(productLot);
 
-  const requiresCheckin = useMemo(() => {
-    const lastCheckpoint =
-      productLot.checkpoints[productLot.checkpoints.length - 1];
-    return Number(lastCheckpoint.outTime) != 0;
-  }, [productLot]);
+  const requiresCheckin = useMemo(
+    () => isCheckinPossible(productLot),
+    [productLot]
+  );
   const canCheckIn = useMemo(() => {
     const lastCheckpoint =
       productLot.checkpoints[productLot.checkpoints.length - 1];
@@ -141,10 +145,9 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
   return (
     <>
       <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
-        {
-          processing ?
+        {processing ? (
           <Loader />
-          :
+        ) : (
           <FormGroup className="relative w-1/3 my-6 mx-auto max-w-3xl">
             {/*content*/}
             {processing ? (
@@ -154,7 +157,8 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                 {/*header*/}
                 <div className="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
                   <h3 className="text-3xl font-semibold">
-                    {productLot.productInfo.name} Lot # {productLot.productLotId}
+                    {productLot.productInfo.name} Lot #{" "}
+                    {productLot.productLotId}
                   </h3>
                   <button
                     className="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
@@ -168,9 +172,27 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                 {/*body*/}
                 <div className="relative p-6 flex-auto">
                   <div>
-                    Produced at{" "}
+                    Production date{" "}
                     {timestampToDate(productLot.createdAt).toLocaleDateString()}
                   </div>
+                  <ul className="list-item"> 
+                    {productLot.checkpoints.map((checkpoint, idx) => {
+                      const title =
+                        idx == 0 ? "At factory" : checkpoint.warehouse.name;
+                      return (
+                        <li key={checkpoint.inTime + idx}>
+                          { title } &nbsp;
+                          {
+                            idx == productLot.checkpoints.length - 1 &&
+                            checkpoint.outTime == "0" && 
+                            <>
+                              ( Stored )
+                            </>
+                          }
+                        </li>
+                      );
+                    })}
+                  </ul>
 
                   {scan && (
                     <>
@@ -182,7 +204,8 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                         : "--"}{" "}
                       °C
                       <br />
-                      Humidity: &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{" "}
+                      Humidity: &nbsp;&nbsp;&nbsp;
+                      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{" "}
                       {scan ? scan.humidity : "--"} %
                       <br />
                     </>
@@ -238,7 +261,7 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
               </div>
             )}
           </FormGroup>
-        }
+        )}
       </div>
       <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
     </>

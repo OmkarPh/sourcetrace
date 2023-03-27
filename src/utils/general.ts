@@ -1,3 +1,4 @@
+import { ProductLotWithCheckpoints } from './../components/Dashboard/productTypes';
 import Web3 from "web3";
 
 export const params = ["temperature", "humidity"];
@@ -23,4 +24,25 @@ export const productIdentifierToDetails = (text: string) => {
     producer: split[0],
     id: Number(split[1]),
   }
+}
+
+export const isCheckinPossible = (productLot: ProductLotWithCheckpoints) => {
+  const lastCheckpoint = productLot.checkpoints[productLot.checkpoints.length - 1];
+  return Number(lastCheckpoint.outTime) != 0;
+}
+export const canCheckinLot = (warehouseAddress: string, productLot: ProductLotWithCheckpoints) => {
+  if(!isCheckinPossible(productLot))
+    return false;
+  return productLot.producerAddress != warehouseAddress; 
+}
+
+export const isCheckOutPossible = (productLot: ProductLotWithCheckpoints) => {
+  const lastCheckpoint = productLot.checkpoints[productLot.checkpoints.length - 1];
+  return Number(lastCheckpoint.outTime) == 0;
+}
+export const canCheckoutLot = (warehouseAddress: string, productLot: ProductLotWithCheckpoints) => {
+  if(!isCheckOutPossible(productLot))
+    return false;
+  const lastCheckpoint = productLot.checkpoints[productLot.checkpoints.length - 1];
+  return lastCheckpoint.warehouse.id == warehouseAddress; 
 }

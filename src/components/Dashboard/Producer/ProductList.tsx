@@ -7,13 +7,14 @@ import {
   TextField,
 } from "@mui/material";
 import axios from "axios";
-import React, { FormEvent, useEffect, useState } from "react";
+import React, { FormEvent, MouseEvent, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { CreateProductLot, GetAllProductsInfo } from "../../apis/apis";
-import { useMetamaskAuth } from "../../auth/authConfig";
-import { humidityToUnits, temperatureToUnits, unitsToHumidity, unitsToTemperature } from "../../utils/general";
-import Loader from "../core/Loader";
-import { ProductInfo, Scan } from "./productTypes";
+import { CreateProductLot, GetAllProductsInfo } from "../../../apis/apis";
+import { useMetamaskAuth } from "../../../auth/authConfig";
+import { humidityToUnits, temperatureToUnits, unitsToHumidity, unitsToTemperature } from "../../../utils/general";
+import Loader from "../../core/Loader";
+import { ProductInfo, Scan } from "../productTypes";
+import ProductInfoModal from "./ProductInfoModal";
 
 
 
@@ -28,11 +29,18 @@ const ProductList = () => {
   );
   const [creatingLot, setCreatingLot] = useState(false);
   const [scan, setScan] = useState<Scan | null>(null);
+  const [previewProductInfo, setPreviewProductInfo] = useState<ProductInfo | null>(null);
 
-  function closeModal() {
+  function closeNewLotModal() {
     setProductForNewLot(null);
     setScan(null);
   }
+  function openNewLotModal(event: MouseEvent, product: ProductInfo){
+    event.stopPropagation();
+    event.preventDefault();
+    setProductForNewLot(product);
+  }
+
 
   function scanDriver() {
     axios
@@ -140,6 +148,7 @@ const ProductList = () => {
               <tr
                 key={product.producer + product.productId}
                 className="border-b hover:bg-gray-100 cursor-pointer"
+                onClick={() => setPreviewProductInfo(product)}
               >
                 <td className="py-3 px-4">{product.name}</td>
                 <td className="py-3 px-4">
@@ -156,7 +165,7 @@ const ProductList = () => {
                 <td className="py-3 px-4">
                   <Button
                     variant="outlined"
-                    onClick={() => setProductForNewLot(product)}
+                    onClick={e => openNewLotModal(e, product)}
                   >
                     Create lot
                   </Button>
@@ -187,7 +196,7 @@ const ProductList = () => {
                     </h3>
                     <button
                       className="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
-                      onClick={closeModal}
+                      onClick={closeNewLotModal}
                     >
                       <span className="bg-transparent text-black opacity-5 h-6 w-6 text-2xl block outline-none focus:outline-none">
                         ×
@@ -235,7 +244,7 @@ const ProductList = () => {
                     <button
                       className="text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                       type="button"
-                      onClick={closeModal}
+                      onClick={closeNewLotModal}
                     >
                       Close
                     </button>
@@ -258,6 +267,14 @@ const ProductList = () => {
           <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
         </>
       )}
+
+      {
+        previewProductInfo &&
+        <ProductInfoModal
+          productInfo={previewProductInfo}
+          closeModal={() => setPreviewProductInfo(null)}
+        />
+      }
     </div>
   );
 };

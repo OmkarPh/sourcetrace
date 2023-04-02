@@ -4,6 +4,7 @@ export interface ProductInfo {
   name: string;
   price: string;
   params: string[];
+  imageURL: string;
   minValues: number[];
   maxValues: number[];
 }

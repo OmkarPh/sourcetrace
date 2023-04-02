@@ -4,10 +4,10 @@ import React, { useState } from "react";
 import { Roles, useMetamaskAuth } from "../../auth/authConfig";
 import Loader from "../core/Loader";
 import AccountInfo from "./AccountInfo";
-import ProductList from "./ProductList";
+import ProductList from "./Producer/ProductList";
 import { Container, LeftContainer, RightContainer } from "./dashboard.styled";
-import NewProductModal from "./NewProductModal";
-import ProductLotList from "./ProductLotList";
+import NewProductModal from "./Producer/NewProductModal";
+import ProductLotList from "./Producer/ProductLotList";
 
 const locations = [
   { lat: 37.7749, lng: -122.4194 }, // San Francisco, CA
@@ -63,8 +63,8 @@ const ProducerDashboard = () => {
                     return (
                       <div
                         className={
-                          `w-[100px] p-1 rounded-md text-center ${isSelected ? "bg-[#73f3fe] transition-colors duration-200 ease-in-out "
-                          : "text-gray-800 hover:bg-[#cff8fb]"}`
+                          `w-[100px] p-1 text-center ${isSelected ? "bg-[#1876d2]  text-white transition-colors duration-200 ease-in-out "
+                          : "text-gray-800 hover:bg-[#c9e2fa]"}`
                         }
                         key={section.id}
                         onClick={() => setSelectedSection(section.id)}

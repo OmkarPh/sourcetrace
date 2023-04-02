@@ -10,7 +10,7 @@ import { Button, Modal } from "@mui/material";
 import { canCheckoutLot, productIdentifierToDetails } from "../../utils/general";
 import { GetProductLotWithCheckpoints, GetWarehouseProductLotsWithCheckpoints } from "../../apis/apis";
 import { ProductLot, ProductLotWithCheckpoints } from "./productTypes";
-import ProductPreviewModal from "./Warehouse/ProductPrevieModal";
+import ProductPreviewModal from "./Warehouse/ProductLotPrevieModal";
 import { toast } from "react-toastify";
 
 enum SECTIONS {
@@ -96,7 +96,7 @@ const WarehouseDashboard = () => {
       <br />
       <div className="flex flex-row h-[calc(100vh-55px)] overflow-hidden box-borderr">
         <Container>
-          <LeftContainer>
+          <LeftContainer className="mt-5">
             <AccountInfo />
             <br />
             <Button
@@ -119,10 +119,10 @@ const WarehouseDashboard = () => {
                   const isSelected = selectedSection === section.id;
                   return (
                     <div
-                      className={`w-[200px] rounded-md text-center ${
+                      className={`w-[200px] p-2 text-center ${
                         isSelected
-                          ? "bg-[#73f3fe] transition-colors duration-200 ease-in-out "
-                          : "text-gray-800 hover:bg-[#cff8fb]"
+                          ? "bg-[#1876d2] transition-colors  text-white duration-200 ease-in-out "
+                          : "text-gray-800 hover:bg-[#c9e2fa]"
                       }`}
                       key={section.id}
                       onClick={() => setSelectedSection(section.id)}

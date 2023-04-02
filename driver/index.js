@@ -1,55 +1,52 @@
-const express = require('express');
-const slashes = require('connect-slashes');
-const cors = require('cors');
+const express = require("express");
+const slashes = require("connect-slashes");
+const cors = require("cors");
+const { poll } = require("./trucks");
 
-if(process.env.NODE_ENV !== "production") {
-  require('dotenv').config();
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
 }
 
 const PORT = process.env.PORT || 5000;
 
 // Setting up the server
 const app = express();
-app.use(cors())
-app.use(express.json()) 
-app.use(express.urlencoded({ extended: true })) 
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(slashes(false));
 app.listen(PORT, () => console.log(`Driver software is running on ${PORT}`));
 
-
 let temperature = 25; // Set initial temperature to 25°C
 let humidity = 50; // Set initial humidity to 50%
-function validateFields(){
-  if(!temperature)
-    temperature = 25;
-  if(!humidity)
-    humidity = 50;
-  
+function validateFields() {
+  if (!temperature) temperature = 25;
+  if (!humidity) humidity = 50;
 }
 
 function randomRangeAbsolute(min, max) {
-	return Math.floor(Math.random() * (max - min + 1)) + min;
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
-function randomChange(){
+function randomChange() {
   return Math.random() - 0.5;
 }
 
-function activateSensor(){
+function activateSensor() {
   // Generate random changes for temperature and humidity
   const temperatureChange = randomChange();
   const humidityChange = randomChange();
-  
+
   // Update temperature and humidity with the random changes
   temperature += temperatureChange;
   humidity += humidityChange;
-  
+
   // Ensure that temperature and humidity stay within realistic ranges
   if (temperature < 10) {
     temperature = 10;
   } else if (temperature > 40) {
     temperature = 40;
   }
-  
+
   if (humidity < 30) {
     humidity = 30;
   } else if (humidity > 70) {
@@ -62,17 +59,15 @@ function activateSensor(){
   return {
     temperature,
     humidity,
-    timestamp: new Date()
-  }
+    timestamp: new Date(),
+  };
 }
 
-
-
-app.get('/driver/sensor', (req, res) => {
+app.get("/driver/sensor", (req, res) => {
   res.status(200).json({
     ...activateSensor(),
-  })
-})
+  });
+});
 
 // Scenarios
 const scenarios = {
@@ -84,7 +79,7 @@ const scenarios = {
     humidity: {
       min: 43,
       max: 52,
-    }
+    },
   },
   coldStorage: {
     temp: {
@@ -94,7 +89,7 @@ const scenarios = {
     humidity: {
       min: 45,
       max: 60,
-    }
+    },
   },
   coldStorageCompromised: {
     temp: {
@@ -104,44 +99,113 @@ const scenarios = {
     humidity: {
       min: 61,
       max: 72,
-    }
+    },
   },
+};
+function setComponentConditions(component) {
+  if (!component) component = scenarios.normal;
+  temperature =
+    randomRangeAbsolute(component.temp.min, component.temp.max) +
+    randomChange();
+  humidity =
+    randomRangeAbsolute(component.humidity.min, component.humidity.max) +
+    randomChange();
 }
-function setComponentConditions(component){
-  if(!component)
-    component = scenarios.normal;
-  temperature = randomRangeAbsolute(component.temp.min, component.temp.max) + randomChange();
-  humidity = randomRangeAbsolute(component.humidity.min, component.humidity.max) + randomChange();
-}
 
-
-app.get('/normal', (req, res) => {
-  setComponentConditions(scenarios.normal)
+app.get("/normal", (req, res) => {
+  setComponentConditions(scenarios.normal);
   res.json({ message: "Success !", temperature, humidity });
-})
-app.get('/coldStorage', (req, res) => {
-  setComponentConditions(scenarios.coldStorage)
+});
+app.get("/coldStorage", (req, res) => {
+  setComponentConditions(scenarios.coldStorage);
   res.json({ message: "Success !", temperature, humidity });
-})
-app.get('/coldStorageCompromised', (req, res) => {
-  setComponentConditions(scenarios.coldStorageCompromised)
+});
+app.get("/coldStorageCompromised", (req, res) => {
+  setComponentConditions(scenarios.coldStorageCompromised);
   res.json({ message: "Success !", temperature, humidity });
-})
-
-
-// Test
-app.get('/test', (req, res) => {
-  res.status(200).send( "Server is running !!");
-})
-app.get('/api/test', (req, res) => {
-  res.status(200).json({ message: "Server is running !!" });
-})
-app.get('/api/ping', (req, res)=>{
-  res.status(200).send('-- ok --');
 });
 
+const PERCENTAGE = 85;
+const POLL_INTERVAL = 2 * 1000;
+app.post("/start-polling", async (req, res) => {
+  const {
+    productLotId,
+    truckAddress,
+    minTemperature,
+    maxTemperature,
+    minHumidity,
+    maxHumidity,
+    timeLimit,
+  } = req.body;
+
+  if(
+    !productLotId ||
+    !truckAddress ||
+    !minTemperature ||
+    !maxTemperature ||
+    !minHumidity ||
+    !maxHumidity ||
+    !timeLimit
+  ) {
+    return res.status(400).json({ message: "Invalid request !!"});
+  }
+
+  const startTime = new Date().getTime();
+
+  // set up interval to generate values every 5 seconds
+  const interval = setInterval(() => {
+    const currentTime = new Date().getTime();
+    const elapsedTime = currentTime - startTime;
+    if (elapsedTime >= timeLimit) {
+      clearInterval(interval);
+      return;
+    }
+
+    // generate values within range with 85% probability
+    let temperature, humidity;
+    temperature = Math.floor(
+      Math.random() * (maxTemperature - minTemperature + 1) + minTemperature
+    );
+    humidity = Math.floor(
+      Math.random() * (maxHumidity - minHumidity + 1) + minHumidity
+    );
+    if (Math.random() >= PERCENTAGE / 100) {
+      // generate values slightly outside the specified range for 15% probability
+      const rangeSize = Math.max(
+        maxTemperature - minTemperature,
+        maxHumidity - minHumidity
+      );
+      const deviation = Math.floor(Math.random() * (rangeSize / 10)) + 1;
+      temperature =
+        Math.random() < 0.5
+          ? minTemperature - deviation
+          : maxTemperature + deviation;
+      humidity =
+        Math.random() < 0.5 ? minHumidity - deviation : maxHumidity + deviation;
+      console.log("Out of bound");
+    }
+
+    // print generated values to console
+    console.log("Polling ...", { temperature, humidity });
+    poll(truckAddress, productLotId || "", temperature, humidity);
+  }, POLL_INTERVAL);
+
+  // send OK response without waiting for generateParams
+  res.status(200).json({ message: "Success" });
+});
+
+// Test
+app.get("/test", (req, res) => {
+  res.status(200).send("Server is running !!");
+});
+app.get("/api/test", (req, res) => {
+  res.status(200).json({ message: "Server is running !!" });
+});
+app.get("/api/ping", (req, res) => {
+  res.status(200).send("-- ok --");
+});
 
 // 404 pages for development
-app.get('*', (req, res)=>{
-    res.status(404).send("API not found :(  <br> ¯\\_(ツ)_/¯");
+app.get("*", (req, res) => {
+  res.status(404).send("API not found :(  <br> ¯\\_(ツ)_/¯");
 });

@@ -1,39 +1,4 @@
-interface AccountKeys {
-  pk: string;
-  address: string;
-  name: string;
-  reg_no: string;
-  phone: number;
-}
-
-interface ProducerDetails extends AccountKeys {
-  physicalAddress: string;
-  products: {
-    name: string;
-    price: number;
-    temperature: { min: number; max: number };
-    timeLimit?: { min: number; max: number };
-    humidity: { min: number; max: number };
-    producer_name: string;
-    image?: string
-  }[];
-  trucks?: {
-    truckLicensPlate: string,   // eg. "MH 06 EF 3259"
-    pk: string,
-    address: string,
-  }[];
-}
-interface WarehouseDetails extends AccountKeys {
-  physicalAddress: string;
-  certifications: { title: string; url: string }[];
-  trucks?: {
-    truckLicensPlate: string,   // eg. "MH 06 EF 3259"
-    pk: string,
-    address: string,
-  }[];
-}
-
-export const producerAccounts: { [key: string]: ProducerDetails } = {
+const producerAccounts = {
   nestle: {
     pk: "0fd9949357465ea9dc776d416fafe782772ef27baad8abdb4e5e64323b0618cc",
     address: "0xabd8EeD5b630578F72eEB06c637dB7179576A811",
@@ -257,9 +222,7 @@ export const producerAccounts: { [key: string]: ProducerDetails } = {
   },
 };
 
-
-
-export const warehouseAccounts: { [key: string]: WarehouseDetails } = {
+const warehouseAccounts = {
   antophyll: {
     pk: "50df0b6a495e75aaa31f04f27bffdc380772b483d41a4826b7c854f434e086dd",
     address: "0x1FCC6B2778417cf0eD82f6e45f2be015f0742ECa",
@@ -503,3 +466,8 @@ export const warehouseAccounts: { [key: string]: WarehouseDetails } = {
     ],
   },
 };
+
+module.exports = {
+  producerAccounts,
+  warehouseAccounts
+}

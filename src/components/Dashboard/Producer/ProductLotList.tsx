@@ -7,17 +7,18 @@ import {
   GetAllProductLots,
   GetAllProductsInfo,
   GetProductLotCheckpoints,
-} from "../../apis/apis";
-import { useMetamaskAuth } from "../../auth/authConfig";
-import { humidityToUnits, temperatureToUnits, timestampToDate } from "../../utils/general";
-import Loader from "../core/Loader";
+} from "../../../apis/apis";
+import { useMetamaskAuth } from "../../../auth/authConfig";
+import { humidityToUnits, temperatureToUnits, timestampToDate } from "../../../utils/general";
+import Loader from "../../core/Loader";
 import {
   ProductLot,
   ProductInfo,
   Checkpoint,
   ProductLotWithCheckpoints,
   Scan,
-} from "./productTypes";
+} from "../productTypes";
+import ProductLotModal from "./ProductLotModal";
 
 const ProductLotList = () => {
   const { profile, isProcessingLogin } = useMetamaskAuth();
@@ -26,6 +27,8 @@ const ProductLotList = () => {
     []
   );
   const [checkingOut, setCheckingOut] = useState(false);
+  const [toCheckoutLot, setToCheckoutLot] = useState<ProductLot | null>(null);
+
   const [refreshIndicator, setRefresh] = useState(Math.random());
   const refresh = () => setRefresh(Math.random());
 
@@ -151,7 +154,7 @@ const ProductLotList = () => {
                       <Button
                         type="submit"
                         variant="outlined"
-                        onClick={() => checkoutFromFactory(productLot)}
+                        onClick={() => setToCheckoutLot(productLot)}
                       >
                         Checkout from factory
                       </Button>
@@ -167,6 +170,13 @@ const ProductLotList = () => {
           </tbody>
         </table>
       </div>
+      {
+        toCheckoutLot &&
+        <ProductLotModal
+          productLot={toCheckoutLot}
+          closeModal={() => setToCheckoutLot(null)}
+        />
+      }
     </div>
   );
 };

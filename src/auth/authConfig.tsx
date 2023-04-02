@@ -5,12 +5,17 @@ export enum Roles {
   PRODUCER = "PRODUCER",
   WAREHOUSE = "WAREHOUSE",
 }
+export interface ParsedTruckDetails {
+  license: string;
+  address: string;
+}
 export interface ProfileData {
   id: string;
   name: string;
   // license: string;
   role: Roles;
   location: string;
+  parsedTruckDetails: ParsedTruckDetails[];
 }
 
 const routingConfig: RoutingConfig = {

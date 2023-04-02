@@ -5,6 +5,7 @@ import React, {
 } from "react";
 import { MetamaskStateProvider, useMetamask } from "use-metamask";
 import Web3 from "web3";
+import { ParsedTruckDetails } from "./authConfig";
 
 // Change here for customizations
 export enum Roles {
@@ -12,10 +13,12 @@ export enum Roles {
   WAREHOUSE = "WAREHOUSE",
 }
 export interface ProfileData {
-  address: string;
+  id: string;
   name: string;
-  license: string;
+  // license: string;
   role: Roles;
+  location: string;
+  parsedTruckDetails: ParsedTruckDetails[];
 }
 
 

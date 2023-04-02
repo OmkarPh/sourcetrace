@@ -7,7 +7,7 @@ import { toast, ToastContainer } from "react-toastify";
 import {
   MetamaskAuthProviderProps
 } from "../lib/useMetamaskAuth";
-import { MetamaskAuthProvider, Roles } from "../auth/authConfig";
+import { MetamaskAuthProvider, ProfileData, Roles } from "../auth/authConfig";
 import Navbar from "../components/core/Navbar";
 
 import "@/styles/globals.css";
@@ -20,6 +20,7 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import './styles/register.css';
 import { useEffect } from "react";
+import { parseTruckData } from "../utils/general";
 
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -40,21 +41,16 @@ export default function App({ Component, pageProps }: AppProps) {
         setTimeout(() => {
           GetProducer(address)
           .then((response: any) => {
-            console.log(`Registered as producer `, response);
-            console.log("Resolve obj:", {
-              loggedIn: true,
-              profile: {
-                ...response,
-                role: Roles.PRODUCER,
-              },
-            });
+            const parsedProducer: ProfileData = {
+              ...response,
+              role: Roles.PRODUCER,
+              parsedTruckDetails: parseTruckData(response.truckDetails, response.trucks),
+            };
+            console.log(`Logged in as producer `, parsedProducer);
             
             resolve({
               loggedIn: true,
-              profile: {
-                ...response,
-                role: Roles.PRODUCER,
-              },
+              profile: parsedProducer,
             })
           })
           .catch(err => {
@@ -62,13 +58,15 @@ export default function App({ Component, pageProps }: AppProps) {
 
             GetWarehouse(address)
               .then((response: any) => {
-                console.log(`Registered as warehouse `, response);
+                const parsedWarehouse: ProfileData = {
+                  ...response,
+                  role: Roles.WAREHOUSE,
+                  parsedTruckDetails: parseTruckData(response.truckDetails, response.trucks),
+                };
+                console.log(`Logged in as warehouse `, parsedWarehouse);
                 resolve({
                   loggedIn: true,
-                  profile: {
-                    ...response,
-                    role: Roles.WAREHOUSE,
-                  },
+                  profile: parsedWarehouse
                 })
               })
               .catch(err => {

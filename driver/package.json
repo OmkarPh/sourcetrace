@@ -11,7 +11,8 @@
     "dotenv": "^16.0.3",
     "express": "^4.17.3",
     "follow-redirects": "^1.14.9",
-    "request": "^2.88.2"
+    "request": "^2.88.2",
+    "web3": "^1.9.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

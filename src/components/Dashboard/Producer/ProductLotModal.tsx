@@ -1,16 +1,8 @@
-import {
-  Backdrop,
-  Box,
-  Button,
-  Fade,
-  FormControl,
-  Modal,
-  Typography,
-} from "@mui/material";
+import axios from "axios";
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 import { timestampToDate } from "../../../utils/general";
-import { ProductInfo, ProductLot } from "../productTypes";
+import { ProductLot, Scan } from "../productTypes";
 import CustomModal, { CustomModalFooter, CustomModalHeader } from "./CustomModal";
 
 interface ProductLotModalProps {
@@ -19,6 +11,7 @@ interface ProductLotModalProps {
 }
 const ProductLotModal = (props: ProductLotModalProps) => {
   const { productLot, closeModal } = props;
+  const [scan, setScan] = useState<Scan | null>(null);
   console.log("Checkout product lot", productLot);
 
   const {
@@ -27,8 +20,33 @@ const ProductLotModal = (props: ProductLotModalProps) => {
     producerAddress,
     productId,
     productLotId,
-    quantity
+    quantity,
   } = productLot;
+
+  // const canCheckOut = useMemo(() => {
+  //   const lastCheckpoint =
+  //     productLot.checkpoints[productLot.checkpoints.length - 1];
+  //   if (Number(lastCheckpoint.outTime) != 0) return false;
+  //   return lastCheckpoint.warehouse.id == profile?.id;
+  // }, [productLot, profile]);
+
+  function scanDriver() {
+    axios
+      .get("http://localhost:5000/driver/sensor")
+      .then((res: any) => {
+        const data = res.data;
+        setScan({
+          temperature: data.temperature,
+          humidity: data.humidity,
+        });
+      })
+      .catch((err) => {
+        setScan({
+          temperature: 26,
+          humidity: 55,
+        });
+      });
+  }
 
   return (
     <CustomModal isOpen onClose={closeModal}>

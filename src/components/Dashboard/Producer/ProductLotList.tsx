@@ -86,6 +86,8 @@ const ProductLotList = () => {
       profile.id,
       productLot.producerAddress,
       productLot.productLotId,
+      profile.parsedTruckDetails[0].address,
+      0,
       parsedTemperature,
       parsedHumidity
     )
@@ -155,6 +157,7 @@ const ProductLotList = () => {
                         type="submit"
                         variant="outlined"
                         onClick={() => setToCheckoutLot(productLot)}
+                        // onClick={() => checkoutFromFactory(productLot)}
                       >
                         Checkout from factory
                       </Button>

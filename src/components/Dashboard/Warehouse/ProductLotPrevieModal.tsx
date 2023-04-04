@@ -4,6 +4,7 @@ import React, { useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { CreateCheckIn, CreateCheckOut } from "../../../apis/apis";
 import { useMetamaskAuth } from "../../../auth/authConfig";
+import { DRIVER_SERVER } from "../../../constants/endpoints";
 import {
   humidityToUnits,
   isCheckinPossible,
@@ -43,7 +44,7 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
 
   function scanDriver() {
     axios
-      .get("http://localhost:5000/driver/sensor")
+      .get(`${DRIVER_SERVER}/driver/sensor`)
       .then((res: any) => {
         const data = res.data;
         setScan({

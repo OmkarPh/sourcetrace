@@ -1,6 +1,8 @@
 const customWeb3 = require("./accounts");
-const { contractAddress } = require("./contract/deploymentDetails");
+const { contractAddress, chainExplorerBaseAddress } = require("./contract/deploymentDetails");
 const SourceTraceABI = require("./contract/SourceTraceABI.json");
+
+const linkFromTxHash = (txHash) => `${chainExplorerBaseAddress}/tx/` + txHash;
 
 const SourceTraceContract = new customWeb3.eth.Contract(
   SourceTraceABI,
@@ -51,29 +53,33 @@ function SenderFn(
     gas_estimate = Math.round(gas_estimate * 1.2);
 
     if (debug) {
-      console.log("Prepared transaction: ", tx);
+      console.log("Prepared transaction. ");
     }
 
-    tx.send({
-      from: senderAddress,
-      gas: customWeb3.utils.toHex(gas_estimate),
-      gasPrice: customWeb3.utils.toHex(gasprice),
-    })
-      .then((receipt) => {
-        console.log(`${method} - Tx Receipt`, receipt);
-        console.log(`Transaction hash: ${receipt?.transactionHash}`);
-        console.log(
-          `View the transaction here: `,
-          linkFromTxHash(receipt?.transactionHash)
-        );
-        return resolve(receipt);
+    try {
+      tx.send({
+        from: senderAddress,
+        gas: customWeb3.utils.toHex(gas_estimate),
+        gasPrice: customWeb3.utils.toHex(gasprice),
       })
-      .catch((err) => {
-        console.log(`Some error sending ${method} with params \n`, params, err);
-        reject(new Error(`Couldn't send tx for ${method}`));
-      });
-  });
-}
+        .then((receipt) => {
+          console.log(`${method} - Tx Receipt`, receipt);
+          console.log(`Transaction hash: ${receipt?.transactionHash}`);
+          console.log(
+            `View the transaction here: `,
+            linkFromTxHash(receipt?.transactionHash)
+          );
+          return resolve(receipt);
+        })
+        .catch((err) => {
+          console.log(`Some error sending ${method} with params \n`, params, err);
+          reject(new Error(`Couldn't send tx for ${method}`));
+        });
+      } catch(err) {
+        console.log("Error in tx", err);
+      }
+    });
+  }
 
 function CallerFactory(Contract, method, debug) {
   return (...params) => CallerFn(Contract, method, debug, ...params);
@@ -90,5 +96,6 @@ module.exports ={
   CallerFactory,
   SenderFactory,
   CallerFn,
-  SenderFn
+  SenderFn,
+  linkFromTxHash,
 }

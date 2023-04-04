@@ -11,6 +11,7 @@ import React, { FormEvent, MouseEvent, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { CreateProductLot, GetAllProductsInfo } from "../../../apis/apis";
 import { useMetamaskAuth } from "../../../auth/authConfig";
+import { DRIVER_SERVER } from "../../../constants/endpoints";
 import { humidityToUnits, temperatureToUnits, unitsToHumidity, unitsToTemperature } from "../../../utils/general";
 import Loader from "../../core/Loader";
 import { ProductInfo, Scan } from "../productTypes";
@@ -44,7 +45,7 @@ const ProductList = () => {
 
   function scanDriver() {
     axios
-      .get("http://localhost:5000/driver/sensor")
+      .get(`${DRIVER_SERVER}/driver/sensor`)
       .then((res: any) => {
         const data = res.data;
         setScan({

@@ -27,7 +27,7 @@ const ProductLotList = () => {
     []
   );
   const [checkingOut, setCheckingOut] = useState(false);
-  const [toCheckoutLot, setToCheckoutLot] = useState<ProductLot | null>(null);
+  const [toCheckoutLot, setToCheckoutLot] = useState<ProductLotWithCheckpoints | null>(null);
 
   const [refreshIndicator, setRefresh] = useState(Math.random());
   const refresh = () => setRefresh(Math.random());
@@ -69,42 +69,6 @@ const ProductLotList = () => {
       });
   }, [profile, refreshIndicator]);
 
-
-  async function scanDriver() {
-    const res = await axios.get("http://localhost:5000/driver/sensor");
-    return res.data as Scan;
-  }
-
-  async function checkoutFromFactory(productLot: ProductLot) {
-    if(!productLot || !profile)
-      return;
-    setCheckingOut(true);
-    const scan = await scanDriver();
-    const parsedTemperature = temperatureToUnits(scan.temperature);
-    const parsedHumidity = humidityToUnits(scan.humidity);
-    CreateCheckOut(
-      profile.id,
-      productLot.producerAddress,
-      productLot.productLotId,
-      profile.parsedTruckDetails[0].address,
-      0,
-      parsedTemperature,
-      parsedHumidity
-    )
-      .then((receipt) => {
-        toast.success(`Checked out lot ${productLot.productInfo.name} !`);
-        setCheckingOut(false);
-        refresh();
-      })
-      .catch((err) => {
-        toast.error(<>Please approve metamask tx</>);
-        console.log(
-          `Err checking out ${productLot.productInfo.name} lot #${productLot.productLotId}`,
-          err
-        );
-        setCheckingOut(false);
-      });
-  }
 
   if (isProcessingLogin || isFetchingProducts || checkingOut) return <Loader size={50} />;
 
@@ -177,6 +141,7 @@ const ProductLotList = () => {
         toCheckoutLot &&
         <ProductLotModal
           productLot={toCheckoutLot}
+          refresh={refresh}
           closeModal={() => setToCheckoutLot(null)}
         />
       }

@@ -9,6 +9,7 @@ import React, { FormEvent, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { CreateCheckOut, CreateProductLot, GetAllProductsInfo } from "../../../apis/apis";
 import { useMetamaskAuth } from "../../../auth/authConfig";
+import { DRIVER_SERVER } from "../../../constants/endpoints";
 import { humidityToUnits, temperatureToUnits, timestampToDate, unitsToHumidity, unitsToTemperature } from "../../../utils/general";
 import Loader from "../../core/Loader";
 import { ProductLot, ProductLotWithCheckpoints, Scan } from "../productTypes";
@@ -24,7 +25,7 @@ const InWarehouse = (props: InWarehouseProps) => {
   const [checkingOut, setCheckingOut] = useState(false);
 
   async function scanDriver() {
-    const res = await axios.get("http://localhost:5000/driver/sensor");
+    const res = await axios.get(`${DRIVER_SERVER}/driver/sensor`);
     return res.data as Scan;
   }
 

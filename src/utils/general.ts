@@ -9,6 +9,13 @@ export const hasWindow = () => typeof window !== 'undefined';
 
 export const weiToEth = (wei: any) => Number(Web3.utils.fromWei(wei)).toPrecision(4);
 
+// 60 -> 3600
+export const productTimeToDriverTimeLimit = (n: number) => {
+  if(n <= -1)
+    return 60000 * 10;  // 10 mins
+  return n * 10000;
+}
+
 export const timestampToDate = (timestamp: number | string) => new Date(Number(timestamp)*1000);
 export const dateToTimestamp = (date: Date) => Number((Number(date)/1000).toFixed())
 export const currDateToTimestamp = () => dateToTimestamp(new Date());
@@ -25,6 +32,13 @@ export const parseTruckData = (truckDetails: string[], truckAddresses: string[])
     license: truckDetails[idx],
   }))
 }
+export const productDetailsToIdentifier = (producer: string, id: number) => {
+  console.log(producer, id);
+  
+  if(!producer) producer = "";
+  if(!id) id = 0;
+  return producer.toLowerCase() + "_" + String(id);
+}
 export const productIdentifierToDetails = (text: string) => {
   const split = text.split('_');
   return {
@@ -32,6 +46,8 @@ export const productIdentifierToDetails = (text: string) => {
     id: Number(split[1]),
   }
 }
+export const productLotDetailsToIdentifier = productDetailsToIdentifier;
+export const productLotIdentifierToDetails = productIdentifierToDetails;
 
 export const isCheckinPossible = (productLot: ProductLotWithCheckpoints) => {
   const lastCheckpoint = productLot.checkpoints[productLot.checkpoints.length - 1];

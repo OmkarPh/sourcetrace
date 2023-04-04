@@ -55,7 +55,9 @@ function ProducerRegister() {
       info.name,
       info.phoneno,
       info.regno,
-      info.location
+      info.location,
+      [],
+      []
     ).then(res => {
       toast.success("Registered successfuly !");
       setProcessing(false);

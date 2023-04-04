@@ -58,6 +58,7 @@ function CallerFn(
   debug: boolean,
   ...params: any[]
 ) {
+  // console.log("Calling2");
   return new Promise((resolve, reject) => {
     Contract.methods[method](...params)
       .call()

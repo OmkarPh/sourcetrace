@@ -11,18 +11,18 @@ function poll(truckAddress, productLotId, temperature, humidity) {
     tUnits: temperatureToUnits(temperature),
     hUnits: humidityToUnits(humidity)
   });
-  // PollDetails(
-  //   truckAddress,
-  //   productLotId.toLowerCase(),
-  //   temperatureToUnits(temperature),
-  //   humidityToUnits(humidity)
-  // )
-  //   .then((res) => {
-  //     console.log(`Poll successful `, { temperature, humidity });
-  //   })
-  //   .catch((err) => {
-  //     console.log("Error polling :(");
-  //   });
+  PollDetails(
+    truckAddress,
+    productLotId.toLowerCase(),
+    temperatureToUnits(temperature),
+    humidityToUnits(humidity)
+  )
+    .then((res) => {
+      console.log(`Poll successful `, { temperature, humidity });
+    })
+    .catch((err) => {
+      console.log("Error polling :(");
+    });
 }
 
 

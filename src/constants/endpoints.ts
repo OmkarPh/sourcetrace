@@ -1,0 +1,1 @@
+export const DRIVER_SERVER = process.env.NEXT_PUBLIC_DRIVER_SERVER || 'http://localhost:5000';

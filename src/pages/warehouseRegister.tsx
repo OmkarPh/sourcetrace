@@ -55,7 +55,9 @@ function WarehouseRegister() {
       info.name,
       info.phoneno,
       info.regno,
-      info.location
+      info.location,
+      [],
+      [],
     ).then(res => {
       toast.success("Registered successfuly !");
       setProcessing(false);
@@ -91,7 +93,6 @@ function WarehouseRegister() {
         </div>
         <div className="w-1/2">
           <form onSubmit={onSubmits}>
-            
             <div>
               {/* NAME */}
               <label className="Name">Name: </label>

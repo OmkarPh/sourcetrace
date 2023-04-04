@@ -1,6 +1,7 @@
 import { linkFromTxHash } from "./SourceTraceContract";
 
 export function CallerFn(Contract: any, method: string, debug: boolean, ...params: any[]){
+  // console.log("Calling");
   return new Promise((resolve, reject) => {
     Contract.methods[method](...params)
       .call()

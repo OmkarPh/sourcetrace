@@ -126,7 +126,7 @@ app.get("/coldStorageCompromised", (req, res) => {
 });
 
 const PERCENTAGE = 85;
-const POLL_INTERVAL = 2 * 1000;
+const POLL_INTERVAL = 10 * 1000;
 app.post("/start-polling", async (req, res) => {
   const {
     productLotId,
@@ -138,17 +138,22 @@ app.post("/start-polling", async (req, res) => {
     timeLimit,
   } = req.body;
 
+  console.log("Received poll request with body", req.body);
+
   if(
-    !productLotId ||
-    !truckAddress ||
-    !minTemperature ||
-    !maxTemperature ||
-    !minHumidity ||
-    !maxHumidity ||
-    !timeLimit
+    productLotId === undefined ||
+    truckAddress === undefined ||
+    minTemperature === undefined ||
+    maxTemperature === undefined ||
+    minHumidity === undefined ||
+    maxHumidity === undefined ||
+    timeLimit === undefined
   ) {
     return res.status(400).json({ message: "Invalid request !!"});
   }
+
+  if(timeLimit <= -1)
+    timeLimit = 600 * 60;    // 10 mins
 
   const startTime = new Date().getTime();
 
@@ -156,6 +161,7 @@ app.post("/start-polling", async (req, res) => {
   const interval = setInterval(() => {
     const currentTime = new Date().getTime();
     const elapsedTime = currentTime - startTime;
+    // console.log(`Elapsed(${elapsedTime}), timelimit ${timeLimit}`);
     if (elapsedTime >= timeLimit) {
       clearInterval(interval);
       return;
@@ -182,11 +188,11 @@ app.post("/start-polling", async (req, res) => {
           : maxTemperature + deviation;
       humidity =
         Math.random() < 0.5 ? minHumidity - deviation : maxHumidity + deviation;
-      console.log("Out of bound");
+      console.log("Out of bound poll");
     }
 
     // print generated values to console
-    console.log("Polling ...", { temperature, humidity });
+    // console.log("Polling ...", { temperature, humidity });
     poll(truckAddress, productLotId || "", temperature, humidity);
   }, POLL_INTERVAL);
 

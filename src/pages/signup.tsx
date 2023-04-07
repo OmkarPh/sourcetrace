@@ -3,27 +3,24 @@ import { Button } from '@mui/material';
 import { withConnectedRoute } from "../auth/authConfig";
 
 function Signup(){
-    return(<div>
-        <div>
-        <div className="labels">
-            <label className="title">Warehouse</label>
-            <label className="title">Producer </label>
-        </div>
-        </div>
-        <div className="container">
-            <div>
+
+    return (<div><div className="container">
+        
+            <div className="left">
+                <div className="labels">Producer</div>
                 <button className="card">
-                    <img src="/illustrations/Producercard.svg"></img>
+                     <img src="/illustrations/Producercard.svg"></img>
+               </button>
+            </div>
+            <div className="right">
+                <div className="labels">Warehouse</div>
+                <button className="card">
+                    <img src="/illustrations/Warehousecard.svg"></img>
                 </button>
             </div>
-        <div>
-            <button className="card">
-                <img src="/illustrations/Warehousecard.svg"></img>
-            </button>
-        </div>
-    
-        </div>
-        <div className="PlaceBtn">
+            
+            </div>
+            <div className="PlaceBtn">
           {/* Button */}
             <Button
                 className="Confirmbtn2"
@@ -33,8 +30,7 @@ function Signup(){
                 CONFIRM
               </Button>
             </div>
-    </div>
-    )
+    </div>)
 }
 
 export default withConnectedRoute(Signup);

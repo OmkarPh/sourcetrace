@@ -69,7 +69,7 @@ const NewProductModal = (props: NewProductModalProps) => {
       profile.id,
       values.name,
       values.price,
-      DEFAULT_PRODUCT_IMAGE,
+      DEFAULT_PRODUCT_IMAGE,   // @TODO - give option for image uploads
       params,
       values.minValues,
       values.maxValues

@@ -12,7 +12,8 @@ import { useMetamaskAuth } from "../../../auth/authConfig";
 import { DRIVER_SERVER } from "../../../constants/endpoints";
 import { humidityToUnits, temperatureToUnits, timestampToDate, unitsToHumidity, unitsToTemperature } from "../../../utils/general";
 import Loader from "../../core/Loader";
-import { ProductLot, ProductLotWithCheckpoints, Scan } from "../productTypes";
+import { ProductLotWithCheckpoints, Scan } from "../productTypes";
+import ProductPreviewModal from "./ProductLotPrevieModal";
 
 interface InWarehouseProps {
   productLots: ProductLotWithCheckpoints[];
@@ -23,49 +24,11 @@ const InWarehouse = (props: InWarehouseProps) => {
   const { productLots, refresh } = props;
   const { profile, isProcessingLogin } = useMetamaskAuth();
   const [checkingOut, setCheckingOut] = useState(false);
+  const [previewProductLot, setPreviewProductLot] = useState<ProductLotWithCheckpoints | null>(null);
 
   async function scanDriver() {
     const res = await axios.get(`${DRIVER_SERVER}/driver/sensor`);
     return res.data as Scan;
-  }
-
-  async function checkout(productLot: ProductLot) {
-    if(!productLot || !profile)
-      return;
-    setCheckingOut(true);
-    const scan = await scanDriver();
-    const parsedTemperature = temperatureToUnits(scan.temperature);
-    const parsedHumidity = humidityToUnits(scan.humidity);
-    console.log("Checkout ", productLot, {
-      params: [
-        profile.id,
-        productLot.producerAddress,
-        productLot.productLotId,
-        parsedTemperature,
-        parsedHumidity
-      ]
-    });
-    
-    CreateCheckOut(
-      profile.id,
-      productLot.producerAddress,
-      productLot.productLotId,
-      parsedTemperature,
-      parsedHumidity
-    )
-      .then((receipt) => {
-        toast.success(`Checked out lot ${productLot.productInfo.name} !`);
-        setCheckingOut(false);
-        refresh();
-      })
-      .catch((err) => {
-        toast.error(<>Please approve metamask tx</>);
-        console.log(
-          `Err checking out ${productLot.productInfo.name} lot #${productLot.productLotId}`,
-          err
-        );
-        setCheckingOut(false);
-      });
   }
 
   if (isProcessingLogin || checkingOut) return <Loader size={50} />;
@@ -102,7 +65,8 @@ const InWarehouse = (props: InWarehouseProps) => {
               return (
                 <tr
                   key={productLot.producerAddress + productLot.productLotId}
-                  className="border-b hover:bg-gray-100"
+                  className="border-b hover:bg-gray-100 cursor-pointer"
+                  onClick={() => setPreviewProductLot(productLot)}
                 >
                   <td className="py-3 px-4">{productLot.productInfo.name}</td>
                   <td className="py-3 px-4">{productLot.quantity}</td>
@@ -123,7 +87,6 @@ const InWarehouse = (props: InWarehouseProps) => {
                     <Button
                       type="submit"
                       variant="outlined"
-                      onClick={() => checkout(productLot)}
                     >
                       Checkout
                     </Button>
@@ -134,6 +97,14 @@ const InWarehouse = (props: InWarehouseProps) => {
           </tbody>
         </table>
       </div>
+      {previewProductLot && (
+        <>
+          <ProductPreviewModal
+            closeModal={() => setPreviewProductLot(null)}
+            productLot={previewProductLot}
+          />
+        </>
+      )}
     </div>
   );
 };

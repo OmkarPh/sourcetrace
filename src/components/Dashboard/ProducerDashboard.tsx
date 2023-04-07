@@ -24,12 +24,6 @@ const ProducerDashboard = () => {
   const [selectedSection, setSelectedSection] = useState<SECTIONS>(SECTIONS.PRODUCTS);
   const [showNewProductModal, setShowNewProductModal] = useState(false);
 
-  
-  function deleteAccount(){
-    if(profile)
-      localStorage.removeItem(profile.id);
-    refreshAuthStatus();
-  }
   console.log(profile);
   
   if(isProcessingLogin){

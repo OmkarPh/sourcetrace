@@ -21,7 +21,7 @@ function poll(truckAddress, productLotId, temperature, humidity) {
       console.log(`Poll successful `, { temperature, humidity });
     })
     .catch((err) => {
-      console.log("Error polling :(");
+      console.log("Error polling :(", err);
     });
 }
 

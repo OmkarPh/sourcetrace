@@ -1,0 +1,8 @@
+const extraTrucksPk = [
+  "0x1d832d102ea7853a438812cfbc505a5e68c590cdc77d4ca736be0463f2f6faa7",
+  "0x946970a073bd51f0a21845936ce6840e3f2356d623889e1fb6314b5225fa00d8",
+  "0x47d3fca3c886b7ca862e2a001eb3e07412a171c6fc9ecb6b75d07486b31aa506",
+  "0xac21490c3fb0a3d2f405c8bfc78c0591d64cec74bdc9a28e4c3f24165134e643",
+];
+
+module.exports.extraTrucksPk = extraTrucksPk;

@@ -62,7 +62,7 @@ const ProductInfoModal = (props: ProductInfoModalProps) => {
                 Humidity: { unitsToHumidity(minValues[1])}% to { unitsToHumidity(maxValues[1]) }%
               </div>
               <div>
-                Transit time limit: { maxValues[2] / 60 } days
+                Transit time limit: { maxValues[2] / 60 } hours
               </div>
         </div>
       </div>

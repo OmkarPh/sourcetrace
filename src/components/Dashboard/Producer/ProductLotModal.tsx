@@ -1,4 +1,10 @@
-import { Button, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import {
+  Button,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+} from "@mui/material";
 import axios from "axios";
 import Image from "next/image";
 import React, { FormEvent, useMemo, useState } from "react";
@@ -21,6 +27,7 @@ import CustomModal, {
   CustomModalFooter,
   CustomModalHeader,
 } from "./CustomModal";
+import ValidityLabel from "../../core/ValidityLabel";
 
 interface ProductLotModalProps {
   productLot: ProductLotWithCheckpoints;
@@ -32,7 +39,11 @@ const ProductLotModal = (props: ProductLotModalProps) => {
   const { profile } = useMetamaskAuth();
   const [checkingOut, setCheckingOut] = useState(false);
   const [scan, setScan] = useState<Scan | null>(null);
-  const [selectedTruckAddress, setSelectedTruck] = useState(profile?.parsedTruckDetails[0].address);
+  const [selectedTruckAddress, setSelectedTruck] = useState(
+    profile?.parsedTruckDetails?.length
+      ? profile?.parsedTruckDetails[0].address
+      : null
+  );
 
   console.log("Checkout product lot", productLot);
 
@@ -70,7 +81,7 @@ const ProductLotModal = (props: ProductLotModalProps) => {
       });
   }
 
-  function unableToCommunicateServer(){
+  function unableToCommunicateServer() {
     toast.error("Unable to establish connection to truck !");
   }
   async function checkoutFromFactory(e: FormEvent) {
@@ -79,7 +90,7 @@ const ProductLotModal = (props: ProductLotModalProps) => {
 
     if (!productLot || !profile) return;
 
-    if(!scan){
+    if (!scan) {
       toast.error("Temperature & humidity data not scanned !");
       return;
     }
@@ -91,24 +102,29 @@ const ProductLotModal = (props: ProductLotModalProps) => {
 
     try {
       const apiTestResponse = await axios.get(`${DRIVER_SERVER}/api/test`);
-      if(!apiTestResponse?.data?.message){
+      if (!apiTestResponse?.data?.message) {
         unableToCommunicateServer();
         return;
       }
-    } catch(err) {
+    } catch (err) {
       unableToCommunicateServer();
       return;
     }
-    
+
     const params = {
-      productLotId: productLotDetailsToIdentifier(productLot.producerAddress, productLot.productLotId),
+      productLotId: productLotDetailsToIdentifier(
+        productLot.producerAddress,
+        productLot.productLotId
+      ),
       truckAddress: selectedTruckAddress,
       minTemperature: unitsToTemperature(productInfo.minValues[0]),
       maxTemperature: unitsToTemperature(productInfo.maxValues[0]),
       minHumidity: unitsToHumidity(productInfo.minValues[1]),
       maxHumidity: unitsToHumidity(productInfo.maxValues[1]),
-      timeLimit: productTimeToDriverTimeLimit(Number(productInfo.maxValues[2] || -1)),
-    }
+      timeLimit: productTimeToDriverTimeLimit(
+        Number(productInfo.maxValues[2] || -1)
+      ),
+    };
     console.log("Truck polling with params", productInfo, params);
 
     setCheckingOut(true);
@@ -117,13 +133,18 @@ const ProductLotModal = (props: ProductLotModalProps) => {
       productLot.producerAddress,
       productLot.productLotId,
       selectedTruckAddress,
-      profile.parsedTruckDetails.findIndex(truck => truck.address == selectedTruckAddress),
+      profile.parsedTruckDetails.findIndex(
+        (truck) => truck.address == selectedTruckAddress
+      ),
       parsedTemperature,
       parsedHumidity
     )
       .then(async (receipt) => {
         toast.success(`Checked out lot ${productInfo.name} !`);
-        const startPollingResponse = await axios.post(`${DRIVER_SERVER}/start-polling`, params);
+        const startPollingResponse = await axios.post(
+          `${DRIVER_SERVER}/start-polling`,
+          params
+        );
         console.log("Polling Response", startPollingResponse.data);
         setCheckingOut(false);
         closeModal();
@@ -141,11 +162,18 @@ const ProductLotModal = (props: ProductLotModalProps) => {
     return false;
   }
 
+  const isTemperatureValid = scan
+    ? unitsToTemperature(productInfo.minValues[0]) <= scan.temperature &&
+      unitsToTemperature(productInfo.maxValues[0]) >= scan.temperature
+    : false;
+  const isHumidityValid =
+    productInfo && scan
+      ? unitsToHumidity(productInfo.minValues[1]) <= scan.humidity &&
+        unitsToHumidity(productInfo.maxValues[1]) >= scan.humidity
+      : false;
+
   return (
-    <CustomModal
-      isOpen
-      onClose={closeModal}
-    >
+    <CustomModal isOpen onClose={closeModal}>
       {checkingOut ? (
         <Loader size={50} />
       ) : (
@@ -173,35 +201,47 @@ const ProductLotModal = (props: ProductLotModalProps) => {
               <h4 className="font-normal mb-2">
                 Produced on {timestampToDate(createdAt).toLocaleDateString()}
               </h4>
-              <br/>
-              {/* Dispatch truck:
-              <br/> */}
+              <br />
               <FormControl fullWidth>
-                <InputLabel>Dispatch Truck</InputLabel>
-              <Select value={selectedTruckAddress} label="Dispatch Truck" onChange={e => setSelectedTruck(e.target.value)}>
-                {
-                  profile?.parsedTruckDetails.map(truck => {
-                    return (
-                      <MenuItem value={truck.address} key={truck.address}>
-                          { truck.license }
-                      </MenuItem>
-                    )
-                  }) || ""
-                }
-              </Select>
+                {selectedTruckAddress ? (
+                  <>
+                    <InputLabel>Dispatch Truck</InputLabel>
+                    <Select
+                      value={selectedTruckAddress}
+                      label="Dispatch Truck"
+                      onChange={(e) => setSelectedTruck(e.target.value)}
+                    >
+                      {profile?.parsedTruckDetails.map((truck) => {
+                        return (
+                          <MenuItem value={truck.address} key={truck.address}>
+                            {truck.license}
+                          </MenuItem>
+                        );
+                      }) || ""}
+                    </Select>
+                  </>
+                ) : (
+                  <div>No truck data available !</div>
+                )}
               </FormControl>
-              <br/>
+              <br />
 
               {/* <h3 className="text-lg font-medium mb-2">Parameters</h3> */}
               {scan && (
                 <>
                   {/* Scan details: */}
-                  {/* <br/> */}
+                  {/* <br/> ‼️*/}
                   <br />
                   Temperature: &nbsp;&nbsp; {scan ? scan.temperature : "--"} °C
+                  <span className="ml-4">
+                    <ValidityLabel valid={isTemperatureValid} />
+                  </span>
                   <br />
                   Humidity: &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{" "}
                   {scan ? scan.humidity : "--"} %
+                  <span className="ml-4">
+                    <ValidityLabel valid={isHumidityValid} />
+                  </span>
                   <br />
                 </>
               )}
@@ -218,7 +258,11 @@ const ProductLotModal = (props: ProductLotModalProps) => {
             >
               Close
             </button>
-            <Button variant="contained" type="submit">
+            <Button
+              variant="contained"
+              type="submit"
+              disabled={!isHumidityValid || !isTemperatureValid}
+            >
               Checkout
             </Button>
           </CustomModalFooter>

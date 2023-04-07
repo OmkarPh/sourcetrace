@@ -1,5 +1,8 @@
-10 hours -> 1 minute
+10 hours -> 10 minutes
 
-Product - 10 hours input, stored -> 10 * 6 = 60
+input
+product limit - 10 hours, stored 10*6 - 60
+product limit - 20 hours, stored 20*6 - 120
+
 Poll request time = (60 / 6) mins => (n/6) * 60000 => n * 10000 (10 mins)
 ie. 60 * 10000 (10 mins)

@@ -96,7 +96,7 @@ const ProductLotList = () => {
               </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="overflow-scroll" style={{ maxHeight: "40vh" }}>
             {productLots.map((productLot) => {
               const isInFactory =
                 productLot.checkpoints.length == 1 &&

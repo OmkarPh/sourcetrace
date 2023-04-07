@@ -22,6 +22,8 @@ export const InventProduct = SenderFactory(SourceTraceContract, 'inventProduct',
 export const CreateProductLot = SenderFactory(SourceTraceContract, 'createProductLot', true);
 export const CreateCheckIn = SenderFactory(SourceTraceContract, 'createCheckIn', true);
 export const CreateCheckOut = SenderFactory(SourceTraceContract, 'createCheckOut', true);
+export const AddTruck = SenderFactory(SourceTraceContract, 'addTruck', false);
+// export const  = SenderFactory(SourceTraceContract, '', false);
 // export const  = SenderFactory(SourceTraceContract, '', false);
 
 export const GetWarehouseProductLots = CallerFactory(SourceTraceContract, 'getWarehouseProductLots', false);

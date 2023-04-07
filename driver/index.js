@@ -125,8 +125,11 @@ app.get("/coldStorageCompromised", (req, res) => {
   res.json({ message: "Success !", temperature, humidity });
 });
 
-const PERCENTAGE = 85;
+
+
+const PERCENTAGE = 90;
 const POLL_INTERVAL = 10 * 1000;
+
 app.post("/start-polling", async (req, res) => {
   const {
     productLotId,
@@ -153,15 +156,16 @@ app.post("/start-polling", async (req, res) => {
   }
 
   if(timeLimit <= -1)
-    timeLimit = 600 * 60;    // 10 mins
+    timeLimit = 600000;    // default 10 mins
 
   const startTime = new Date().getTime();
+  console.log(`Poll will last for ${timeLimit/60000} mins`);
 
   // set up interval to generate values every 5 seconds
   const interval = setInterval(() => {
     const currentTime = new Date().getTime();
     const elapsedTime = currentTime - startTime;
-    // console.log(`Elapsed(${elapsedTime}), timelimit ${timeLimit}`);
+    console.log(`Elapsed(${elapsedTime}), timelimit ${timeLimit}`);
     if (elapsedTime >= timeLimit) {
       clearInterval(interval);
       return;
@@ -193,7 +197,11 @@ app.post("/start-polling", async (req, res) => {
 
     // print generated values to console
     // console.log("Polling ...", { temperature, humidity });
-    poll(truckAddress, productLotId || "", temperature, humidity);
+    try {
+      poll(truckAddress, productLotId || "", temperature, humidity)
+    } catch(err) {
+      console.log("err polling", err);
+    }
   }, POLL_INTERVAL);
 
   // send OK response without waiting for generateParams

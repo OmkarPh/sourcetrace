@@ -12,12 +12,16 @@ import { toast } from "react-toastify";
 import { CreateProductLot, GetAllProductsInfo } from "../../../apis/apis";
 import { useMetamaskAuth } from "../../../auth/authConfig";
 import { DRIVER_SERVER } from "../../../constants/endpoints";
-import { humidityToUnits, temperatureToUnits, unitsToHumidity, unitsToTemperature } from "../../../utils/general";
+import {
+  humidityToUnits,
+  temperatureToUnits,
+  unitsToHumidity,
+  unitsToTemperature,
+} from "../../../utils/general";
 import Loader from "../../core/Loader";
 import { ProductInfo, Scan } from "../productTypes";
 import ProductInfoModal from "./ProductInfoModal";
-
-
+import ValidityLabel from "../../core/ValidityLabel";
 
 const ProductList = () => {
   const { profile, isProcessingLogin } = useMetamaskAuth();
@@ -30,18 +34,18 @@ const ProductList = () => {
   );
   const [creatingLot, setCreatingLot] = useState(false);
   const [scan, setScan] = useState<Scan | null>(null);
-  const [previewProductInfo, setPreviewProductInfo] = useState<ProductInfo | null>(null);
+  const [previewProductInfo, setPreviewProductInfo] =
+    useState<ProductInfo | null>(null);
 
   function closeNewLotModal() {
     setProductForNewLot(null);
     setScan(null);
   }
-  function openNewLotModal(event: MouseEvent, product: ProductInfo){
+  function openNewLotModal(event: MouseEvent, product: ProductInfo) {
     event.stopPropagation();
     event.preventDefault();
     setProductForNewLot(product);
   }
-
 
   function scanDriver() {
     axios
@@ -94,9 +98,9 @@ const ProductList = () => {
     console.log("New lot params", {
       quantity,
       tmp: temperatureToUnits(scan.temperature),
-      hm: humidityToUnits(scan.humidity)
+      hm: humidityToUnits(scan.humidity),
     });
-    
+
     setCreatingLot(true);
     CreateProductLot(
       profile.id,
@@ -119,6 +123,9 @@ const ProductList = () => {
         setCreatingLot(false);
       });
   }
+
+  const isTemperatureValid = (productForNewLot && scan) ? unitsToTemperature(productForNewLot.minValues[0]) <= scan.temperature && unitsToTemperature(productForNewLot.maxValues[0]) >= scan.temperature : false;
+  const isHumidityValid = (productForNewLot && scan) ? unitsToHumidity(productForNewLot.minValues[1]) <= scan.humidity && unitsToHumidity(productForNewLot.maxValues[1]) >= scan.humidity : false;
 
   if (isProcessingLogin || isFetchingProducts) return <Loader size={50} />;
 
@@ -166,7 +173,7 @@ const ProductList = () => {
                 <td className="py-3 px-4">
                   <Button
                     variant="outlined"
-                    onClick={e => openNewLotModal(e, product)}
+                    onClick={(e) => openNewLotModal(e, product)}
                   >
                     Create lot
                   </Button>
@@ -222,14 +229,20 @@ const ProductList = () => {
                     {scan && (
                       <>
                         {/* Scan details: */}
-                        {/* <br/> */}
+                        {/* <br/> ‼️*/}
                         <br />
                         Temperature: &nbsp;&nbsp;{" "}
                         {scan ? scan.temperature : "--"} °C
+                        <span className="ml-4">
+                          <ValidityLabel valid={isTemperatureValid} />
+                        </span>
                         <br />
                         Humidity: &nbsp;&nbsp;&nbsp;
                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{" "}
                         {scan ? scan.humidity : "--"} %
+                        <span className="ml-4">
+                          <ValidityLabel valid={isHumidityValid} />
+                        </span>
                         <br />
                       </>
                     )}
@@ -250,7 +263,7 @@ const ProductList = () => {
                       Close
                     </button>
                     <FormControl>
-                      <Button type="submit" variant="outlined">
+                      <Button type="submit" variant="outlined" disabled={!isTemperatureValid || !isHumidityValid}>
                         Submit
                       </Button>
                       {/* <button
@@ -269,13 +282,12 @@ const ProductList = () => {
         </>
       )}
 
-      {
-        previewProductInfo &&
+      {previewProductInfo && (
         <ProductInfoModal
           productInfo={previewProductInfo}
           closeModal={() => setPreviewProductInfo(null)}
         />
-      }
+      )}
     </div>
   );
 };

@@ -55,18 +55,43 @@ const WarehouseDashboard = () => {
       .then((lot) => {
         console.log("Product lot: ", lot);
         setPreviewProductLot(lot);
-        setScanning(false);
+        cloasQrScanner();
       })
       .catch((err) => {
         console.log("Err fetching product lot", err);
         toast.error("Invalid product lot !");
-        setScanning(false);
+        cloasQrScanner();
         setTimeout(() => window.location.reload(), 1000);
       });
   };
+
+
+
+    // Testing
+    // useEffect(() => {
+    //   const details = productIdentifierToDetails("0xabd8EeD5b630578F72eEB06c637dB7179576A811_5");
+    //   console.log("Fetch", details);
+    //   GetProductLotWithCheckpoints(details.producer, details.id)
+    //     .then((lot) => {
+    //       console.log("Product lot: ", lot);
+    //       setPreviewProductLot(lot);
+    //       cloasQrScanner();
+    //     })
+    //     .catch((err) => {
+    //       console.log("Err fetching product lot", err);
+    //       toast.error("Invalid product lot !");
+    //       cloasQrScanner();
+    //       setTimeout(() => window.location.reload(), 1000);
+    //     });
+    // }, []);
+
+  function cloasQrScanner(){
+    setScanning(false);
+  }
+
   function closeProductLotPreview() {
     setPreviewProductLot(null);
-    window.location.reload();
+    setTimeout(() => window.location.reload(), 200);
   }
   
   useEffect(() => {
@@ -178,7 +203,9 @@ const WarehouseDashboard = () => {
                 <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                   <button
                     type="button"
-                    onClick={() => setScanning(false)}
+                    onClick={() => {
+                      cloasQrScanner();
+                    }}
                     className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-500 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
                   >
                     Close

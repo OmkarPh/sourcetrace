@@ -1,17 +1,10 @@
-import {
-  Button,
-  FormControl,
-  FormGroup,
-  TextField,
-} from "@mui/material";
 import axios from "axios";
-import React, { FormEvent, useEffect, useState } from "react";
-import { toast } from "react-toastify";
-import { CreateProductLot, GetAllProductsInfo } from "../../../apis/apis";
+import React, { useState } from "react";
 import { useMetamaskAuth } from "../../../auth/authConfig";
-import { humidityToUnits, temperatureToUnits, timestampToDate, unitsToHumidity, unitsToTemperature } from "../../../utils/general";
+import { timestampToDate } from "../../../utils/general";
 import Loader from "../../core/Loader";
 import { ProductLotWithCheckpoints } from "../productTypes";
+import ProductPreviewModal from "./ProductLotPrevieModal";
 
 interface PastWarehouseProps {
   productLots: ProductLotWithCheckpoints[];
@@ -20,7 +13,7 @@ interface PastWarehouseProps {
 const PastWarehouse = (props: PastWarehouseProps) => {
   const { productLots } = props;
   const { profile, isProcessingLogin } = useMetamaskAuth();
-
+  const [previewProductLot, setPreviewProductLot] = useState<ProductLotWithCheckpoints | null>(null);
 
   if (isProcessingLogin) return <Loader size={50} />;
 
@@ -56,7 +49,8 @@ const PastWarehouse = (props: PastWarehouseProps) => {
               return (
                 <tr
                   key={productLot.producerAddress + productLot.productLotId}
-                  className="border-b hover:bg-gray-100"
+                  className="border-b hover:bg-gray-100 cursor-pointer"
+                  onClick={() => setPreviewProductLot(productLot)}
                 >
                   <td className="py-3 px-4">{productLot.productInfo.name}</td>
                   <td className="py-3 px-4">{productLot.quantity}</td>
@@ -77,6 +71,15 @@ const PastWarehouse = (props: PastWarehouseProps) => {
           </tbody>
         </table>
       </div>
+      {previewProductLot && (
+        <>
+          <ProductPreviewModal
+            closeModal={() => setPreviewProductLot(null)}
+            productLot={previewProductLot}
+            noActions
+          />
+        </>
+      )}
     </div>
   );
 };

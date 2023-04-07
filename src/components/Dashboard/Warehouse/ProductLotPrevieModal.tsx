@@ -1,4 +1,4 @@
-import { Button, FormControl, FormGroup, TextField } from "@mui/material";
+import { Button, FormControl, FormGroup, InputLabel, MenuItem, Select, TextField } from "@mui/material";
 import axios from "axios";
 import React, { useMemo, useState } from "react";
 import { toast } from "react-toastify";
@@ -13,6 +13,8 @@ import {
 } from "../../../utils/general";
 import Loader from "../../core/Loader";
 import { ProductLot, ProductLotWithCheckpoints, Scan } from "../productTypes";
+import Image from "next/image";
+import CustomModal, { CustomModalFooter, CustomModalHeader } from "../Producer/CustomModal";
 
 interface ProductPreviewModalrops {
   closeModal: () => void;
@@ -23,7 +25,29 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
   const { profile } = useMetamaskAuth();
   const [processing, setProcessing] = useState(false);
   const [scan, setScan] = useState<Scan | null>(null);
+  const [expandedCheckpoints, setExpandedCheck] = useState<Set<number>>(new Set());
+
+  function expandCheckpoint(checkpointIndex: number){
+    setExpandedCheck(prevCheckpoints => new Set(prevCheckpoints).add(checkpointIndex));
+  }
+  function collapseCheckpoint(checkpointIndex: number){
+    setExpandedCheck(prevCheckpoints => {
+      const newCheckpoints = new Set(prevCheckpoints);
+      newCheckpoints.delete(checkpointIndex);
+      return newCheckpoints;
+    })
+  }
+
   console.log(productLot);
+  
+  const {
+    productInfo,
+    createdAt,
+    producerAddress,
+    productId,
+    productLotId,
+    quantity,
+  } = productLot;
 
   const requiresCheckin = useMemo(
     () => isCheckinPossible(productLot),
@@ -154,9 +178,12 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
             {processing ? (
               <Loader size={30} />
             ) : (
-              <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none w-[400px]">
+              <CustomModal
+                isOpen
+                onClose={closeModal}
+              >
+                <CustomModalHeader>
                 {/*header*/}
-                <div className="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
                   <h3 className="text-3xl font-semibold">
                     {productLot.productInfo.name} Lot #{" "}
                     {productLot.productLotId}
@@ -169,20 +196,41 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                       ×
                     </span>
                   </button>
-                </div>
+                </CustomModalHeader>
+
                 {/*body*/}
-                <div className="relative p-6 flex-auto">
+                <div className="flex justify-center p-4">
+                  <div className="w-fit border-r border-gray-300 rounded-l-lg p-4">
+                    <Image
+                      height={300}
+                      width={300}
+                      src={productInfo.imageURL}
+                      alt={productInfo.name}
+                    />
+                  </div>
+                  <div
+                    className="w-max rounded-r-lg p-4 ml-3"
+                    style={{ minWidth: "400px" }}
+                  >
+                    <h3 className="text-lg font-medium mb-2">
+                      Quantity - {quantity}
+                    </h3>
+                    <h4 className="font-normal mb-2">
+                      Produced on {timestampToDate(createdAt).toLocaleDateString()}
+                    </h4>
                   <div>
                     Production date{" "}
                     {timestampToDate(productLot.createdAt).toLocaleDateString()}
                   </div>
+
                   <ul className="list-item"> 
                     {productLot.checkpoints.map((checkpoint, idx) => {
                       const title =
                         idx == 0 ? "At factory" : checkpoint.warehouse.name;
+                      const isExpanded = expandedCheckpoints.has(idx);
                       return (
                         <li key={checkpoint.inTime + idx}>
-                          { title } &nbsp;
+                          #{idx} { title } &nbsp;
                           {
                             idx == productLot.checkpoints.length - 1 &&
                             checkpoint.outTime == "0" && 
@@ -190,36 +238,58 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                               ( Stored )
                             </>
                           }
+                          
+                          <span
+                            style={{ rotate: isExpanded ? "0deg" : "180deg" }}
+                            onClick={() => {
+                              if(isExpanded)
+                                collapseCheckpoint(idx);
+                              else
+                                expandCheckpoint(idx);
+                            }}  
+                          >
+                            ^
+                          </span>
+                          &nbsp;&nbsp;&nbsp;
+
+                          {
+                            isExpanded ?
+                            <span>
+                              I'm Expanded
+                            </span>
+                            :
+                            <span>
+                              I'm collapsed
+                            </span>
+                          }
                         </li>
                       );
                     })}
                   </ul>
+                    <br/>
+                    <br/>
 
-                  {scan && (
-                    <>
-                      {/* Scan details: */}
-                      {/* <br/> */}
-                      <br />
-                      Temperature: &nbsp;&nbsp; {scan
-                        ? scan.temperature
-                        : "--"}{" "}
-                      °C
-                      <br />
-                      Humidity: &nbsp;&nbsp;&nbsp;
-                      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{" "}
-                      {scan ? scan.humidity : "--"} %
-                      <br />
-                    </>
-                  )}
-                  <br />
-                  {
-                    <Button onClick={scanDriver}>
-                      {scan ? "Rescan" : "Scan"}
-                    </Button>
-                  }
+                    {/* <h3 className="text-lg font-medium mb-2">Parameters</h3> */}
+                    {scan && (
+                      <>
+                        {/* Scan details: */}
+                        {/* <br/> */}
+                        <br />
+                        Temperature: &nbsp;&nbsp; {scan ? scan.temperature : "--"} °C
+                        <br />
+                        Humidity: &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{" "}
+                        {scan ? scan.humidity : "--"} %
+                        <br />
+                      </>
+                    )}
+                    <br />
+                    {<Button onClick={scanDriver}>{scan ? "Rescan" : "Scan"}</Button>}
+                    
+                  </div>
                 </div>
+
                 {/*footer*/}
-                <div className="flex items-center justify-end p-6 border-t border-solid border-slate-200 rounded-b">
+                <CustomModalFooter>
                   <button
                     className="text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                     type="button"
@@ -258,8 +328,8 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                     Create
                   </button> */}
                   </FormControl>
-                </div>
-              </div>
+                </CustomModalFooter>
+              </CustomModal>
             )}
           </FormGroup>
         )}

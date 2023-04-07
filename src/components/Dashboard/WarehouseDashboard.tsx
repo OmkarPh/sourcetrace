@@ -64,9 +64,28 @@ const WarehouseDashboard = () => {
         setTimeout(() => window.location.reload(), 1000);
       });
   };
+
+  // Testing
+  useEffect(() => {
+    const details = productIdentifierToDetails("0xabd8EeD5b630578F72eEB06c637dB7179576A811_1");
+    console.log("Fetch", details);
+    GetProductLotWithCheckpoints(details.producer, details.id)
+      .then((lot) => {
+        console.log("Product lot: ", lot);
+        setPreviewProductLot(lot);
+        setScanning(false);
+      })
+      .catch((err) => {
+        console.log("Err fetching product lot", err);
+        toast.error("Invalid product lot !");
+        setScanning(false);
+        setTimeout(() => window.location.reload(), 1000);
+      });
+  }, []);
+
   function closeProductLotPreview() {
     setPreviewProductLot(null);
-    window.location.reload();
+    // window.location.reload();
   }
   
   useEffect(() => {

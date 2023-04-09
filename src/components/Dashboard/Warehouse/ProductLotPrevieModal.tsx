@@ -5,6 +5,7 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Tooltip,
 } from "@mui/material";
 import axios from "axios";
 import React, { useMemo, useState } from "react";
@@ -30,6 +31,32 @@ import CustomModal, {
   CustomModalHeader,
 } from "../Producer/CustomModal";
 import ValidityLabel from "../../core/ValidityLabel";
+
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+
+// import Dialog, { DialogProps } from '@mui/material/Dialog';
+const longtext = "svsd";
+// const [open, setOpen] = React.useState(false);
+// const [scroll, setScroll] = React.useState<DialogProps['scroll']>('paper');
+
+// const handleClickOpen = (scrollType: DialogProps['scroll']) => () => {
+//   setOpen(true);
+//   setScroll(scrollType);
+// };
+
+// const descriptionElementRef = React.useRef<HTMLElement>(null);
+// React.useEffect(() => {
+//   if (open) {
+//     const { current: descriptionElement } = descriptionElementRef;
+//     if (descriptionElement !== null) {
+//       descriptionElement.focus();
+//     }
+//   }
+// }, [open]);
 
 interface ProductPreviewModalrops {
   closeModal: () => void;
@@ -280,23 +307,41 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                         const verified = true;
                         return (
                           <li key={checkpoint.inTime + idx}>
-                            {verified ? "✅ " : "!!"}
+                           
                             {verified}
                             {/* #{idx}  */}
-                            {title} &nbsp;
+                           <div className="w-[500px]">
+                            <Accordion>
+                                <AccordionSummary
+                                  expandIcon={<ExpandMoreIcon />}
+                                  aria-controls="panel1a-content"
+                                  id="panel1a-header"
+                                >
+                                  <Typography>  {verified ? "✅ " : "!!"}{title} &nbsp;</Typography> 
+                                </AccordionSummary>
+                                <AccordionDetails >
+                                  <Typography>
+                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
+                                    malesuada lacus ex, sit amet blandit leo lobortis eget.
+                                  </Typography>
+                                </AccordionDetails>
+                              </Accordion>
+                              </div>
                             {idx == productLot.checkpoints.length - 1 &&
                               checkpoint.outTime == "0" && <>( Stored )</>}
-                            {/* <span
-                              style={{ rotate: isExpanded ? "0deg" : "180deg" }}
-                              onClick={() => {
-                                if (isExpanded) collapseCheckpoint(idx);
-                                else expandCheckpoint(idx);
-                              }}
-                            >
-                              ^
-                            </span>
+                            
+                            
+
+
+{/* 
+                            <Tooltip title={longtext} placement="right" leaveDelay={1000} arrow >
+                                <Button>more info</Button>
+                            </Tooltip> */}
+
+                            {/* <Button onClick={handleClickOpen('paper')}>scroll=paper</Button> */}
+
                             &nbsp;&nbsp;&nbsp;
-                            {isExpanded ? (
+                            {/* {isExpanded ? (
                               <span>I am Expanded</span>
                             ) : (
                               <span>I am collapsed</span>

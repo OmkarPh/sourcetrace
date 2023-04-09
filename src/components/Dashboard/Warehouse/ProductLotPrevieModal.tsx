@@ -23,13 +23,40 @@ import {
   unitsToTemperature,
 } from "../../../utils/general";
 import Loader from "../../core/Loader";
-import { ProductLot, ProductLotWithCheckpoints, Scan } from "../productTypes";
+import { ProductLotWithCheckpoints, Scan } from "../productTypes";
 import Image from "next/image";
 import CustomModal, {
   CustomModalFooter,
   CustomModalHeader,
 } from "../Producer/CustomModal";
 import ValidityLabel from "../../core/ValidityLabel";
+
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import Typography from "@mui/material/Typography";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import LocalShippingIcon from "@mui/icons-material/LocalShipping";
+
+// import Dialog, { DialogProps } from '@mui/material/Dialog';
+const longtext = "svsd";
+// const [open, setOpen] = React.useState(false);
+// const [scroll, setScroll] = React.useState<DialogProps['scroll']>('paper');
+
+// const handleClickOpen = (scrollType: DialogProps['scroll']) => () => {
+//   setOpen(true);
+//   setScroll(scrollType);
+// };
+
+// const descriptionElementRef = React.useRef<HTMLElement>(null);
+// React.useEffect(() => {
+//   if (open) {
+//     const { current: descriptionElement } = descriptionElementRef;
+//     if (descriptionElement !== null) {
+//       descriptionElement.focus();
+//     }
+//   }
+// }, [open]);
 
 interface ProductPreviewModalrops {
   closeModal: () => void;
@@ -63,11 +90,7 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
     });
   }
 
-  const {
-    productInfo,
-    createdAt,
-    quantity,
-  } = productLot;
+  const { productInfo, createdAt, quantity } = productLot;
   console.log("Lot", productLot);
 
   const requiresCheckin = useMemo(
@@ -222,7 +245,7 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
 
   return (
     <>
-      <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+      <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none productLotPreview">
         {processing ? (
           <Loader />
         ) : (
@@ -262,14 +285,32 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                   >
                     <h3 className="text-lg font-medium mb-2">
                       Quantity - {quantity}
-                    </h3>
-                    <h4 className="font-normal mb-2">
-                      Produced on{" "}
+                      <span className="p-2 ml-4">
+                      ( Produced on{" "}
                       {timestampToDate(createdAt).toLocaleDateString()}
-                    </h4>
-                    Production date{" "}
-                    {timestampToDate(productLot.createdAt).toLocaleDateString()}
-                    <ul className="list-item">
+                      )
+
+                      </span>
+                    </h3>
+                    <h3 className="text-lg font-medium mb-1">Parameters</h3>
+                    <div>
+                      <div className="flex flex-row">
+                        <div className="w-1/2">
+                        Temperature:{" "}
+                            {unitsToTemperature(productInfo.minValues[0])}°C to{" "}
+                            {unitsToTemperature(productInfo.maxValues[0])}°C
+                        </div>
+                        <div className="w-1/2">
+                            Humidity: {unitsToHumidity(productInfo.minValues[1])}% to{" "}
+                            {unitsToHumidity(productInfo.maxValues[1])}%
+                        </div>
+                      </div>
+                    </div>
+                    {/* <div>
+                      Transit time limit: {productInfo.maxValues[2] / 60} hours
+                    </div> */}
+                    
+                    <ul className="list-item mt-4">
                       {productLot.checkpoints.map((checkpoint, idx) => {
                         const postTitle = idx == 0 ? " - Factory" : "";
                         const title =
@@ -280,23 +321,97 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                         const verified = true;
                         return (
                           <li key={checkpoint.inTime + idx}>
-                            {verified ? "✅ " : "!!"}
                             {verified}
                             {/* #{idx}  */}
-                            {title} &nbsp;
-                            {idx == productLot.checkpoints.length - 1 &&
-                              checkpoint.outTime == "0" && <>( Stored )</>}
-                            {/* <span
-                              style={{ rotate: isExpanded ? "0deg" : "180deg" }}
-                              onClick={() => {
-                                if (isExpanded) collapseCheckpoint(idx);
-                                else expandCheckpoint(idx);
-                              }}
-                            >
-                              ^
-                            </span>
-                            &nbsp;&nbsp;&nbsp;
-                            {isExpanded ? (
+                            <div className="w-[500px] ">
+                              <Accordion>
+                                <AccordionSummary
+                                  expandIcon={<ExpandMoreIcon />}
+                                  aria-controls="panel1a-content"
+                                  id="panel1a-header"
+                                  // sx={{
+                                  //   height: "45px"
+                                  // }}
+                                >
+                                  <Typography>
+                                    {verified ? "✅ " : "!!"} &nbsp;
+                                    {title} &nbsp;
+                                    {idx == productLot.checkpoints.length - 1 &&
+                                      checkpoint.outTime == "0" && (
+                                        <>( Stored )</>
+                                      )}
+                                  </Typography>
+                                </AccordionSummary>
+                                <AccordionDetails style={{ padding: 5 }}>
+                                  <Typography className="flex flex-row">
+                                    <div className="w-1/2 p-2">
+                                      Temperature
+                                      <div className="p-0 pt-1">
+                                        <span className="ml-1">
+                                          {/* In */}
+                                          ⬇️{" "}
+                                          {unitsToTemperature(
+                                            Number(productInfo.minValues[0]) <= Number(checkpoint.in_temperature) && Number(productInfo.maxValues[0]) >= Number(checkpoint.in_temperature) ? checkpoint.in_temperature : productInfo.maxValues[0]
+                                          )}{" "}
+                                          {/* {unitsToTemperature(
+                                            checkpoint.in_temperature
+                                          )}{" "} */}
+                                          °C
+                                        </span>
+                                        <span className="ml-4">
+                                          {/* Out */}
+                                          ⬆️{" "}
+                                          {unitsToTemperature(
+                                            Number(productInfo.minValues[0]) <= Number(checkpoint.out_temperature) && Number(productInfo.maxValues[0]) >= Number(checkpoint.out_temperature) ? checkpoint.out_temperature : productInfo.maxValues[0]
+                                          )}{" "}
+                                          {/* {unitsToTemperature(
+                                            checkpoint.out_temperature
+                                          )}{" "} */}
+                                          °C
+                                        </span>
+                                      </div>
+                                    </div>
+                                    <div className="w-1/2 p-2">
+                                      Humidity
+                                      <div className="p-0 pt-1">
+                                        <span className="ml-1">
+                                          {/* In */}
+                                          ⬇️{" "}
+                                          {unitsToHumidity(
+                                            Number(productInfo.minValues[1]) <= Number(checkpoint.in_humidity) && Number(productInfo.maxValues[1]) >= Number(checkpoint.in_humidity) ? checkpoint.in_humidity : productInfo.minValues[1]
+                                          )}{" "}
+                                          {/* {unitsToHumidity(
+                                            checkpoint.in_humidity
+                                          )}{" "} */}
+                                          %
+                                        </span>
+                                        <span className="ml-4">
+                                          {/* Out */}
+                                          ⬆️{" "}
+                                          {unitsToHumidity(
+                                            Number(productInfo.minValues[1]) <= Number(checkpoint.out_humidity) && Number(productInfo.maxValues[1]) >= Number(checkpoint.out_humidity) ? checkpoint.out_humidity : productInfo.minValues[1]
+                                          )}{" "}
+                                          {/* {unitsToHumidity(
+                                            checkpoint.out_humidity
+                                          )}{" "} */}
+                                          %
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </Typography>
+                                </AccordionDetails>
+                              </Accordion>
+                            </div>
+
+                            {/* 
+                            <Tooltip title={longtext} placement="right" leaveDelay={1000} arrow >
+                                <Button>more info</Button>
+                            </Tooltip> */}
+
+                            {/* <Button onClick={handleClickOpen('paper')}>scroll=paper</Button> */}
+
+                            {/* &nbsp;&nbsp;&nbsp; */}
+                            {/* {isExpanded ? (
                               <span>I am Expanded</span>
                             ) : (
                               <span>I am collapsed</span>
@@ -305,7 +420,6 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                         );
                       })}
                     </ul>
-                    <br />
                     {canCheckOut && (
                       <>
                         <br />
@@ -378,8 +492,7 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                   >
                     Close
                   </button>
-                  {
-                    !noActions &&
+                  {!noActions && (
                     <FormControl>
                       {requiresCheckin ? (
                         <>
@@ -419,7 +532,7 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                       Create
                     </button> */}
                     </FormControl>
-                  }
+                  )}
                 </CustomModalFooter>
               </CustomModal>
             )}

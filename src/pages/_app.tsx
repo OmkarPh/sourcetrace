@@ -19,6 +19,12 @@ import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import './styles/register.css';
+import './styles/warehouse.css';
+import './styles/component2.css';
+import './styles/Content.css';
+import './styles/Footer_style.css';
+import './styles/mid_comp.css';
+
 import { useEffect } from "react";
 import { parseTruckData } from "../utils/general";
 

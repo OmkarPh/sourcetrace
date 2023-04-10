@@ -9,11 +9,14 @@ export default function Home() {
 
   return (
     <>
-      <div>
-        <h1 className="text-3xl font-bold">
-          Landing page
-        </h1>
-        
+      <div className="landing-page">
+        {/* <br/>
+        <br/>
+        <br/>
+        <h1 className="text-3xl font-bold text-center">
+          Welcome to SourceTrace
+        </h1> */}
+
         <Content/>
         <Mid_component/>
         <Component2/>

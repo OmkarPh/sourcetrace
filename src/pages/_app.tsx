@@ -20,6 +20,7 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import './styles/register.css';
 import './styles/warehouse.css';
+
 import './styles/component2.css';
 import './styles/Content.css';
 import './styles/Footer_style.css';

@@ -1,13 +1,13 @@
-.main-contianer-2 {
+.landing-page .main-contianer-2 {
     display: flex;
     margin-top: -50px;
 }
 
-h1 {
+.landing-page h1 {
     padding-top: 30px;
 }
 
-.right-div-2 {
+.landing-page .right-div-2 {
     padding-right: 50px;
     margin-left: 120px;
     position: relative;
@@ -16,11 +16,11 @@ h1 {
 
 }
 
-#right-div-content {
+.landing-page #right-div-content {
     padding-right: 30px;
 }
 
-.left-div-2 {
+.landing-page .left-div-2 {
     padding-left: 300px;
     font-size: 28px;
     padding-top: 60px;
@@ -32,6 +32,6 @@ h1 {
 
 }
 
-#h1 {
+.landing-page #h1 {
     margin-top: -70px;
 }

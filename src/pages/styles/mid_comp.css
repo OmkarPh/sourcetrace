@@ -1,9 +1,9 @@
-.mid-contianer {
+.landing-page .mid-contianer {
     display: flex;
     margin-top: 100px;
 }
 
-.right-mid-div {
+.landing-page .right-mid-div {
     padding-left: 160px;
     font-size: 30px;
     font:semibold;
@@ -15,24 +15,24 @@
 }
 
 
-h1 {
+.landing-page h1 {
     padding-left: 100px;
 }
 
-.left-mid-div {
+.landing-page .left-mid-div {
 
     position: relative;
     border-color: palevioletred;
     margin-left: 50px;
 }
 
-img {
+.landing-page img {
     background-color: white;
     border-radius: 300px;
-    height: 25;
+    /* height: 25; */
 }
 
-#img-2 {
+.landing-page #img-2 {
     display: flex;
     padding-right: 300px;
     margin-right: 300px;

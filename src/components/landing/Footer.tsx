@@ -23,7 +23,7 @@ function Footer() {
           </div>
           <div className="div-3">
             <div id="img-3">
-              <img id="footer-img" src="trust.png"></img>
+              <img id="footer-img" src="/images/landing/trust.png"></img>
             </div>
             <div id="div-2-ui">History of Product on your Fingrertips</div>
 

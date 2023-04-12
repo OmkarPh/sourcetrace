@@ -1,3 +1,5 @@
+import { humidityToUnits, temperatureToUnits } from "../../utils/general";
+
 interface AccountKeys {
   pk: string;
   address: string;
@@ -5,7 +7,23 @@ interface AccountKeys {
   reg_no: string;
   phone: number;
 }
-
+interface LotInfo {
+  productId: number;
+  lot_size: number;
+  tempUnits: number;
+  humidityUnits: number;
+  checkpoints?: {
+    warehouse: WarehouseDetails;
+    in: {
+      tempUnits: number;
+      humidityUnits: number;
+    },
+    out: {
+      tempUnits: number;
+      humidityUnits: number;
+    },
+  }[];
+}
 interface ProducerDetails extends AccountKeys {
   physicalAddress: string;
   products: {
@@ -15,248 +33,24 @@ interface ProducerDetails extends AccountKeys {
     timeLimit?: { min: number; max: number };
     humidity: { min: number; max: number };
     producer_name: string;
-    image?: string
+    image?: string;
+    lots?: LotInfo[];
   }[];
   trucks?: {
-    truckLicensPlate: string,   // eg. "MH 06 EF 3259"
-    pk: string,
-    address: string,
+    truckLicensPlate: string; // eg. "MH 06 EF 3259"
+    pk: string;
+    address: string;
   }[];
 }
 interface WarehouseDetails extends AccountKeys {
   physicalAddress: string;
   certifications: { title: string; url: string }[];
   trucks?: {
-    truckLicensPlate: string,   // eg. "MH 06 EF 3259"
-    pk: string,
-    address: string,
+    truckLicensPlate: string; // eg. "MH 06 EF 3259"
+    pk: string;
+    address: string;
   }[];
 }
-
-export const producerAccounts: { [key: string]: ProducerDetails } = {
-  nestle: {
-    pk: "0fd9949357465ea9dc776d416fafe782772ef27baad8abdb4e5e64323b0618cc",
-    address: "0xabd8EeD5b630578F72eEB06c637dB7179576A811",
-    name: "Nestle India Ltd.",
-    physicalAddress:
-      "ICC Chambers, Marol, Andheri East, Mumbai, Maharashtra 400072",
-    reg_no: "34374789392@$WE323S@#@#42",
-    phone: 9032328423,
-    products: [
-      {
-        name: "Nestle Kitkat",
-        price: 400,
-        temperature: { min: -10, max: 20 },
-        timeLimit: { min: 0, max: 60 },    // 1 minutes
-        humidity: { min: 15, max: 75 },
-        producer_name: "Nestle Pvt Ltd",
-        image: 'https://res.cloudinary.com/dp0ayty6p/image/upload/v1679820531/kitkat_rmwi0o.jpg',
-      },
-      {
-        name: "Munch",
-        price: 20,
-        temperature: { min: -10, max: 30 },
-        timeLimit: { min: 0, max: 120 },    // 2 minutes
-        humidity: { min: 25, max: 70 },
-        producer_name: "Nestle Pvt Ltd",
-        image: 'https://res.cloudinary.com/dp0ayty6p/image/upload/v1679820693/munch_b3wmt7.jpg',
-      },
-    ],
-    trucks: [
-      {
-        truckLicensPlate: "MH 06 EF 3259",
-        pk: "0xa927de328fe2969939fa9667501e816a154f8a5228ab64edaec57d28cdee0f1c",
-        address: "0xb80dB168Af9540a33A462D14a6d6ACfa09486B7e",
-      },
-      {
-        truckLicensPlate: "MH 02 GF 5882",
-        pk: "0xf67daaf5e236c749f9e0bcf68120d011a54dcfbe7881bdb0ac79f3d8ecefea6f",
-        address: "0xEaB8854EFB669979D60c5B75101410B702B5072b",
-      }
-    ]
-  },
-  ITC: {
-    pk: "0xc75475d22b8b87d8d181dbc3c967cc9ca0a285e11957642a92dbc44485fe8694",
-    address: "0x40c94dAAE90B73162f22564B4E051d9AB2dFCAb9",
-    name: " ITC Limited",
-    reg_no: "34374789392@$WE323S@#@#42",
-    phone: 9032328423,
-    physicalAddress:
-      "Bengaluru Corporate Head Quarters. ITC Infotechpark 18, Banaswadi Main Road, Maruthiseva Nagar, Bengaluru - 560005, India",
-    products: [
-      {
-        name: "Sunfest Milkshake",
-        price: 400,
-        temperature: { min: -10, max: 20 },
-        timeLimit: { min: 0, max: 60 },    // 1 minute
-        humidity: { min: 30, max: 65 },
-        producer_name: "ITC",
-      },
-    ],
-  },
-  Hindustan_Unilever: {
-    pk: "0xa6fb7104b1894e91fdc7c8b8448b2a9e94eb5f0ad46c69df952c4ba5b37a440e",
-    address: "0x35FCB8a9E8cf487Ad620037AF5D05CfF56a8eECe",
-    name: "Hindustan Unilever Limited",
-    physicalAddress:
-      "Hindustan Unilever Limited, Unilever House, B. D. Sawant Marg, Chakala, Andheri (E), Mumbai - 400 099.",
-    products: [
-      {
-        name: " Bru Coffee",
-        price: 240,
-        temperature: { min: -10, max: 20 },
-        humidity: { min: 40, max: 75 },
-        producer_name: "Hindustan Unilever Limited",
-        image: 'https://res.cloudinary.com/dp0ayty6p/image/upload/v1679820787/bru_niyzbv.jpg',
-      },
-    ],
-    reg_no: "34374789392@$WE323S@#@#42",
-    phone: 9032328423,
-    trucks: [
-      {
-        truckLicensPlate: "MH 02 FF 8258",
-        pk: "0x5768275da3a6d0ab9a13c2a52082f29917ab7e4fd3cf4caee84aa45e26d247c0",
-        address: "0x43cCD3d3d064229224186d47eb5a6dd5FFb225B2",
-      },
-    ],
-  },
-
-
-  // Not created for now
-  Britania: {
-    pk: "0xea5bbf6d3768cf0e5605bedca4ebfce1b79f93505d0664987c359d8bd88f2d22",
-    address: "0xC59C99Dba249c371b2Adaea7451a63854f38372F",
-    name: "Britannia Industries",
-    reg_no: "34374789392@$WE323S@#@#42",
-    phone: 9032328423,
-
-    physicalAddress:
-      "5/1A Hungerford Street, Kolkata -700 017 · Executive Office. Britannia Industries Limited ·",
-    products: [
-      {
-        name: "Britania milky-bakes cookies",
-        price: 50,
-        temperature: { min: -10, max: 20 },
-
-        humidity: { min: 40, max: 60 },
-        producer_name: "Britania",
-      },
-    ],
-  },
-  Jubilant_FoodWorks: {
-    pk: "0x6b650fb2bff15c7588915b6d07b0867d6427e48a1f07bae841e37bb7beb227d9",
-    address: "0x207521246355b3f5c187a09f7195633df2D427E0",
-    name: "Jubilant FoodWorks Limited",
-    reg_no: "34374789392@$WE323S@#@#42",
-    phone: 9032328423,
-    physicalAddress:
-      "Jubilant FoodWorks Limited. 15th Floor, Tower E Skymark One, Plot No. H – 10/A Sector 98, Noida- 201301, U.P., India",
-    products: [
-      {
-        name: "	Domino's Pizza",
-        price: 330,
-        temperature: { min: -10, max: 20 },
-
-        humidity: { min: 45, max: 75 },
-        producer_name: "Jubilant_FoodWorks",
-      },
-    ],
-  },
-  Varun: {
-    pk: "0x69f6f727c9131ae7cc742a2c873c6a4244ca0c82f6a3ab28e4f50d467c582f79",
-    address: "0x0b63D4daab91a6f65c7A68D384e16ECD6DD0Ba1f",
-    name: "VarunBeverages Limited ",
-    reg_no: "34374789392@$WE323S@#@#42",
-    phone: 9032328423,
-    physicalAddress:
-      "Adityapur Industrial Area Tata Kandra Main Rd Adityapur Jamshedpur",
-    products: [
-      {
-        name: "Pepsi,Diet Pepsi",
-        price: 40,
-        temperature: { min: -10, max: 20 },
-
-        humidity: { min: 22, max: 65 },
-        producer_name: "Nestle Pvt Ltd",
-      },
-    ],
-  },
-  wibs: {
-    pk: "47bdfd22594b27d21f279ce22d0b9d673ceae68960ac358892a3381ded8e70e7",
-    address: "0xCCCA8B3c76a6bE3CB933109855f4956E5F6Dd776",
-    name: "Western India Bakers Pvt. Ltd.",
-    reg_no: "34374789392@$WE323S@#@#42",
-    phone: 9032328423,
-    physicalAddress:
-      "Western India Bakers Pvt. Ltd A.P.M., Mafco Market Yard, Turbhe, Navi Mumbai-400703.",
-    products: [
-      {
-        name: "Brown Bread",
-        price: 40,
-        temperature: { min: -10, max: 20 },
-
-        humidity: { min: 45, max: 65 },
-        producer_name: " Western India Bakers Pvt. Ltd ",
-      },
-    ],
-  },
-  MotherDairy: {
-    pk: "0xe10d19342618f3e5b15ae5ad0a0a7d8ef5f8420d45750e8a5b3cd97180842906",
-    address: "0x75BB9Df3f9B0c3c84cA604E4d5d99116A595E510",
-    name: "Mother Dairy Foods",
-    reg_no: "34374789392@$WE323S@#@#42",
-    phone: 9032328423,
-    physicalAddress:
-      "Mother Dairy Fruit & Vegetable Pvt Ltd, A-3, NDDB House, Sector-1, Noida, Uttar Pradesh-201 301 (India)",
-    products: [
-      {
-        name: "Ice creams ",
-        price: 190,
-        temperature: { min: -10, max: 20 },
-
-        humidity: { min: 40, max: 60 },
-        producer_name: "Mother Dairy ",
-      },
-    ],
-  },
-  Rasna: {
-    pk: "0x8d2a005771dc75891ced998851114d53cc21295364f3d8b7f6c3e70c146d15b9",
-    address: "0xF3F7834fFA6d74eBbA17887dc5aB81fb261e3BF3",
-    name: "Rasna Internationals",
-    reg_no: "34374789392@$WE323S@#@#42",
-    phone: 9032328423,
-    physicalAddress:
-      "Rasna House, Opp. Sears Tower, Gulbai Tekra, Ahmedabad-380 015,",
-    products: [
-      {
-        name: "Rasna Energy Drinks",
-        price: 100,
-        temperature: { min: -20, max: 10 },
-        humidity: { min: 22, max: 75 },
-        producer_name: "Rasna",
-      },
-    ],
-  },
-  AB_Mauri: {
-    pk: "0x4d13b878d19adab6f80e8cef7d46b491387fc3e5b4d1138b532a6558f8c8c515",
-    address: "0x375f7543402eE18363330e062c7e91C0ad5ffFCC",
-    name: "AB Mauri India Pvt Ltd",
-    reg_no: "34374789392@$WE323S@#@#42",
-    phone: 9032328423,
-    physicalAddress:
-      "Plot No. 218 & 219 Bommasandra Jigani Link Road Bangalore / Bengaluru Karnataka , 560105",
-    products: [
-      {
-        name: "cake mixes & concentrates ",
-        price: 220,
-        temperature: { min: -10, max: 20 },
-        humidity: { min: 40, max: 60 },
-        producer_name: "AB Mauri India Pvt Ltd",
-      },
-    ],
-  },
-};
-
 
 
 export const warehouseAccounts: { [key: string]: WarehouseDetails } = {
@@ -279,8 +73,8 @@ export const warehouseAccounts: { [key: string]: WarehouseDetails } = {
         truckLicensPlate: "MH 08 HH 4773",
         pk: "0x445539af0ce3f3bf64c5f37f1d1b389de2ded9790a136143507e87df56213308",
         address: "0xf51510412594CDc96c270b880F1dE75105B29900",
-      }
-    ]
+      },
+    ],
   },
   eskimo: {
     pk: "f506511bdee935fd4e030c423edc51905b0f2b3956bb7be07ab3f7c05df1a65c",
@@ -302,7 +96,7 @@ export const warehouseAccounts: { [key: string]: WarehouseDetails } = {
         pk: "0x30617f4a927340046255555e9cc161635dfe19464b0ba433649a762afeadd9e7",
         address: "0x31C8aA1bCE09ecD845f8423604662a7Da4Bff9D2",
       },
-    ]
+    ],
   },
   welspun: {
     pk: "1d009ea92c976fd7db91281fc00f194e108daf4673f4be1d52389cfa2e6ae9d5",
@@ -318,10 +112,20 @@ export const warehouseAccounts: { [key: string]: WarehouseDetails } = {
         url: "",
       },
     ],
+    trucks: [
+      {
+        truckLicensPlate: "MH 02 DD 5221",
+        pk: "0x881f120226ddaeae82de42942d68e36b37ec08c78fe10c476d68e65e296a7b27",
+        address: "0x869B57623A44F62ABc43ce67097C3Ac1c8C31eBc",
+      },
+      {
+        truckLicensPlate: "MH 08 HH 4773",
+        pk: "0x445539af0ce3f3bf64c5f37f1d1b389de2ded9790a136143507e87df56213308",
+        address: "0xf51510412594CDc96c270b880F1dE75105B29900",
+      },
+    ],
   },
-  
 
-  // Not created for now
   Mayur: {
     pk: "0x2915815ca28378567fe95cc891184e9087bf5fe7f1f2314e13e85fa575b9b074",
     address: "0x06aaB32BCE950C8e0Fc5967b6E3dC13F7Bd23873",
@@ -499,6 +303,330 @@ export const warehouseAccounts: { [key: string]: WarehouseDetails } = {
       {
         title: "FSSAI Basic License",
         url: "",
+      },
+    ],
+  },
+};
+
+
+export const producerAccounts: { [key: string]: ProducerDetails } = {
+  nestle: {
+    pk: "0fd9949357465ea9dc776d416fafe782772ef27baad8abdb4e5e64323b0618cc",
+    address: "0xabd8EeD5b630578F72eEB06c637dB7179576A811",
+    name: "Nestle India Ltd.",
+    physicalAddress:
+      "ICC Chambers, Marol, Andheri East, Mumbai, Maharashtra 400072",
+    reg_no: "34374789392@$WE323S@#@#42",
+    phone: 9032328423,
+    products: [
+      {
+        name: "Nestle Kitkat",
+        price: 400,
+        temperature: { min: -10, max: 20 },
+        timeLimit: { min: 0, max: 60 }, // 1 minutes
+        humidity: { min: 15, max: 75 },
+        producer_name: "Nestle Pvt Ltd",
+        image:
+          "https://res.cloudinary.com/dp0ayty6p/image/upload/v1679820531/kitkat_rmwi0o.jpg",
+        lots: [
+          {
+            humidityUnits: humidityToUnits(55),
+            tempUnits: temperatureToUnits(13),
+            lot_size: 100,
+            productId: 0,
+            checkpoints: [
+              {
+                warehouse: warehouseAccounts.antophyll,
+                in: {
+                  humidityUnits: humidityToUnits(65),
+                  tempUnits: temperatureToUnits(12),
+                },
+                out: {
+                  humidityUnits: humidityToUnits(67),
+                  tempUnits: temperatureToUnits(14),
+                },
+              },
+              {
+                warehouse: warehouseAccounts.eskimo,
+                in: {
+                  humidityUnits: humidityToUnits(84),
+                  tempUnits: temperatureToUnits(25),
+                },
+                out: {
+                  humidityUnits: humidityToUnits(57),
+                  tempUnits: temperatureToUnits(14),
+                },
+              }
+            ],
+          },
+        ],
+      },
+      {
+        name: "Munch",
+        price: 20,
+        temperature: { min: -10, max: 30 },
+        timeLimit: { min: 0, max: 120 }, // 2 minutes
+        humidity: { min: 25, max: 70 },
+        producer_name: "Nestle Pvt Ltd",
+        image:
+          "https://res.cloudinary.com/dp0ayty6p/image/upload/v1679820693/munch_b3wmt7.jpg",
+        lots: [
+          {
+            humidityUnits: humidityToUnits(35),
+            tempUnits: temperatureToUnits(15),
+            lot_size: 50,
+            productId: 1,
+            checkpoints: [
+              {
+                warehouse: warehouseAccounts.welspun,
+                in : {
+                  humidityUnits: humidityToUnits(55),
+                  tempUnits: temperatureToUnits(12),
+                },
+                out : {
+                  humidityUnits: humidityToUnits(55),
+                  tempUnits: temperatureToUnits(15),
+                },
+              },
+              {
+                warehouse: warehouseAccounts.antophyll,
+                in : {
+                  humidityUnits: humidityToUnits(54),
+                  tempUnits: temperatureToUnits(16),
+                },
+                out : {
+                  humidityUnits: humidityToUnits(65),
+                  tempUnits: temperatureToUnits(19),
+                },
+              },
+              {
+                warehouse: warehouseAccounts.antophyll,
+                in : {
+                  humidityUnits: humidityToUnits(52),
+                  tempUnits: temperatureToUnits(16),
+                },
+                out : {
+                  humidityUnits: humidityToUnits(72),
+                  tempUnits: temperatureToUnits(35),
+                },
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    trucks: [
+      {
+        truckLicensPlate: "MH 06 EF 3259",
+        pk: "0xa927de328fe2969939fa9667501e816a154f8a5228ab64edaec57d28cdee0f1c",
+        address: "0xb80dB168Af9540a33A462D14a6d6ACfa09486B7e",
+      },
+      {
+        truckLicensPlate: "MH 02 GF 5882",
+        pk: "0xf67daaf5e236c749f9e0bcf68120d011a54dcfbe7881bdb0ac79f3d8ecefea6f",
+        address: "0xEaB8854EFB669979D60c5B75101410B702B5072b",
+      },
+    ],
+  },
+  ITC: {
+    pk: "0xc75475d22b8b87d8d181dbc3c967cc9ca0a285e11957642a92dbc44485fe8694",
+    address: "0x40c94dAAE90B73162f22564B4E051d9AB2dFCAb9",
+    name: " ITC Limited",
+    reg_no: "34374789392@$WE323S@#@#42",
+    phone: 9032328423,
+    physicalAddress:
+      "Bengaluru Corporate Head Quarters. ITC Infotechpark 18, Banaswadi Main Road, Maruthiseva Nagar, Bengaluru - 560005, India",
+    products: [
+      {
+        name: "Sunfest Milkshake",
+        price: 400,
+        temperature: { min: -10, max: 20 },
+        timeLimit: { min: 0, max: 60 }, // 1 minute
+        humidity: { min: 30, max: 65 },
+        producer_name: "ITC",
+        lots: [
+          {
+            humidityUnits: humidityToUnits(55),
+            tempUnits: temperatureToUnits(13),
+            lot_size: 100,
+            productId: 0,
+          },
+          {
+            humidityUnits: humidityToUnits(45),
+            tempUnits: temperatureToUnits(14),
+            lot_size: 50,
+            productId: 0,
+          },
+        ],
+      },
+    ],
+  },
+  Hindustan_Unilever: {
+    pk: "0xa6fb7104b1894e91fdc7c8b8448b2a9e94eb5f0ad46c69df952c4ba5b37a440e",
+    address: "0x35FCB8a9E8cf487Ad620037AF5D05CfF56a8eECe",
+    name: "Hindustan Unilever Limited",
+    physicalAddress:
+      "Hindustan Unilever Limited, Unilever House, B. D. Sawant Marg, Chakala, Andheri (E), Mumbai - 400 099.",
+    products: [
+      {
+        name: " Bru Coffee",
+        price: 240,
+        temperature: { min: -10, max: 20 },
+        humidity: { min: 40, max: 75 },
+        producer_name: "Hindustan Unilever Limited",
+        image:
+          "https://res.cloudinary.com/dp0ayty6p/image/upload/v1679820787/bru_niyzbv.jpg",
+      },
+    ],
+    reg_no: "34374789392@$WE323S@#@#42",
+    phone: 9032328423,
+    trucks: [
+      {
+        truckLicensPlate: "MH 02 FF 8258",
+        pk: "0x5768275da3a6d0ab9a13c2a52082f29917ab7e4fd3cf4caee84aa45e26d247c0",
+        address: "0x43cCD3d3d064229224186d47eb5a6dd5FFb225B2",
+      },
+    ],
+  },
+
+  // Not created for now
+  Britania: {
+    pk: "0xea5bbf6d3768cf0e5605bedca4ebfce1b79f93505d0664987c359d8bd88f2d22",
+    address: "0xC59C99Dba249c371b2Adaea7451a63854f38372F",
+    name: "Britannia Industries",
+    reg_no: "34374789392@$WE323S@#@#42",
+    phone: 9032328423,
+
+    physicalAddress:
+      "5/1A Hungerford Street, Kolkata -700 017 · Executive Office. Britannia Industries Limited ·",
+    products: [
+      {
+        name: "Britania milky-bakes cookies",
+        price: 50,
+        temperature: { min: -10, max: 20 },
+
+        humidity: { min: 40, max: 60 },
+        producer_name: "Britania",
+      },
+    ],
+  },
+  Jubilant_FoodWorks: {
+    pk: "0x6b650fb2bff15c7588915b6d07b0867d6427e48a1f07bae841e37bb7beb227d9",
+    address: "0x207521246355b3f5c187a09f7195633df2D427E0",
+    name: "Jubilant FoodWorks Limited",
+    reg_no: "34374789392@$WE323S@#@#42",
+    phone: 9032328423,
+    physicalAddress:
+      "Jubilant FoodWorks Limited. 15th Floor, Tower E Skymark One, Plot No. H – 10/A Sector 98, Noida- 201301, U.P., India",
+    products: [
+      {
+        name: "	Domino's Pizza",
+        price: 330,
+        temperature: { min: -10, max: 20 },
+
+        humidity: { min: 45, max: 75 },
+        producer_name: "Jubilant_FoodWorks",
+      },
+    ],
+  },
+  Varun: {
+    pk: "0x69f6f727c9131ae7cc742a2c873c6a4244ca0c82f6a3ab28e4f50d467c582f79",
+    address: "0x0b63D4daab91a6f65c7A68D384e16ECD6DD0Ba1f",
+    name: "VarunBeverages Limited ",
+    reg_no: "34374789392@$WE323S@#@#42",
+    phone: 9032328423,
+    physicalAddress:
+      "Adityapur Industrial Area Tata Kandra Main Rd Adityapur Jamshedpur",
+    products: [
+      {
+        name: "Pepsi,Diet Pepsi",
+        price: 40,
+        temperature: { min: -10, max: 20 },
+
+        humidity: { min: 22, max: 65 },
+        producer_name: "Nestle Pvt Ltd",
+      },
+    ],
+  },
+  wibs: {
+    pk: "47bdfd22594b27d21f279ce22d0b9d673ceae68960ac358892a3381ded8e70e7",
+    address: "0xCCCA8B3c76a6bE3CB933109855f4956E5F6Dd776",
+    name: "Western India Bakers Pvt. Ltd.",
+    reg_no: "34374789392@$WE323S@#@#42",
+    phone: 9032328423,
+    physicalAddress:
+      "Western India Bakers Pvt. Ltd A.P.M., Mafco Market Yard, Turbhe, Navi Mumbai-400703.",
+    products: [
+      {
+        name: "Brown Bread",
+        price: 40,
+        temperature: { min: -10, max: 20 },
+
+        humidity: { min: 45, max: 65 },
+        producer_name: " Western India Bakers Pvt. Ltd ",
+      },
+    ],
+  },
+  MotherDairy: {
+    pk: "0xe10d19342618f3e5b15ae5ad0a0a7d8ef5f8420d45750e8a5b3cd97180842906",
+    address: "0x75BB9Df3f9B0c3c84cA604E4d5d99116A595E510",
+    name: "Mother Dairy Foods",
+    reg_no: "34374789392@$WE323S@#@#42",
+    phone: 9032328423,
+    physicalAddress:
+      "Mother Dairy Fruit & Vegetable Pvt Ltd, A-3, NDDB House, Sector-1, Noida, Uttar Pradesh-201 301 (India)",
+    products: [
+      {
+        name: "Ice creams ",
+        price: 190,
+        temperature: { min: -10, max: 20 },
+
+        humidity: { min: 40, max: 60 },
+        producer_name: "Mother Dairy ",
+      },
+    ],
+  },
+  Rasna: {
+    pk: "0x8d2a005771dc75891ced998851114d53cc21295364f3d8b7f6c3e70c146d15b9",
+    address: "0xF3F7834fFA6d74eBbA17887dc5aB81fb261e3BF3",
+    name: "Rasna Internationals",
+    reg_no: "34374789392@$WE323S@#@#42",
+    phone: 9032328423,
+    physicalAddress:
+      "Rasna House, Opp. Sears Tower, Gulbai Tekra, Ahmedabad-380 015,",
+    products: [
+      {
+        name: "Rasna Energy Drinks",
+        price: 100,
+        temperature: { min: -20, max: 10 },
+        humidity: { min: 22, max: 75 },
+        producer_name: "Rasna",
+      },
+    ],
+  },
+  AB_Mauri: {
+    pk: "0x4d13b878d19adab6f80e8cef7d46b491387fc3e5b4d1138b532a6558f8c8c515",
+    address: "0x375f7543402eE18363330e062c7e91C0ad5ffFCC",
+    name: "AB Mauri India Pvt Ltd",
+    reg_no: "34374789392@$WE323S@#@#42",
+    phone: 9032328423,
+    physicalAddress:
+      "Plot No. 218 & 219 Bommasandra Jigani Link Road Bangalore / Bengaluru Karnataka , 560105",
+    products: [
+      {
+        name: "cake mixes & concentrates ",
+        price: 220,
+        temperature: { min: -10, max: 20 },
+        humidity: { min: 40, max: 60 },
+        producer_name: "AB Mauri India Pvt Ltd",
+        lots: [
+          {
+            humidityUnits: humidityToUnits(50),
+            tempUnits: temperatureToUnits(16),
+            lot_size: 50,
+            productId: 0,
+          },
+        ],
       },
     ],
   },

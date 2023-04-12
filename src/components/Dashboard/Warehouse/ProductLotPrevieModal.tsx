@@ -281,7 +281,7 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                   </div>
                   <div
                     className="w-max rounded-r-lg p-4 ml-3"
-                    style={{ minWidth: "400px", maxHeight: "80vh" }}
+                    style={{ minWidth: "400px", maxHeight: "70vh", overflow: "scroll" }}
                   >
                     <h3 className="text-lg font-medium mb-2">
                       Quantity - {quantity}

@@ -423,6 +423,16 @@ contract SourceTrace {
                 Strings.toString(_product_lot_id)
             )
         ];
+
+        // maxValues[2] = 0 indicates that time limit isn't required
+        if (targetCheckpoints.length > 0 && productInfo.maxValues[2] > 0)
+            require(
+                block.timestamp -
+                    targetCheckpoints[targetCheckpoints.length - 1].outTime <=
+                    uint256(productInfo.minValues[2]),
+                "Time limit exceeded"
+            );
+
         uint256 targetCheckpointIndex = targetCheckpoints.length;
         targetCheckpoints.push();
 
@@ -493,14 +503,6 @@ contract SourceTrace {
         ];
         uint256 _checkpointIndex = targetCheckpoints.length - 1;
         Checkpoint storage checkpoint = targetCheckpoints[_checkpointIndex];
-
-        // 0 indicates to time limit factor involved
-        if (productInfo.maxValues[2] > 0)
-            require(
-                block.timestamp - checkpoint.inTime <=
-                    uint256(productInfo.minValues[2]),
-                "Time limit exceeded"
-            );
 
         if (_checkpointIndex == 0) {
             // 0th Checkout from producer only

@@ -6,13 +6,12 @@ function Warehouserole(){
         <span className="text-2xl font-bold">Warehouse Role</span>
         <br/>
         <br/>
-            Warehouse needs to update the product details on the blockchain at the time of the product's departure. And also when  the product arrives at the warehouse.  
+            Warehouse needs to update the product details on the blockchain at the time of the product&apos;s departure. 
+            And also when the product arrives at the warehouse.  
         </div>
         <div>
             <img src="./illustrations/Warehouserole.png" className="w-60"></img>
         </div>
-        
-        
     </div>
 }
 

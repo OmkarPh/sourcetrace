@@ -1,8 +1,12 @@
 import React from "react";
+import { useMetamaskAuth } from "src/auth/authConfig";
+
+
 
 function Getstartedtext(){
+  const { connect } = useMetamaskAuth();
     return <div className="px-32 py-5">
-        <div className=" text-2xl font-bold pt-36">
+        <div className=" text-2xl font-bold pt-16">
           Take control of your supply chain with Sourcetrace -
           <br />
           the innovative blockchain-based trackingsoftware that
@@ -14,7 +18,7 @@ function Getstartedtext(){
           Trusted byGovernment authorities
         </div>
         <div className="pt-12">
-          <button className=" bg-blue-400 my-4 p-3 pl-12 pr-12 text-lg rounded-full hover:bg-blue-500 hover:text-white">
+          <button onClick={connect} className=" bg-blue-400 my-4 p-3 pl-12 pr-12 text-lg rounded-full hover:bg-blue-500 hover:text-white">
             Get Started
           </button>
         </div>

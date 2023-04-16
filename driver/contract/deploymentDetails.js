@@ -1,12 +1,13 @@
-const contractDeploymentTx = "0xc54f8658656d270313c50444a56439ccafc15055b0980393840ce4abe5a99d71";
-const contractAddress = "0x0f0D919F45edFAf7A0De0B9707D5AC9c43527299";
+// const contractDeploymentTx = "0x383e2c398f766d461c077125d52ac60121a35a3ef23c5a6853e6a1f1a04685e5";
+// const contractDeploymentTxLink = `${chainExplorerBaseAddress}/tx/${contractDeploymentTx}`; 
+
+const contractAddress = "0x9dC11a773d99ebD8e28fdd1D5C6bed09337cC05e";
 
 const chainExplorerBaseAddress = "https://mumbai.polygonscan.com";
-const contractDeploymentTxLink = `${chainExplorerBaseAddress}/tx/${contractDeploymentTx}`; 
 
 module.exports = {
   contractAddress,
-  contractDeploymentTx,
   chainExplorerBaseAddress,
-  contractDeploymentTxLink,
+  // contractDeploymentTx,
+  // contractDeploymentTxLink,
 }

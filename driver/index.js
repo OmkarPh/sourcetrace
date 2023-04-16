@@ -93,12 +93,12 @@ const scenarios = {
   },
   coldStorageCompromised: {
     temp: {
-      min: 17,
-      max: 20,
+      min: 19,
+      max: 25,
     },
     humidity: {
       min: 61,
-      max: 72,
+      max: 90,
     },
   },
 };
@@ -125,8 +125,6 @@ app.get("/coldStorageCompromised", (req, res) => {
   res.json({ message: "Success !", temperature, humidity });
 });
 
-
-
 const PERCENTAGE = 90;
 const POLL_INTERVAL = 10 * 1000;
 
@@ -141,9 +139,10 @@ app.post("/start-polling", async (req, res) => {
     timeLimit,
   } = req.body;
 
+  console.log("\n--------------------------------");
   console.log("Received poll request with body", req.body);
 
-  if(
+  if (
     productLotId === undefined ||
     truckAddress === undefined ||
     minTemperature === undefined ||
@@ -152,22 +151,26 @@ app.post("/start-polling", async (req, res) => {
     maxHumidity === undefined ||
     timeLimit === undefined
   ) {
-    return res.status(400).json({ message: "Invalid request !!"});
+    return res.status(400).json({ message: "Invalid request !!" });
   }
 
-  if(timeLimit <= -1)
-    timeLimit = 600000;    // default 10 mins
+  const lot_id_split = productLotId.split("_");
+  const producerAddress = lot_id_split[0].toLowerCase();
+  const lotIdx = Number(lot_id_split[1]);
+
+  if (timeLimit <= -1) timeLimit = 600000; // default 10 mins
 
   const startTime = new Date().getTime();
-  console.log(`Poll will last for ${timeLimit/60000} mins`);
+  // console.log(`Poll will last for ${timeLimit/60000} mins`);
 
   // set up interval to generate values every 5 seconds
-  const interval = setInterval(() => {
+  const pollInterval = setInterval(() => {
     const currentTime = new Date().getTime();
     const elapsedTime = currentTime - startTime;
     console.log(`Elapsed(${elapsedTime}), timelimit ${timeLimit}`);
     if (elapsedTime >= timeLimit) {
-      clearInterval(interval);
+      clearInterval(pollInterval);
+      console.log("Stop polling ------------------------\n");
       return;
     }
 
@@ -198,8 +201,19 @@ app.post("/start-polling", async (req, res) => {
     // print generated values to console
     // console.log("Polling ...", { temperature, humidity });
     try {
-      poll(truckAddress, productLotId || "", temperature, humidity)
-    } catch(err) {
+      poll(
+        truckAddress,
+        producerAddress,
+        lotIdx,
+        productLotId || "",
+        temperature,
+        humidity,
+        () => {
+          console.log("Stop polling ------------------------\n");
+          clearInterval(pollInterval)
+        }
+      );
+    } catch (err) {
       console.log("err polling", err);
     }
   }, POLL_INTERVAL);

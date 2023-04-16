@@ -25,25 +25,24 @@ Object.entries(producerAccounts).forEach(([_, producer]) => {
   customWeb3.eth.accounts.wallet.add(
     customWeb3.eth.accounts.privateKeyToAccount(producer.pk)
   );
-  producer.trucks?.forEach(truck => {
+  producer.trucks?.forEach((truck) => {
     customWeb3.eth.accounts.wallet.add(
       customWeb3.eth.accounts.privateKeyToAccount(truck.pk)
     );
-  })
+  });
 });
 Object.entries(warehouseAccounts).forEach(([_, warehouse]) => {
   customWeb3.eth.accounts.wallet.add(
     customWeb3.eth.accounts.privateKeyToAccount(warehouse.pk)
   );
-  warehouse.trucks?.forEach(truck => {
+  warehouse.trucks?.forEach((truck) => {
     customWeb3.eth.accounts.wallet.add(
       customWeb3.eth.accounts.privateKeyToAccount(truck.pk)
     );
-  })
+  });
 });
 
 console.log("Eth accounts", customWeb3.eth.accounts.wallet.length);
-
 
 // console.log("All Accounts:", customWeb3.eth.accounts.wallet);
 // for(let i=0; i<customWeb3.eth.accounts.wallet.length; i++){
@@ -70,11 +69,11 @@ function CallerFn(
       })
       .catch((err: any) => {
         if (debug) {
-          console.log(
-            `Some error calling ${method} with params \n`,
-            params,
-            err
-          );
+          // console.log(
+          //   `Some error calling ${method} with params \n`,
+          //   params,
+          //   err
+          // );
         }
         reject(new Error(`Couldn't fetch results for ${method}`));
       });
@@ -97,7 +96,7 @@ function SenderFn(
     gas_estimate = Math.round(gas_estimate * 1.2);
 
     if (debug) {
-      console.log("Prepared transaction: ", tx);
+      // console.log("Prepared transaction: ", tx);
     }
 
     tx.send({
@@ -106,12 +105,12 @@ function SenderFn(
       gasPrice: customWeb3.utils.toHex(gasprice),
     })
       .then((receipt: any) => {
-        console.log(`${method} - Tx Receipt`, receipt);
+        // console.log(`${method} - Tx Receipt`, receipt);
         console.log(`Transaction hash: ${receipt?.transactionHash}`);
-        console.log(
-          `View the transaction here: `,
-          linkFromTxHash(receipt?.transactionHash)
-        );
+        // console.log(
+        //   `View the transaction here: `,
+        //   linkFromTxHash(receipt?.transactionHash)
+        // );
         return resolve(receipt);
       })
       .catch((err: any) => {
@@ -146,10 +145,39 @@ const CreateWarehouseFn = SenderFactory(
   true
 );
 const InventProduct = SenderFactory(SourceTraceContract, "inventProduct", true);
+const CreateProductLot = SenderFactory(
+  SourceTraceContract,
+  "createProductLot",
+  true
+);
+const CreateCheckInFn = SenderFactory(SourceTraceContract, 'createCheckIn', true);
+const CreateCheckOutFn = SenderFactory(SourceTraceContract, 'createCheckOut', true);
 
-function createProducers(limit = 3) {
+
+
+
+// const CreateCheckIn = async (address: string, ...params: any[]) => {
+//   // try {
+//   //   const receipt = await CreateCheckInFn(address, ...params);
+//   //   return receipt;
+//   // } catch(err) {
+//   //   return null;
+//   // }
+// }
+// const CreateCheckOut = async (
+//   address: string,
+//   ...params: any[]
+// ) => {
+//   // try {
+//   //   const receipt = await CreateCheckOutFn(address, ...params);
+//   //   return receipt;
+//   // } catch(err) {
+//   //   return null;
+//   // }
+// }
+
+function createProducers(limit = 10) {
   console.log("Creating producers ....");
-
   const promises: Promise<any>[] = [];
   Object.entries(producerAccounts).forEach(([key, producer], idx) => {
     if (idx >= limit) return;
@@ -191,15 +219,15 @@ function createProducers(limit = 3) {
   });
 
   Promise.all(promises).then(function (results) {
-    console.log("Created producers with result:", results);
-    console.log("Verify: ");
+    console.log("Producers setup complete ------:", results);
+    console.log("Verification ");
     Object.entries(producerAccounts).forEach(([key, producer], idx) => {
       new Promise((resolve, reject) => {
         GetProducer(producer.address)
           .then((response) => {
             console.log(
-              `${idx}. ${key} Producer already registered: `,
-              response
+              `${idx}. ${key} Producer registered: `
+              // response
             );
             resolve(response);
           })
@@ -212,7 +240,7 @@ function createProducers(limit = 3) {
     });
   });
 }
-function createWarehouses(limit = 3) {
+function createWarehouses(limit = 10) {
   console.log("Creating warehouses ....");
 
   const promises: Promise<any>[] = [];
@@ -243,6 +271,7 @@ function createWarehouses(limit = 3) {
               warehouse.phone,
               warehouse.reg_no,
               warehouse.physicalAddress,
+              warehouse.isRetailer || false,
               truckAddresses,
               truckDetails
             ).then((receipt) => {
@@ -259,15 +288,15 @@ function createWarehouses(limit = 3) {
   });
 
   Promise.all(promises).then(function (results) {
-    console.log("Created warehouses with result:", results);
-    console.log("Verify: ");
+    console.log("Warehouse setup complete ------", results);
+    console.log("Verification ");
     Object.entries(warehouseAccounts).forEach(([key, warehouse], idx) => {
       new Promise((resolve, reject) => {
         GetWarehouse(warehouse.address)
           .then((response) => {
             console.log(
-              `${idx}. ${key} Warehouse already registered: `,
-              response
+              `${idx}. ${key} Warehouse registered `
+              // response
             );
             resolve(response);
           })
@@ -326,10 +355,9 @@ async function generateTestAccounts(count = 10) {
 
 async function createProducts() {
   console.log("Creating products ....");
-  let idx=0;
+  let idx = 0;
   for (let entry of Object.entries(producerAccounts)) {
-    if(idx > 2)
-      break;
+    if (idx > 2) break;
     idx++;
     const [_, producer] = entry;
     for (let product of producer.products) {
@@ -337,12 +365,12 @@ async function createProducts() {
         temperatureToUnits(product.temperature.min),
         humidityToUnits(product.humidity.min),
         product.timeLimit?.min || -1,
-      ]
+      ];
       const maxValues = [
         temperatureToUnits(product.temperature.max),
         humidityToUnits(product.humidity.max),
         product.timeLimit?.max || -1,
-      ]
+      ];
       console.log("Creation params", {
         add: producer.address,
         name: product.name,
@@ -362,9 +390,149 @@ async function createProducts() {
         minValues,
         maxValues
       );
-      console.log(`Invented product ${product.name} `, receipt);
+      console.log(
+        `Producer ${producer.address} - Created product ${product.name} with receipt`,
+        receipt
+      );
     }
   }
+  console.log("Created all preset products");
+}
+
+async function createProductLots() {
+  console.log("Creating product lots ....");
+  let idx = 0;
+  for (let entry of Object.entries(producerAccounts)) {
+    if (idx > 2) break;
+    idx++;
+    const [_, producer] = entry;
+    let productIdx = 0;
+    for (let product of producer.products) {
+      let lotIdx = 0;
+      for (let lot of product.lots || []) {
+        console.log("Lot creation params", {
+          producer: producer.address,
+          lot_size: lot.lot_size,
+          productId: lot.productId,
+          name: producer.name,
+          location: producer.address,
+          tempUnits: lot.tempUnits,
+          humidityUnits: lot.humidityUnits,
+        });
+
+        const receipt = await CreateProductLot(
+          producer.address,
+          lot.lot_size,
+          lot.productId,
+          producer.name,
+          producer.physicalAddress,
+          lot.tempUnits,
+          lot.humidityUnits,
+        );
+        console.log(
+          `Producer ${producer.name} - Created Product_${productIdx} - lot_${lotIdx} with receipt`,
+          receipt
+        );
+        // console.log(`Producer ${producer.name} - Created Product_${productIdx} - lot_${lotIdx}`);
+        lotIdx++;
+      }
+      productIdx++;
+    }
+  }
+  console.log("Created all preset lots");
+}
+
+async function testCheckpoints() {
+  console.log("Testing checkpoints ....");
+  let idx = 0;
+  for (let entry of Object.entries(producerAccounts)) {
+    if (idx > 2) break;
+    idx++;
+    const [_, producer] = entry;
+    let productIdx = 0;
+    for (let product of producer.products) {
+      let lotIdx = 0;
+      for (let lot of product.lots || []) {
+        for(let checkpoint of lot.checkpoints || []){          
+          console.log("Checkin tx params", {
+            actionTaker: checkpoint.warehouse.address,
+            producerAddress: producer.address,
+            lotId: lotIdx,
+            tempUnits: checkpoint.in.tempUnits,
+            humidityUnits: checkpoint.in.humidityUnits,
+          });
+          const receipt = await CreateCheckInFn(
+            checkpoint.warehouse.address,
+            producer.address,
+            lotIdx,
+            checkpoint.in.tempUnits,
+            checkpoint.out.humidityUnits,
+          )
+          console.log(
+            `Warehouse ${checkpoint.warehouse.name} - Check in ${producer.name} - lot_${lotIdx} with receipt`,
+            receipt
+          );
+
+          if(receipt)
+          // if(
+          //   checkpoint.in.tempUnits >= temperatureToUnits(product.temperature.min) &&
+          //   checkpoint.in.tempUnits <= temperatureToUnits(product.temperature.max) &&
+          //   checkpoint.in.humidityUnits >= humidityToUnits(product.humidity.min) &&
+          //   checkpoint.in.humidityUnits <= humidityToUnits(product.humidity.max)
+          // )
+            console.log(
+              `Warehouse ${checkpoint.warehouse.name} - Check in ${producer.name} - lot_${lotIdx}`,
+            );
+          else {
+            console.log(`----- Invalid params, can't checkin -----`);
+            continue;
+          }
+            
+
+          const availableTrucks = checkpoint.warehouse.trucks || [];
+          console.log("Checkout tx params", {
+            actionTaker: checkpoint.warehouse.address,
+            producerAddress: producer.address,
+            lotId: lotIdx,
+            truckAddress: availableTrucks[0].address,
+            truckIdx: 0,
+            tempUnits: checkpoint.in.tempUnits,
+            humidityUnits: checkpoint.in.humidityUnits,
+          });
+          const checkoutReceipt = await CreateCheckOutFn(
+            checkpoint.warehouse.address,
+            producer.address,
+            lotIdx,
+            checkpoint.out.tempUnits,
+            checkpoint.out.humidityUnits,
+          )
+          console.log(
+            `Warehouse ${checkpoint.warehouse.name} - Check out ${producer.name} - lot_${lotIdx} with receipt`,
+            receipt
+          );
+          if(checkoutReceipt)
+          // if(
+          //   checkpoint.out.tempUnits >= temperatureToUnits(product.temperature.min) &&
+          //   checkpoint.out.tempUnits <= temperatureToUnits(product.temperature.max) &&
+          //   checkpoint.out.humidityUnits >= humidityToUnits(product.humidity.min) &&
+          //   checkpoint.out.humidityUnits <= humidityToUnits(product.humidity.max)
+          // )
+          console.log(
+            `Warehouse ${checkpoint.warehouse.name} - Check out ${producer.name} - lot_${lotIdx}`,
+          );
+          else {
+            console.log(`----- Invalid params, can't checkout -----`);
+            continue;
+          }
+          // console.log(`Producer ${producer.name} - Created Product_${productIdx} - lot_${lotIdx}`);
+        }
+        console.log("----------------------------------------");
+        lotIdx++;
+      }
+      productIdx++;
+    }
+  }
+  console.log("Check in & check out tested for all preset lots");
 }
 
 export const SETUP_TOOL = {
@@ -373,7 +541,9 @@ export const SETUP_TOOL = {
   createWarehouses,
   generateTestAccounts,
   createProducts,
+  createProductLots,
+  testCheckpoints,
 };
-if (hasWindow()) {
-  window.SETUP_TOOL = SETUP_TOOL;
-}
+// if (hasWindow()) {
+//   window.SETUP_TOOL = SETUP_TOOL;
+// }

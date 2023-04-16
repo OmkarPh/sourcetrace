@@ -1,13 +1,11 @@
-// import { useMetamaskAuth } from "../auth/authConfig";
-import Getstarted from "@/components/landingpage/getstarted";
-import Producerrole from "@/components/landingpage/producerrole";
-import Warehouserole from "@/components/landingpage/warehouserole";
-import Footer from "@/components/landingpage/footer";
+import React from 'react';
+import Getstarted from '../components/landingpage/getstarted';
+import Producerrole from '../components/landingpage/producerrole';
+import Warehouserole from '../components/landingpage/warehouserole';
+import Footer from '../components/landingpage/footer';
 
 
 export default function Home() {
-  // const { connect } = useMetamaskAuth();
-
   return (
     <>
       <Getstarted/>

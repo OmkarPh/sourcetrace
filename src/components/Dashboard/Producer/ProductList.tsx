@@ -124,8 +124,16 @@ const ProductList = () => {
       });
   }
 
-  const isTemperatureValid = (productForNewLot && scan) ? unitsToTemperature(productForNewLot.minValues[0]) <= scan.temperature && unitsToTemperature(productForNewLot.maxValues[0]) >= scan.temperature : false;
-  const isHumidityValid = (productForNewLot && scan) ? unitsToHumidity(productForNewLot.minValues[1]) <= scan.humidity && unitsToHumidity(productForNewLot.maxValues[1]) >= scan.humidity : false;
+  const isTemperatureValid =
+    productForNewLot && scan
+      ? unitsToTemperature(productForNewLot.minValues[0]) <= scan.temperature &&
+        unitsToTemperature(productForNewLot.maxValues[0]) >= scan.temperature
+      : false;
+  const isHumidityValid =
+    productForNewLot && scan
+      ? unitsToHumidity(productForNewLot.minValues[1]) <= scan.humidity &&
+        unitsToHumidity(productForNewLot.maxValues[1]) >= scan.humidity
+      : false;
 
   if (isProcessingLogin || isFetchingProducts) return <Loader size={50} />;
 
@@ -263,7 +271,11 @@ const ProductList = () => {
                       Close
                     </button>
                     <FormControl>
-                      <Button type="submit" variant="outlined" disabled={!isTemperatureValid || !isHumidityValid}>
+                      <Button
+                        type="submit"
+                        variant="outlined"
+                        disabled={!isTemperatureValid || !isHumidityValid}
+                      >
                         Submit
                       </Button>
                       {/* <button

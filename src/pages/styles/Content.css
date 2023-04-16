@@ -1,0 +1,59 @@
+.landing-page .container {
+    display: flex;
+    margin-top: 100px;
+
+}
+
+.landing-page #transit-video {
+    height: 366px;
+    width: 578px;
+}
+
+.landing-page .right-div {
+    float: right;
+
+}
+
+.landing-page #mid-text {
+
+    font-weight: 200px;
+
+    font-size: 24px;
+}
+
+.landing-page button {
+    height: 70px;
+    width: 230px;
+    align-items: center;
+    font-size: 25px;
+    margin-top: 30px;
+    border-radius: 30px;
+    background-color: rgba(73, 125, 255, 1);
+    color: white;
+}
+
+.landing-page #right-div-content {
+    padding-left: 300px;
+}
+
+.landing-page .container {
+    margin: 10px;
+    margin-top: -70px;
+}
+
+.landing-page #img-transit {
+    width: 70px;
+    height: 85px;
+    margin-top: 60px;
+    padding-right: 700px;
+
+}
+
+.landing-page .left-div {
+    margin-top: 230px;
+    font-size: 32px;
+    margin-right: -220px;
+    margin-left: 25px;
+    word-spacing: 15px;
+
+}

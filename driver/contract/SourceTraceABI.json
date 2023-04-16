@@ -193,6 +193,11 @@
 				"type": "string"
 			},
 			{
+				"internalType": "bool",
+				"name": "_isRetailer",
+				"type": "bool"
+			},
+			{
 				"internalType": "address[]",
 				"name": "_trucks",
 				"type": "address[]"
@@ -204,91 +209,6 @@
 			}
 		],
 		"name": "createWarehouse",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "_name",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_price",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_imageURL",
-				"type": "string"
-			},
-			{
-				"internalType": "string[]",
-				"name": "_params",
-				"type": "string[]"
-			},
-			{
-				"internalType": "int256[]",
-				"name": "_minValues",
-				"type": "int256[]"
-			},
-			{
-				"internalType": "int256[]",
-				"name": "_maxValues",
-				"type": "int256[]"
-			}
-		],
-		"name": "inventProduct",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "_productLotId",
-				"type": "string"
-			},
-			{
-				"internalType": "int256",
-				"name": "temperature",
-				"type": "int256"
-			},
-			{
-				"internalType": "int256",
-				"name": "humidity",
-				"type": "int256"
-			}
-		],
-		"name": "poll",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_producer_address",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_product_lot_id",
-				"type": "uint256"
-			}
-		],
-		"name": "reject",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -663,6 +583,11 @@
 								"type": "string"
 							},
 							{
+								"internalType": "bool",
+								"name": "isRetailer",
+								"type": "bool"
+							},
+							{
 								"internalType": "address[]",
 								"name": "trucks",
 								"type": "address[]"
@@ -716,6 +641,11 @@
 						"internalType": "uint256[]",
 						"name": "polledTimes",
 						"type": "uint256[]"
+					},
+					{
+						"internalType": "bool[]",
+						"name": "validities",
+						"type": "bool[]"
 					}
 				],
 				"internalType": "struct SourceTrace.Checkpoint",
@@ -781,6 +711,11 @@
 								"type": "string"
 							},
 							{
+								"internalType": "bool",
+								"name": "isRetailer",
+								"type": "bool"
+							},
+							{
 								"internalType": "address[]",
 								"name": "trucks",
 								"type": "address[]"
@@ -834,6 +769,11 @@
 						"internalType": "uint256[]",
 						"name": "polledTimes",
 						"type": "uint256[]"
+					},
+					{
+						"internalType": "bool[]",
+						"name": "validities",
+						"type": "bool[]"
 					}
 				],
 				"internalType": "struct SourceTrace.Checkpoint[]",
@@ -882,6 +822,11 @@
 						"type": "string"
 					},
 					{
+						"internalType": "bool",
+						"name": "isRetailer",
+						"type": "bool"
+					},
+					{
 						"internalType": "address[]",
 						"name": "trucks",
 						"type": "address[]"
@@ -917,6 +862,106 @@
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_name",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_price",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_imageURL",
+				"type": "string"
+			},
+			{
+				"internalType": "string[]",
+				"name": "_params",
+				"type": "string[]"
+			},
+			{
+				"internalType": "int256[]",
+				"name": "_minValues",
+				"type": "int256[]"
+			},
+			{
+				"internalType": "int256[]",
+				"name": "_maxValues",
+				"type": "int256[]"
+			}
+		],
+		"name": "inventProduct",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "producer_address",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "lot_id",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "_productLotId",
+				"type": "string"
+			},
+			{
+				"internalType": "int256",
+				"name": "temperature",
+				"type": "int256"
+			},
+			{
+				"internalType": "int256",
+				"name": "humidity",
+				"type": "int256"
+			}
+		],
+		"name": "poll",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_producer_address",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_product_lot_id",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "reason",
+				"type": "uint256"
+			}
+		],
+		"name": "reject",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	}
 ]

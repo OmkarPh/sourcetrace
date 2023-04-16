@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 // import React, { useState} from "react";
 import { TextField } from "@mui/material";
 import { Button } from "@mui/material";
@@ -10,7 +10,7 @@ import { useMetamaskAuth } from "../auth/authConfig";
 import Loader from "../components/core/Loader";
 
 function WarehouseRegister() {
-  const { metaState, refreshAuthStatus } = useMetamaskAuth();
+  const { metaState, isLoggedIn, refreshAuthStatus } = useMetamaskAuth();
   const router = useRouter();
   const [processing, setProcessing] = useState(false);
   const [info, setInfo] = useState({
@@ -20,6 +20,11 @@ function WarehouseRegister() {
     location: "",
   });
 
+  useEffect(() => {
+    if(isLoggedIn)
+      router.push('/dashboard');
+  }, [isLoggedIn, router]);
+  
   const inputEvent = (event: any) => {
     const name = event.target.name;
     const value = event.target.value;
@@ -56,6 +61,7 @@ function WarehouseRegister() {
       info.phoneno,
       info.regno,
       info.location,
+      false,
       [],
       [],
     ).then(res => {

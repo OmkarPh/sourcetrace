@@ -281,35 +281,37 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                   </div>
                   <div
                     className="w-max rounded-r-lg p-4 ml-3"
-                    style={{ minWidth: "400px", maxHeight: "80vh" }}
+                    style={{
+                      minWidth: "400px",
+                      maxHeight: "70vh",
+                      overflow: "scroll",
+                    }}
                   >
                     <h3 className="text-lg font-medium mb-2">
                       Quantity - {quantity}
                       <span className="p-2 ml-4">
-                      ( Produced on{" "}
-                      {timestampToDate(createdAt).toLocaleDateString()}
-                      )
-
+                        ( Produced on{" "}
+                        {timestampToDate(createdAt).toLocaleDateString()})
                       </span>
                     </h3>
                     <h3 className="text-lg font-medium mb-1">Parameters</h3>
                     <div>
                       <div className="flex flex-row">
                         <div className="w-1/2">
-                        Temperature:{" "}
-                            {unitsToTemperature(productInfo.minValues[0])}°C to{" "}
-                            {unitsToTemperature(productInfo.maxValues[0])}°C
+                          Temperature:{" "}
+                          {unitsToTemperature(productInfo.minValues[0])}°C to{" "}
+                          {unitsToTemperature(productInfo.maxValues[0])}°C
                         </div>
                         <div className="w-1/2">
-                            Humidity: {unitsToHumidity(productInfo.minValues[1])}% to{" "}
-                            {unitsToHumidity(productInfo.maxValues[1])}%
+                          Humidity: {unitsToHumidity(productInfo.minValues[1])}%
+                          to {unitsToHumidity(productInfo.maxValues[1])}%
                         </div>
                       </div>
                     </div>
                     {/* <div>
                       Transit time limit: {productInfo.maxValues[2] / 60} hours
                     </div> */}
-                    
+
                     <ul className="list-item mt-4">
                       {productLot.checkpoints.map((checkpoint, idx) => {
                         const postTitle = idx == 0 ? " - Factory" : "";
@@ -319,6 +321,18 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                             : checkpoint.warehouse.name) + postTitle;
                         const isExpanded = expandedCheckpoints.has(idx);
                         const verified = true;
+                        const isCheckedOut = Number(checkpoint.outTime) != 0;
+                        const transitCompliance = (
+                          (checkpoint.validities.reduce(
+                            (a, v) => (v === true ? a + 1 : a),
+                            0
+                          ) *
+                            100) /
+                          checkpoint.validities.length
+                        ).toFixed();
+                        const isTransitComplianceValid =
+                          Number(transitCompliance) >= 75;
+
                         return (
                           <li key={checkpoint.inTime + idx}>
                             {verified}
@@ -336,14 +350,23 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                                   <Typography>
                                     {verified ? "✅ " : "!!"} &nbsp;
                                     {title} &nbsp;
-                                    {idx == productLot.checkpoints.length - 1 &&
-                                      checkpoint.outTime == "0" && (
-                                        <>( Stored )</>
-                                      )}
+                                    {!isCheckedOut && <>( Stored )</>}
                                   </Typography>
                                 </AccordionSummary>
                                 <AccordionDetails style={{ padding: 5 }}>
-                                  <Typography className="flex flex-row">
+                                  {isCheckedOut && (
+                                    <ValidityLabel
+                                      valid={isTransitComplianceValid}
+                                      validText={`Transit compliance: ${transitCompliance} %`}
+                                      inValidText={`Transit compliance: ${transitCompliance} %`}
+                                    />
+                                  )}
+                                  {/* {isCheckedOut && (
+                                    <div className={`pl-2 ${isTransitComplianceValid ? 'text-green-800' : 'text-danger-600'}`}>
+                                      
+                                    </div>
+                                  )} */}
+                                  <div className="flex flex-row">
                                     <div className="w-1/2 p-2">
                                       Temperature
                                       <div className="p-0 pt-1">
@@ -351,7 +374,18 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                                           {/* In */}
                                           ⬇️{" "}
                                           {unitsToTemperature(
-                                            Number(productInfo.minValues[0]) <= Number(checkpoint.in_temperature) && Number(productInfo.maxValues[0]) >= Number(checkpoint.in_temperature) ? checkpoint.in_temperature : productInfo.maxValues[0]
+                                            Number(productInfo.minValues[0]) <=
+                                              Number(
+                                                checkpoint.in_temperature
+                                              ) &&
+                                              Number(
+                                                productInfo.maxValues[0]
+                                              ) >=
+                                                Number(
+                                                  checkpoint.in_temperature
+                                                )
+                                              ? checkpoint.in_temperature
+                                              : productInfo.maxValues[0]
                                           )}{" "}
                                           {/* {unitsToTemperature(
                                             checkpoint.in_temperature
@@ -362,7 +396,18 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                                           {/* Out */}
                                           ⬆️{" "}
                                           {unitsToTemperature(
-                                            Number(productInfo.minValues[0]) <= Number(checkpoint.out_temperature) && Number(productInfo.maxValues[0]) >= Number(checkpoint.out_temperature) ? checkpoint.out_temperature : productInfo.maxValues[0]
+                                            Number(productInfo.minValues[0]) <=
+                                              Number(
+                                                checkpoint.out_temperature
+                                              ) &&
+                                              Number(
+                                                productInfo.maxValues[0]
+                                              ) >=
+                                                Number(
+                                                  checkpoint.out_temperature
+                                                )
+                                              ? checkpoint.out_temperature
+                                              : productInfo.maxValues[0]
                                           )}{" "}
                                           {/* {unitsToTemperature(
                                             checkpoint.out_temperature
@@ -378,7 +423,14 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                                           {/* In */}
                                           ⬇️{" "}
                                           {unitsToHumidity(
-                                            Number(productInfo.minValues[1]) <= Number(checkpoint.in_humidity) && Number(productInfo.maxValues[1]) >= Number(checkpoint.in_humidity) ? checkpoint.in_humidity : productInfo.minValues[1]
+                                            Number(productInfo.minValues[1]) <=
+                                              Number(checkpoint.in_humidity) &&
+                                              Number(
+                                                productInfo.maxValues[1]
+                                              ) >=
+                                                Number(checkpoint.in_humidity)
+                                              ? checkpoint.in_humidity
+                                              : productInfo.minValues[1]
                                           )}{" "}
                                           {/* {unitsToHumidity(
                                             checkpoint.in_humidity
@@ -389,7 +441,14 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                                           {/* Out */}
                                           ⬆️{" "}
                                           {unitsToHumidity(
-                                            Number(productInfo.minValues[1]) <= Number(checkpoint.out_humidity) && Number(productInfo.maxValues[1]) >= Number(checkpoint.out_humidity) ? checkpoint.out_humidity : productInfo.minValues[1]
+                                            Number(productInfo.minValues[1]) <=
+                                              Number(checkpoint.out_humidity) &&
+                                              Number(
+                                                productInfo.maxValues[1]
+                                              ) >=
+                                                Number(checkpoint.out_humidity)
+                                              ? checkpoint.out_humidity
+                                              : productInfo.minValues[1]
                                           )}{" "}
                                           {/* {unitsToHumidity(
                                             checkpoint.out_humidity
@@ -398,7 +457,7 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                                         </span>
                                       </div>
                                     </div>
-                                  </Typography>
+                                  </div>
                                 </AccordionDetails>
                               </Accordion>
                             </div>

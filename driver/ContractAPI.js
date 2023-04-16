@@ -32,7 +32,7 @@ function CallerFn(
             err
           );
         }
-        reject(new Error(`Couldn't fetch results for ${method}`));
+        // reject(new Error(`Couldn't fetch results for ${method}`));
       });
   });
 }
@@ -49,7 +49,12 @@ function SenderFn(
     gasprice = Math.round(gasprice * 1.2); // to speed up 1.2 times..
 
     const tx = Contract.methods[method](...params);
-    var gas_estimate = await tx.estimateGas({ from: senderAddress });
+    let gas_estimate;
+    try{
+      gas_estimate = await tx.estimateGas({ from: senderAddress });
+    } catch(err) {
+      return reject("Polling not required, checkedin");
+    }
     gas_estimate = Math.round(gas_estimate * 1.2);
 
     if (debug) {
@@ -63,7 +68,7 @@ function SenderFn(
         gasPrice: customWeb3.utils.toHex(gasprice),
       })
         .then((receipt) => {
-          console.log(`${method} - Tx Receipt`, receipt);
+          // console.log(`${method} - Tx Receipt`, receipt);
           console.log(`Transaction hash: ${receipt?.transactionHash}`);
           console.log(
             `View the transaction here: `,
@@ -73,7 +78,8 @@ function SenderFn(
         })
         .catch((err) => {
           console.log(`Some error sending ${method} with params \n`, params, err);
-          reject(new Error(`Couldn't send tx for ${method}`));
+          console.log("Tx failed !!");
+          // reject(new Error(`Couldn't send tx for ${method}`));
         });
       } catch(err) {
         console.log("Error in tx", err);

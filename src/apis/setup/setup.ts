@@ -544,6 +544,6 @@ export const SETUP_TOOL = {
   createProductLots,
   testCheckpoints,
 };
-if (hasWindow()) {
-  window.SETUP_TOOL = SETUP_TOOL;
-}
+// if (hasWindow()) {
+//   window.SETUP_TOOL = SETUP_TOOL;
+// }

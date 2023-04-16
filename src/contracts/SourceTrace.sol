@@ -38,6 +38,7 @@ contract SourceTrace {
         string phone;
         string reg_no;
         string location;
+        bool isRetailer;
         address[] trucks;
         string[] truckDetails;
     }
@@ -65,6 +66,7 @@ contract SourceTrace {
         int256[] polledTemperatures;
         int256[] polledHumidity;
         uint256[] polledTimes;
+        bool[] validities;
     }
 
     struct ProductLot {
@@ -251,6 +253,7 @@ contract SourceTrace {
         string memory _phone,
         string memory _reg_no,
         string memory _location,
+        bool _isRetailer,
         address[] memory _trucks,
         string[] memory _truckDetails
     ) public {
@@ -267,6 +270,7 @@ contract SourceTrace {
             phone: _phone,
             reg_no: _reg_no,
             location: _location,
+            isRetailer: _isRetailer,
             trucks: _trucks,
             truckDetails: _truckDetails
         });
@@ -343,6 +347,24 @@ contract SourceTrace {
         });
         productLots[msg.sender].push(newProductLot);
 
+        ProductInfo storage productInfo = productsInfo[msg.sender][_product_id];
+        require(
+            _temperature >= productInfo.minValues[0],
+            "Min temperature criteria not met !"
+        );
+        require(
+            _temperature <= productInfo.maxValues[0],
+            "Max temperature criteria not met !"
+        );
+        require(
+            _humidity >= productInfo.minValues[1],
+            "Min humidity criteria not met !"
+        );
+        require(
+            _humidity <= productInfo.maxValues[1],
+            "Max humidity criteria not met !"
+        );
+
         // add the check-in checkpoint
         Checkpoint memory checkIn = Checkpoint({
             inTime: block.timestamp,
@@ -355,7 +377,8 @@ contract SourceTrace {
             truckAssigned: 0x0000000000000000000000000000000000000000,
             polledTemperatures: new int256[](0),
             polledHumidity: new int256[](0),
-            polledTimes: new uint256[](0)
+            polledTimes: new uint256[](0),
+            validities: new bool[](0)
         });
 
         checkpoints[
@@ -374,10 +397,41 @@ contract SourceTrace {
             );
     }
 
-    function reject(address _producer_address, uint256 _product_lot_id)
+    function reject(address _producer_address, uint256 _product_lot_id, uint256 reason)
         public
         mustBeWarehouse(msg.sender)
     {
+        // retrieve the product lot
+        ProductLot storage productLot = productLots[_producer_address][
+            _product_lot_id
+        ];
+        ProductInfo storage productInfo = productsInfo[_producer_address][
+            productLot.productId
+        ];
+
+        Checkpoint[] storage targetCheckpoints = checkpoints[
+            string.concat(
+                addressToString(_producer_address),
+                "_",
+                Strings.toString(_product_lot_id)
+            )
+        ];
+
+        if(reason == 1){
+            // Time
+            require(targetCheckpoints.length > 0 && productInfo.maxValues[2] > 0, "No time limit set");
+            require(
+                block.timestamp - targetCheckpoints[targetCheckpoints.length - 1].outTime >
+                    uint256(productInfo.minValues[2]),
+                "Time limit not exceeded"
+            );
+        } else if(reason == 2){
+            // Temp (Check polls)
+        } else if(reason == 3){
+            // Humidity (Check polls)
+        }
+
+        // poll details are not valid
         productLots[_producer_address][_product_lot_id].rejected = true;
     }
 
@@ -395,7 +449,7 @@ contract SourceTrace {
             _product_lot_id
         ];
         ProductInfo storage productInfo = productsInfo[_producer_address][
-            productLot.productLotId
+            productLot.productId
         ];
 
         require(
@@ -415,7 +469,6 @@ contract SourceTrace {
             "Max humidity criteria not met !"
         );
 
-        // add a checkpoint to the product lot
         Checkpoint[] storage targetCheckpoints = checkpoints[
             string.concat(
                 addressToString(_producer_address),
@@ -424,11 +477,10 @@ contract SourceTrace {
             )
         ];
 
-        // maxValues[2] = 0 indicates that time limit isn't required
+        // 0 indicates no time limit factor involved
         if (targetCheckpoints.length > 0 && productInfo.maxValues[2] > 0)
             require(
-                block.timestamp -
-                    targetCheckpoints[targetCheckpoints.length - 1].outTime <=
+                block.timestamp -targetCheckpoints[targetCheckpoints.length - 1].outTime <=
                     uint256(productInfo.minValues[2]),
                 "Time limit exceeded"
             );
@@ -473,7 +525,7 @@ contract SourceTrace {
             _product_lot_id
         ];
         ProductInfo storage productInfo = productsInfo[_producer_address][
-            productLot.productLotId
+            productLot.productId
         ];
 
         require(
@@ -522,6 +574,10 @@ contract SourceTrace {
                 "Warehouse not exist"
             );
             require(
+                !warehouses[msg.sender].isRetailer,
+                "Retailers can't checkout"
+            );
+            require(
                 checkpoint.warehouse.id == msg.sender,
                 "Can't checkout else's checkpoint"
             );
@@ -551,22 +607,27 @@ contract SourceTrace {
     ) public {
         ProductLot storage productLot = productLots[producer_address][lot_id];
         ProductInfo storage productInfo = productsInfo[producer_address][
-            productLot.productLotId
+            productLot.productId
         ];
-
-        if (temperature < productInfo.minValues[0]) return;
-        if (humidity < productInfo.minValues[1]) return;
-        if (temperature > productInfo.maxValues[0]) return;
-        if (humidity > productInfo.maxValues[1]) return;
 
         Checkpoint[] storage targetCheckpoints = checkpoints[_productLotId];
         uint256 idx = targetCheckpoints.length - 1;
         require(
+            targetCheckpoints[idx].outTime != 0,
+            "Reached destination"
+        );
+        require(
             targetCheckpoints[idx].truckAssigned == msg.sender,
             "Only assigned truck can poll !"
         );
+        bool isValid = temperature >= productInfo.minValues[0] &&
+        humidity >= productInfo.minValues[1] &&
+        temperature <= productInfo.maxValues[0] &&
+        humidity <= productInfo.maxValues[1];
+
         targetCheckpoints[idx].polledTemperatures.push(temperature);
         targetCheckpoints[idx].polledHumidity.push(humidity);
         targetCheckpoints[idx].polledTimes.push(block.timestamp);
+        targetCheckpoints[idx].validities.push(isValid);
     }
 }

@@ -3,16 +3,18 @@ const { temperatureToUnits, humidityToUnits } = require("./util/general");
 
 
 // productLotId -> in format 0x23..23_2
-function poll(truckAddress, productLotId, temperature, humidity) {
+function poll(truckAddress, producerAddress, lotIdx, productLotId, temperature, humidity, stopPolling) {
   if (!productLotId) productLotId = "";
-  console.log("Polled with params", {
-    addr: truckAddress,
+  console.log("Polling with params", {
+    truckAddress,
     productLotId: productLotId.toLowerCase(),
     tUnits: temperatureToUnits(temperature),
     hUnits: humidityToUnits(humidity)
   });
   PollDetails(
     truckAddress,
+    producerAddress.toLowerCase(),
+    lotIdx,
     productLotId.toLowerCase(),
     temperatureToUnits(temperature),
     humidityToUnits(humidity)
@@ -22,6 +24,7 @@ function poll(truckAddress, productLotId, temperature, humidity) {
     })
     .catch((err) => {
       console.log("Error polling :(", err);
+      stopPolling();
     });
 }
 

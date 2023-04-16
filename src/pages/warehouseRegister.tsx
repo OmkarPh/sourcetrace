@@ -61,6 +61,7 @@ function WarehouseRegister() {
       info.phoneno,
       info.regno,
       info.location,
+      false,
       [],
       [],
     ).then(res => {

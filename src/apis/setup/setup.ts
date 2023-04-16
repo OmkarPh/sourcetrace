@@ -271,6 +271,7 @@ function createWarehouses(limit = 10) {
               warehouse.phone,
               warehouse.reg_no,
               warehouse.physicalAddress,
+              warehouse.isRetailer || false,
               truckAddresses,
               truckDetails
             ).then((receipt) => {
@@ -370,15 +371,15 @@ async function createProducts() {
         humidityToUnits(product.humidity.max),
         product.timeLimit?.max || -1,
       ];
-      // console.log("Creation params", {
-      //   add: producer.address,
-      //   name: product.name,
-      //   price: String(product.price),
-      //   DEFAULT_PRODUCT_IMAGE,
-      //   params,
-      //   minValues,
-      //   maxValues,
-      // });
+      console.log("Creation params", {
+        add: producer.address,
+        name: product.name,
+        price: String(product.price),
+        DEFAULT_PRODUCT_IMAGE,
+        params,
+        minValues,
+        maxValues,
+      });
       const imageURL = product.image || DEFAULT_PRODUCT_IMAGE;
       const receipt = await InventProduct(
         producer.address,
@@ -395,6 +396,7 @@ async function createProducts() {
       );
     }
   }
+  console.log("Created all preset products");
 }
 
 async function createProductLots() {
@@ -438,7 +440,6 @@ async function createProductLots() {
     }
   }
   console.log("Created all preset lots");
-  
 }
 
 async function testCheckpoints() {

@@ -53,7 +53,7 @@ function SenderFn(
     try{
       gas_estimate = await tx.estimateGas({ from: senderAddress });
     } catch(err) {
-      reject("Polling not required, checkedin");
+      return reject("Polling not required, checkedin");
     }
     gas_estimate = Math.round(gas_estimate * 1.2);
 
@@ -68,7 +68,7 @@ function SenderFn(
         gasPrice: customWeb3.utils.toHex(gasprice),
       })
         .then((receipt) => {
-          console.log(`${method} - Tx Receipt`, receipt);
+          // console.log(`${method} - Tx Receipt`, receipt);
           console.log(`Transaction hash: ${receipt?.transactionHash}`);
           console.log(
             `View the transaction here: `,

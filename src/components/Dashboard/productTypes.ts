@@ -34,6 +34,11 @@ export interface Checkpoint {
   out_humidity: string;
   out_temperature: string;
   warehouse: Warehouse;
+  polledHumidity: number[];
+  polledTemperatures: number[];
+  polledTimes: number[];
+  truckAssigned: string;
+  validities: boolean[];
 }
 export interface ProductLotWithCheckpoints extends ProductLot {
   checkpoints: Checkpoint[],

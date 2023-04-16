@@ -45,6 +45,7 @@ interface ProducerDetails extends AccountKeys {
 interface WarehouseDetails extends AccountKeys {
   physicalAddress: string;
   certifications: { title: string; url: string }[];
+  isRetailer?: boolean;
   trucks?: {
     truckLicensPlate: string; // eg. "MH 06 EF 3259"
     pk: string;
@@ -323,8 +324,8 @@ export const producerAccounts: { [key: string]: ProducerDetails } = {
         name: "Nestle Kitkat",
         price: 400,
         temperature: { min: -10, max: 20 },
-        timeLimit: { min: 0, max: 60 }, // 1 minutes
         humidity: { min: 15, max: 75 },
+        timeLimit: { min: 0, max: 1440 }, // 24 hour (i.e. 24 minute)
         producer_name: "Nestle Pvt Ltd",
         image:
           "https://res.cloudinary.com/dp0ayty6p/image/upload/v1679820531/kitkat_rmwi0o.jpg",
@@ -362,10 +363,52 @@ export const producerAccounts: { [key: string]: ProducerDetails } = {
         ],
       },
       {
+        name: "Real dairy icecream",
+        price: 150,
+        temperature: { min: -10, max: 20 },
+        timeLimit: { min: 0, max: 600 }, // 10 hour (i.e. 10 minutes)
+        humidity: { min: 25, max: 70 },
+        producer_name: "Nestle Pvt Ltd",
+        image:
+          "https://res.cloudinary.com/dp0ayty6p/image/upload/v1680854027/Non-dairy-ice-cream-alternatives-from-coconut-and-almond-to-open-up-new-opportunities-for-industry-growth_l67d9m.jpg",
+        lots: [
+          {
+            humidityUnits: humidityToUnits(35),
+            tempUnits: temperatureToUnits(12),
+            lot_size: 50,
+            productId: 1,
+            checkpoints: [
+              {
+                warehouse: warehouseAccounts.welspun,
+                in : {
+                  humidityUnits: humidityToUnits(40),
+                  tempUnits: temperatureToUnits(13),
+                },
+                out : {
+                  humidityUnits: humidityToUnits(42),
+                  tempUnits: temperatureToUnits(13),
+                },
+              },
+              {
+                warehouse: warehouseAccounts.antophyll,
+                in : {
+                  humidityUnits: humidityToUnits(54),
+                  tempUnits: temperatureToUnits(16),
+                },
+                out : {
+                  humidityUnits: humidityToUnits(65),
+                  tempUnits: temperatureToUnits(19),
+                },
+              },
+            ],
+          },
+        ],
+      },
+      {
         name: "Munch",
         price: 20,
         temperature: { min: -10, max: 30 },
-        timeLimit: { min: 0, max: 120 }, // 2 minutes
+        timeLimit: { min: 0, max: 1440 }, // 24 hour (i.e. 24 minutes)
         humidity: { min: 25, max: 70 },
         producer_name: "Nestle Pvt Ltd",
         image:

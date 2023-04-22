@@ -1,8 +1,9 @@
+import axios from 'axios';
 import { ProductLotWithCheckpoints } from './../components/Dashboard/productTypes';
 import { ProductLot, ProductInfo, Checkpoint } from "../components/Dashboard/productTypes";
 import { CallerFactory, SenderFactory } from "./factory";
 import SourceTraceContract from "./SourceTraceContract";
-import { productIdentifierToDetails } from '../utils/general';
+import { parseRejectionMessage, productIdentifierToDetails } from '../utils/general';
 
 export const GetProducer = CallerFactory(SourceTraceContract, 'getProducer', false);
 export const GetWarehouse = CallerFactory(SourceTraceContract, 'getWarehouse', false);
@@ -22,8 +23,8 @@ export const InventProduct = SenderFactory(SourceTraceContract, 'inventProduct',
 export const CreateProductLot = SenderFactory(SourceTraceContract, 'createProductLot', true);
 export const CreateCheckIn = SenderFactory(SourceTraceContract, 'createCheckIn', true);
 export const CreateCheckOut = SenderFactory(SourceTraceContract, 'createCheckOut', true);
+export const Reject = SenderFactory(SourceTraceContract, 'reject', true);
 export const AddTruck = SenderFactory(SourceTraceContract, 'addTruck', false);
-// export const  = SenderFactory(SourceTraceContract, '', false);
 // export const  = SenderFactory(SourceTraceContract, '', false);
 
 export const GetWarehouseProductLots = CallerFactory(SourceTraceContract, 'getWarehouseProductLots', false);
@@ -44,7 +45,20 @@ export const GetProductLotWithCheckpoints = async (producer: string, id: number)
   const checkpoints = await GetProductLotCheckpoints(producer, lot.productLotId) as Checkpoint[];
   return {
     ...lot,
+    rejection: parseRejectionMessage(lot.rejectedMessage),
     productInfo,
     checkpoints,
   }
+}
+
+export async function uploadImg(file: File){
+  console.log("File", file);
+  // const fileExtension = file.name.split('.').pop() || "jpg";
+  // const randFileName = uuidv4() + '.' + fileExtension;
+  
+  const body = new FormData();
+  body.append('file', file);
+  body.append('upload_preset', 'nftmarketplace');
+  const res = await axios.post('https://api.cloudinary.com/v1_1/dp0ayty6p/image/upload', body);
+  return res.data.secure_url;
 }

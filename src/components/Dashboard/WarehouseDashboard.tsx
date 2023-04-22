@@ -1,17 +1,24 @@
 import Head from "next/head";
 import React, { useEffect, useRef, useState } from "react";
 import { OnResultFunction, QrReader } from "react-qr-reader";
-import { useMetamaskAuth } from "../../auth/authConfig";
+import { Roles, useMetamaskAuth } from "../../auth/authConfig";
 import AccountInfo from "./AccountInfo";
 import { Container, LeftContainer, RightContainer } from "./dashboard.styled";
 import InWarehouse from "./Warehouse/InWarehouse";
 import PastWarehouse from "./Warehouse/PastWarehouse";
-import { Button, Modal } from "@mui/material";
-import { canCheckoutLot, productIdentifierToDetails } from "../../utils/general";
-import { GetProductLotWithCheckpoints, GetWarehouseProductLotsWithCheckpoints } from "../../apis/apis";
-import { ProductLot, ProductLotWithCheckpoints } from "./productTypes";
+import { Button } from "@mui/material";
+import {
+  canCheckoutLot,
+  productIdentifierToDetails,
+} from "../../utils/general";
+import {
+  GetProductLotWithCheckpoints,
+  GetWarehouseProductLotsWithCheckpoints,
+} from "../../apis/apis";
+import { ProductLotWithCheckpoints } from "./productTypes";
 import ProductPreviewModal from "./Warehouse/ProductLotPrevieModal";
 import { toast } from "react-toastify";
+import Loader from "../core/Loader";
 
 enum SECTIONS {
   IN_WAREHOUSE = "IN_WAREHOUSE",
@@ -24,14 +31,19 @@ const WarehouseDashboard = () => {
     SECTIONS.IN_WAREHOUSE
   );
   const [scanning, setScanning] = useState(false);
-  const [previewProductLot, setPreviewProductLot] = useState<ProductLotWithCheckpoints | null>(null);
+  const [previewProductLot, setPreviewProductLot] =
+    useState<ProductLotWithCheckpoints | null>(null);
   const ref = useRef(null);
   const [loading, setLoading] = useState(false);
   const [refreshIndicator, setRefresh] = useState(Math.random());
   const refresh = () => setRefresh(Math.random());
-  const [inWarehouseLots, setInWarehouseLots] = useState<ProductLotWithCheckpoints[]>([]);
-  const [pastWarehouseLots, setPastWarehouseLots] = useState<ProductLotWithCheckpoints[]>([]);
-  
+  const [inWarehouseLots, setInWarehouseLots] = useState<
+    ProductLotWithCheckpoints[]
+  >([]);
+  const [pastWarehouseLots, setPastWarehouseLots] = useState<
+    ProductLotWithCheckpoints[]
+  >([]);
+
   const handleScan: OnResultFunction = (data) => {
     if (!data) return;
     if (window.prevText == data.getText()) return;
@@ -65,27 +77,25 @@ const WarehouseDashboard = () => {
       });
   };
 
+  // Testing
+  // useEffect(() => {
+  //   const details = productIdentifierToDetails("0xabd8EeD5b630578F72eEB06c637dB7179576A811_1");
+  //   console.log("Fetch", details);
+  //   GetProductLotWithCheckpoints(details.producer, details.id)
+  //     .then((lot) => {
+  //       console.log("Product lot: ", lot);
+  //       setPreviewProductLot(lot);
+  //       cloasQrScanner();
+  //     })
+  //     .catch((err) => {
+  //       console.log("Err fetching product lot", err);
+  //       toast.error("Invalid product lot !");
+  //       cloasQrScanner();
+  //       setTimeout(() => window.location.reload(), 1000);
+  //     });
+  // }, []);
 
-
-    // Testing
-    // useEffect(() => {
-    //   const details = productIdentifierToDetails("0xabd8EeD5b630578F72eEB06c637dB7179576A811_5");
-    //   console.log("Fetch", details);
-    //   GetProductLotWithCheckpoints(details.producer, details.id)
-    //     .then((lot) => {
-    //       console.log("Product lot: ", lot);
-    //       setPreviewProductLot(lot);
-    //       cloasQrScanner();
-    //     })
-    //     .catch((err) => {
-    //       console.log("Err fetching product lot", err);
-    //       toast.error("Invalid product lot !");
-    //       cloasQrScanner();
-    //       setTimeout(() => window.location.reload(), 1000);
-    //     });
-    // }, []);
-
-  function cloasQrScanner(){
+  function cloasQrScanner() {
     setScanning(false);
   }
 
@@ -93,24 +103,30 @@ const WarehouseDashboard = () => {
     setPreviewProductLot(null);
     setTimeout(() => window.location.reload(), 200);
   }
-  
+
   useEffect(() => {
-    if(!profile)  return;
+    if (!profile) return;
     setLoading(true);
     GetWarehouseProductLotsWithCheckpoints(profile.id)
-      .then(lots => {
+      .then((lots) => {
         console.log("Warehouse lots", lots);
-        const newInWarehouseLots = lots.filter(lot => canCheckoutLot(profile.id, lot));
-        const newPastWarehouseLots = lots.filter(lot => !canCheckoutLot(profile.id, lot));
+        const newInWarehouseLots = lots.filter((lot) =>
+          canCheckoutLot(profile.id, lot)
+        );
+        const newPastWarehouseLots = lots.filter(
+          (lot) => !canCheckoutLot(profile.id, lot)
+        );
         setPastWarehouseLots(newPastWarehouseLots);
         setInWarehouseLots(newInWarehouseLots);
         setLoading(false);
       })
-      .catch(err => {
+      .catch((err) => {
         toast.error("Some error fetching product lots of warehouse !");
         setLoading(false);
-      })
+      });
   }, [profile, refreshIndicator]);
+
+  if (!profile) return <Loader />;
 
   return (
     <div className="px-4">
@@ -138,10 +154,21 @@ const WarehouseDashboard = () => {
             <div className="w-[100%] h-[100%] overflow-hidden">
               <div className="flex flex-row bg-[#fafeff] w-fit self-center m-auto rounded-md cursor-pointer ">
                 {[
-                  { name: "In warehouse", id: SECTIONS.IN_WAREHOUSE },
-                  { name: "Previous lots", id: SECTIONS.PAST_LOTS },
+                  {
+                    name: `In ${
+                      profile.role === Roles.WAREHOUSE ? "warehouse" : "store"
+                    }`,
+                    id: SECTIONS.IN_WAREHOUSE,
+                    show: true,
+                  },
+                  {
+                    name: "Previous lots",
+                    id: SECTIONS.PAST_LOTS,
+                    show: profile.role === Roles.WAREHOUSE,
+                  },
                 ].map((section) => {
                   const isSelected = selectedSection === section.id;
+                  if (!section.show) return <></>;
                   return (
                     <div
                       className={`w-[200px] p-2 text-center ${
@@ -159,7 +186,10 @@ const WarehouseDashboard = () => {
               </div>
               <div className="w-[100%] h-auto max-h-[calc(100vh-199px)] rounded-xl overflow-auto">
                 {selectedSection == SECTIONS.IN_WAREHOUSE ? (
-                  <InWarehouse productLots={inWarehouseLots} refresh={refresh} />
+                  <InWarehouse
+                    productLots={inWarehouseLots}
+                    refresh={refresh}
+                  />
                 ) : (
                   // <></>
                   <PastWarehouse productLots={pastWarehouseLots} />

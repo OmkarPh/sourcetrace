@@ -69,3 +69,15 @@ export const canCheckoutLot = (warehouseAddress: string, productLot: ProductLotW
   const lastCheckpoint = productLot.checkpoints[productLot.checkpoints.length - 1];
   return lastCheckpoint.warehouse.id == warehouseAddress; 
 }
+
+
+export const buildRejectionString = (rejectedByAddress: string, message: string) => {
+  return `${rejectedByAddress}|||${message}`;
+}
+export const parseRejectionMessage = (message: string) => {
+  const [rejectedByAddress, reason] = message.split('|||');
+  return {
+    rejectedByAddress,
+    reason,
+  }
+}

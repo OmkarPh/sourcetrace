@@ -17,11 +17,11 @@ interface LotInfo {
     in: {
       tempUnits: number;
       humidityUnits: number;
-    },
+    };
     out: {
       tempUnits: number;
       humidityUnits: number;
-    },
+    };
   }[];
 }
 interface ProducerDetails extends AccountKeys {
@@ -32,6 +32,7 @@ interface ProducerDetails extends AccountKeys {
     temperature: { min: number; max: number };
     timeLimit?: { min: number; max: number };
     humidity: { min: number; max: number };
+    isPerishable?: boolean;
     producer_name: string;
     image?: string;
     lots?: LotInfo[];
@@ -52,7 +53,9 @@ interface WarehouseDetails extends AccountKeys {
     address: string;
   }[];
 }
-
+interface RetailerDetails extends WarehouseDetails {
+  isRetailer: true;
+}
 
 export const warehouseAccounts: { [key: string]: WarehouseDetails } = {
   antophyll: {
@@ -217,20 +220,6 @@ export const warehouseAccounts: { [key: string]: WarehouseDetails } = {
       },
     ],
   },
-  Tanvi: {
-    pk: "0x7aa4e5df42fcf8d010782deada2b5e7d3ae7cf501f717ed529c2db1b169cc483",
-    address: "0x9282262A05bb316641530a57C80d487226143445",
-    name: "Tanvi Food Tech private Limited",
-    reg_no: "3Tanvi789392@$WE323S@#@#42",
-    phone: 8732328423,
-    physicalAddress: "Rohisa, Gujarat 364295",
-    certifications: [
-      {
-        title: "FSSAI Basic License",
-        url: "",
-      },
-    ],
-  },
   Jsun: {
     pk: "0x1d001ceac7ae186e88335f6f098192d45c17c2c92ba4c2db91ec088fa1a35643",
     address: "0x718A12082AA6264e256C8949eD76BDED530b959a",
@@ -277,38 +266,41 @@ export const warehouseAccounts: { [key: string]: WarehouseDetails } = {
       },
     ],
   },
-  Mountain: {
-    pk: "0xe5ad3ff4e6530131fdb6af7d86820a79e65e94af557ae57f968e827611877594",
-    address: "0xa8B5115dFe82fDd28Dd6EfD8662EA40899E85BDA",
-    name: "   Mountain Trail Foods Pvt Ltd. Warehouse Bamnoli Vill",
-    reg_no: "Mountain789392323S@#@#42",
-    phone: 863232423,
-    physicalAddress:
-      "plot no 95, Water wood cold chain solution, Bamnoli, Sector 28 Dwarka, Dwarka, Delhi, 110061",
-    certifications: [
-      {
-        title: "FSSAI Basic License",
-        url: "",
-      },
-    ],
+};
+export const retailerAccounts: { [key: string]: RetailerDetails } = {
+  DMart: {
+    isRetailer: true,
+    pk: "0x7aa4e5df42fcf8d010782deada2b5e7d3ae7cf501f717ed529c2db1b169cc483",
+    address: "0x9282262A05bb316641530a57C80d487226143445",
+    name: "DMart India pvt. ltd",
+    reg_no: "DMRTK2F22J",
+    phone: 8732328423,
+    physicalAddress: "Azad nagar, Andheri West, Mumbai - 400021",
+    certifications: [],
   },
-  Grofers: {
+  MBmart: {
+    isRetailer: true,
     pk: "0x8d2a005771dc75891ced998851114d53cc21295364f3d8b7f6c3e70c146d15b9",
     address: "0xF3F7834fFA6d74eBbA17887dc5aB81fb261e3BF3",
-    name: "   Grofers India Pvt Ltd ",
-    reg_no: "Grofers*3S@#@#42",
+    name: "MB mart India Pvt Ltd ",
+    reg_no: "MBRTMUM2321",
     phone: 993232092,
     physicalAddress:
       "Rangpuri Extention B-Block Pocket-4, Near Bangali colony and Shiv Shakti Public School, New Delhi, Delhi 110037",
-    certifications: [
-      {
-        title: "FSSAI Basic License",
-        url: "",
-      },
-    ],
+    certifications: [],
+  },
+  BigBazaar: {
+    isRetailer: true,
+    pk: "0xe5ad3ff4e6530131fdb6af7d86820a79e65e94af557ae57f968e827611877594",
+    address: "0xa8B5115dFe82fDd28Dd6EfD8662EA40899E85BDA",
+    name: "Big Bazaar India Pvt Ltd.",
+    reg_no: "BGBM22RSDFC3",
+    phone: 863232423,
+    physicalAddress:
+      "Growel's 101, Akurli Road, Off, Western Express Hwy, Akurli Industry Estate, Kandivali East, Mumbai, Maharashtra 400101",
+    certifications: [],
   },
 };
-
 
 export const producerAccounts: { [key: string]: ProducerDetails } = {
   nestle: {
@@ -322,6 +314,7 @@ export const producerAccounts: { [key: string]: ProducerDetails } = {
     products: [
       {
         name: "Nestle Kitkat",
+        isPerishable: false,
         price: 400,
         temperature: { min: -10, max: 20 },
         humidity: { min: 15, max: 75 },
@@ -357,7 +350,7 @@ export const producerAccounts: { [key: string]: ProducerDetails } = {
                   humidityUnits: humidityToUnits(57),
                   tempUnits: temperatureToUnits(14),
                 },
-              }
+              },
             ],
           },
         ],
@@ -365,6 +358,7 @@ export const producerAccounts: { [key: string]: ProducerDetails } = {
       {
         name: "Real dairy icecream",
         price: 150,
+        isPerishable: true,
         temperature: { min: -10, max: 20 },
         timeLimit: { min: 0, max: 600 }, // 10 hour (i.e. 10 minutes)
         humidity: { min: 25, max: 70 },
@@ -380,22 +374,22 @@ export const producerAccounts: { [key: string]: ProducerDetails } = {
             checkpoints: [
               {
                 warehouse: warehouseAccounts.welspun,
-                in : {
+                in: {
                   humidityUnits: humidityToUnits(40),
                   tempUnits: temperatureToUnits(13),
                 },
-                out : {
+                out: {
                   humidityUnits: humidityToUnits(42),
                   tempUnits: temperatureToUnits(13),
                 },
               },
               {
                 warehouse: warehouseAccounts.antophyll,
-                in : {
+                in: {
                   humidityUnits: humidityToUnits(54),
                   tempUnits: temperatureToUnits(16),
                 },
-                out : {
+                out: {
                   humidityUnits: humidityToUnits(65),
                   tempUnits: temperatureToUnits(19),
                 },
@@ -407,6 +401,7 @@ export const producerAccounts: { [key: string]: ProducerDetails } = {
       {
         name: "Munch",
         price: 20,
+        isPerishable: false,
         temperature: { min: -10, max: 30 },
         timeLimit: { min: 0, max: 1440 }, // 24 hour (i.e. 24 minutes)
         humidity: { min: 25, max: 70 },
@@ -422,33 +417,33 @@ export const producerAccounts: { [key: string]: ProducerDetails } = {
             checkpoints: [
               {
                 warehouse: warehouseAccounts.welspun,
-                in : {
+                in: {
                   humidityUnits: humidityToUnits(55),
                   tempUnits: temperatureToUnits(12),
                 },
-                out : {
+                out: {
                   humidityUnits: humidityToUnits(55),
                   tempUnits: temperatureToUnits(15),
                 },
               },
               {
                 warehouse: warehouseAccounts.antophyll,
-                in : {
+                in: {
                   humidityUnits: humidityToUnits(54),
                   tempUnits: temperatureToUnits(16),
                 },
-                out : {
+                out: {
                   humidityUnits: humidityToUnits(65),
                   tempUnits: temperatureToUnits(19),
                 },
               },
               {
                 warehouse: warehouseAccounts.antophyll,
-                in : {
+                in: {
                   humidityUnits: humidityToUnits(52),
                   tempUnits: temperatureToUnits(16),
                 },
-                out : {
+                out: {
                   humidityUnits: humidityToUnits(72),
                   tempUnits: temperatureToUnits(35),
                 },
@@ -482,6 +477,7 @@ export const producerAccounts: { [key: string]: ProducerDetails } = {
     products: [
       {
         name: "Sunfest Milkshake",
+        isPerishable: true,
         price: 400,
         temperature: { min: -10, max: 20 },
         timeLimit: { min: 0, max: 60 }, // 1 minute
@@ -513,6 +509,7 @@ export const producerAccounts: { [key: string]: ProducerDetails } = {
     products: [
       {
         name: " Bru Coffee",
+        isPerishable: false,
         price: 240,
         temperature: { min: -10, max: 20 },
         humidity: { min: 40, max: 75 },
@@ -626,24 +623,6 @@ export const producerAccounts: { [key: string]: ProducerDetails } = {
 
         humidity: { min: 40, max: 60 },
         producer_name: "Mother Dairy ",
-      },
-    ],
-  },
-  Rasna: {
-    pk: "0x8d2a005771dc75891ced998851114d53cc21295364f3d8b7f6c3e70c146d15b9",
-    address: "0xF3F7834fFA6d74eBbA17887dc5aB81fb261e3BF3",
-    name: "Rasna Internationals",
-    reg_no: "34374789392@$WE323S@#@#42",
-    phone: 9032328423,
-    physicalAddress:
-      "Rasna House, Opp. Sears Tower, Gulbai Tekra, Ahmedabad-380 015,",
-    products: [
-      {
-        name: "Rasna Energy Drinks",
-        price: 100,
-        temperature: { min: -20, max: 10 },
-        humidity: { min: 22, max: 75 },
-        producer_name: "Rasna",
       },
     ],
   },

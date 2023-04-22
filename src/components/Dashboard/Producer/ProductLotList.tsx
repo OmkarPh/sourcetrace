@@ -7,9 +7,15 @@ import {
   GetAllProductLots,
   GetAllProductsInfo,
   GetProductLotCheckpoints,
+  GetWarehouse,
 } from "../../../apis/apis";
 import { useMetamaskAuth } from "../../../auth/authConfig";
-import { humidityToUnits, temperatureToUnits, timestampToDate } from "../../../utils/general";
+import {
+  humidityToUnits,
+  parseRejectionMessage,
+  temperatureToUnits,
+  timestampToDate,
+} from "../../../utils/general";
 import Loader from "../../core/Loader";
 import {
   ProductLot,
@@ -17,8 +23,10 @@ import {
   Checkpoint,
   ProductLotWithCheckpoints,
   Scan,
+  Warehouse,
 } from "../productTypes";
 import ProductLotModal from "./ProductLotModal";
+import ValidityLabel from "../../core/ValidityLabel";
 
 const ProductLotList = () => {
   const { profile, isProcessingLogin } = useMetamaskAuth();
@@ -27,7 +35,8 @@ const ProductLotList = () => {
     []
   );
   const [checkingOut, setCheckingOut] = useState(false);
-  const [toCheckoutLot, setToCheckoutLot] = useState<ProductLotWithCheckpoints | null>(null);
+  const [toCheckoutLot, setToCheckoutLot] =
+    useState<ProductLotWithCheckpoints | null>(null);
 
   const [refreshIndicator, setRefresh] = useState(Math.random());
   const refresh = () => setRefresh(Math.random());
@@ -52,8 +61,17 @@ const ProductLotList = () => {
             profile.id,
             lot.productLotId
           )) as Checkpoint[];
+
+          // @TODO- fetch warehouse which rejected this here ...
+          const rejection = lot.rejected ? parseRejectionMessage(lot.rejectedMessage) : null;
+          
+          const rejectedByWarehouse = 
           newProductLots.push({
             ...lot,
+            rejection: lot.rejected && rejection ? {
+              ...rejection,
+              rejectedByWarehouse: (await GetWarehouse(rejection.rejectedByAddress)) as Warehouse,
+            } : null,
             productInfo: ProductInfoMap.get(lot.productId) as ProductInfo,
             checkpoints,
           });
@@ -69,8 +87,8 @@ const ProductLotList = () => {
       });
   }, [profile, refreshIndicator]);
 
-
-  if (isProcessingLogin || isFetchingProducts || checkingOut) return <Loader size={50} />;
+  if (isProcessingLogin || isFetchingProducts || checkingOut)
+    return <Loader size={50} />;
 
   return (
     <div className="container mx-auto pt-4">
@@ -98,13 +116,15 @@ const ProductLotList = () => {
           </thead>
           <tbody className="overflow-scroll" style={{ maxHeight: "40vh" }}>
             {productLots.map((productLot) => {
+              const isAtRetailer = productLot.checkpoints[productLot.checkpoints.length-1].warehouse.isRetailer;
               const isInFactory =
                 productLot.checkpoints.length == 1 &&
                 Number(productLot.checkpoints[0].outTime) == 0;
               return (
                 <tr
                   key={productLot.producerAddress + productLot.productLotId}
-                  className="border-b hover:bg-gray-100"
+                  className="border-b hover:bg-gray-100 cursor-pointer"
+                  onClick={() => setToCheckoutLot(productLot)}
                 >
                   <td className="py-3 px-4">{productLot.productInfo.name}</td>
                   <td className="py-3 px-4">{productLot.quantity}</td>
@@ -115,8 +135,11 @@ const ProductLotList = () => {
                     {productLot.sourceFactoryLocation}
                   </td>
                   <td className="py-3 px-4">
-                    {
-                      isInFactory ?
+                    {productLot.rejected ? (
+                      <ValidityLabel valid={false} inValidText="Rejected" />
+                    ) : isAtRetailer ? (
+                      <>On Shelf</>
+                      ) : isInFactory ? (
                       <Button
                         type="submit"
                         variant="outlined"
@@ -125,11 +148,9 @@ const ProductLotList = () => {
                       >
                         Checkout from factory
                       </Button>
-                      :
-                      <>
-                        In transit
-                      </>
-                    }
+                    ) : (
+                      <>In transit</>
+                    )}
                   </td>
                 </tr>
               );
@@ -137,14 +158,13 @@ const ProductLotList = () => {
           </tbody>
         </table>
       </div>
-      {
-        toCheckoutLot &&
+      {toCheckoutLot && (
         <ProductLotModal
           productLot={toCheckoutLot}
           refresh={refresh}
           closeModal={() => setToCheckoutLot(null)}
         />
-      }
+      )}
     </div>
   );
 };

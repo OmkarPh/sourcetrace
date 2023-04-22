@@ -1,7 +1,7 @@
 import React from "react";
 import { FormEvent, useEffect, useState } from "react";
 // import React, { useState} from "react";
-import { TextField } from "@mui/material";
+import { Checkbox, FormControlLabel, TextField } from "@mui/material";
 import { Button } from "@mui/material";
 import { CreateWarehouseFn } from "../apis/apis";
 import { toast } from "react-toastify";
@@ -10,7 +10,7 @@ import { useRouter } from "next/router";
 import { useMetamaskAuth } from "../auth/authConfig";
 import Loader from "../components/core/Loader";
 
-function WarehouseRegister() {
+function EntityRegister() {
   const { metaState, isLoggedIn, refreshAuthStatus } = useMetamaskAuth();
   const router = useRouter();
   const [processing, setProcessing] = useState(false);
@@ -22,20 +22,18 @@ function WarehouseRegister() {
   });
 
   useEffect(() => {
-    if(isLoggedIn)
-      router.push('/dashboard');
+    if (isLoggedIn) router.push("/dashboard");
   }, [isLoggedIn, router]);
-  
+
   const inputEvent = (event: any) => {
     const name = event.target.name;
     const value = event.target.value;
-  
-    setInfo((prev)=>{
-      event.preventDefault();
-      return {...prev, [name]:value}
-    })
 
-  }
+    setInfo((prev) => {
+      event.preventDefault();
+      return { ...prev, [name]: value };
+    });
+  };
 
   const onSubmits = (event: FormEvent) => {
     event.preventDefault();
@@ -44,6 +42,7 @@ function WarehouseRegister() {
       entityAddress: metaState.account[0],
       ...info,
     });
+    const isRetailer = (event.target as any).isRetailer.checked;
     console.log(
       "Create warehouse params",
       metaState.account[0],
@@ -51,9 +50,10 @@ function WarehouseRegister() {
       info.name,
       info.phoneno,
       info.regno,
-      info.location
+      info.location,
+      isRetailer,
     );
-    
+
     setProcessing(true);
 
     CreateWarehouseFn(
@@ -62,29 +62,30 @@ function WarehouseRegister() {
       info.phoneno,
       info.regno,
       info.location,
-      false,
+      isRetailer,
       [],
-      [],
-    ).then(res => {
-      toast.success("Registered successfuly !");
-      setProcessing(false);
-      refreshAuthStatus();
-      router.push(DASHBOARD);
-    })
-    .catch(err => {
-      toast.error(<>Please approve metamask tx</>);
-      setProcessing(false);
-    })
+      []
+    )
+      .then((res) => {
+        toast.success("Registered successfuly !");
+        setProcessing(false);
+        refreshAuthStatus();
+        router.push(DASHBOARD);
+      })
+      .catch((err) => {
+        toast.error(<>Please approve metamask tx</>);
+        setProcessing(false);
+      });
   };
 
-  if(processing){
-    return <Loader />
+  if (processing) {
+    return <Loader />;
   }
 
   return (
     <div className="p-5">
-      <label className="Projecttitle p-2 text-center p-10 ml-12">
-        Register as Warehouse
+      <label className="Projecttitle p-10 text-center pt-20 ml-12">
+        Register as Warehouse / Retailer
       </label>
       <br />
       <br />
@@ -103,15 +104,15 @@ function WarehouseRegister() {
             <div>
               {/* NAME */}
               <label className="Name">Name: </label>
-            <TextField
-              className="Namebox mt-11"
-              onChange={inputEvent}
-              id="Name"
-              name="name"
-              // label="Name"
-              variant="outlined"
-              autoComplete="off"
-            />
+              <TextField
+                className="Namebox mt-11"
+                onChange={inputEvent}
+                id="Name"
+                name="name"
+                // label="Name"
+                variant="outlined"
+                autoComplete="off"
+              />
             </div>
             <br />
 
@@ -133,8 +134,8 @@ function WarehouseRegister() {
               <div className="w-1/2">
                 {/* Registration No */}
                 <label className="Regno w-1/2">Registeration No: </label>
-                <br/>
-              
+                <br />
+
                 <TextField
                   className="Regnobox mt-2"
                   value={info.regno}
@@ -165,7 +166,14 @@ function WarehouseRegister() {
               />
             </div>
 
-            <br />
+              <FormControlLabel
+                className="Addressbox my-4 mb-6"
+                style={{ backgroundColor: "transparent" }}
+                control={<Checkbox />}
+                label="Are you a retailer ?"
+                name="isRetailer"
+              />
+
             <br />
             <div className="w-100 flex flex-row center text-center justify-center items-center mt-2">
               {/* Button */}
@@ -184,4 +192,4 @@ function WarehouseRegister() {
   );
 }
 
-export default WarehouseRegister;
+export default EntityRegister;

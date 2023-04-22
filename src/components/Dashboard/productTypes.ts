@@ -4,6 +4,7 @@ export interface ProductInfo {
   name: string;
   price: string;
   params: string[];
+  perishable: boolean;
   imageURL: string;
   minValues: number[];
   maxValues: number[];
@@ -14,9 +15,16 @@ export interface ProductLot {
   producerAddress: string;
   quantity: number;
   createdAt: number;
+  rejected: boolean;
+  rejectedMessage: string;
   sourceFactoryName: string;
   sourceFactoryLocation: string;
   productInfo: ProductInfo;
+  rejection?: {
+    rejectedByAddress: string,
+    reason: string,
+    rejectedByWarehouse?: Warehouse,
+  } | null,
 }
 
 export interface Warehouse {
@@ -25,6 +33,7 @@ export interface Warehouse {
   name: string;
   phone: string;
   reg_no: string;
+  isRetailer: boolean;
 }
 export interface Checkpoint {
   inTime: string;

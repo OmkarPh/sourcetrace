@@ -4,6 +4,7 @@ import { createMetamaskAuth, RoutingConfig } from "../lib/useMetamaskAuth";
 export enum Roles {
   PRODUCER = "PRODUCER",
   WAREHOUSE = "WAREHOUSE",
+  RETAILER = "RETAILER",
 }
 export interface ParsedTruckDetails {
   license: string;

@@ -15,7 +15,7 @@ import {
   // contractDeploymentTxLink,
   chainExplorerBaseAddress,
 } from "../../contracts/deploymentDetails";
-import { producerAccounts, warehouseAccounts } from "./details";
+import { producerAccounts, retailerAccounts, warehouseAccounts } from "./details";
 
 const linkFromTxHash = (txHash: string) =>
   `${chainExplorerBaseAddress}/tx/` + txHash;
@@ -32,6 +32,16 @@ Object.entries(producerAccounts).forEach(([_, producer]) => {
   });
 });
 Object.entries(warehouseAccounts).forEach(([_, warehouse]) => {
+  customWeb3.eth.accounts.wallet.add(
+    customWeb3.eth.accounts.privateKeyToAccount(warehouse.pk)
+  );
+  warehouse.trucks?.forEach((truck) => {
+    customWeb3.eth.accounts.wallet.add(
+      customWeb3.eth.accounts.privateKeyToAccount(truck.pk)
+    );
+  });
+});
+Object.entries(retailerAccounts).forEach(([_, warehouse]) => {
   customWeb3.eth.accounts.wallet.add(
     customWeb3.eth.accounts.privateKeyToAccount(warehouse.pk)
   );
@@ -200,7 +210,7 @@ function createProducers(limit = 10) {
             CreateProducerFn(
               producer.address,
               producer.name,
-              producer.phone,
+              String(producer.phone),
               producer.reg_no,
               producer.physicalAddress,
               truckAddresses,
@@ -268,7 +278,7 @@ function createWarehouses(limit = 10) {
             CreateWarehouseFn(
               warehouse.address,
               warehouse.name,
-              warehouse.phone,
+              String(warehouse.phone),
               warehouse.reg_no,
               warehouse.physicalAddress,
               warehouse.isRetailer || false,
@@ -309,7 +319,75 @@ function createWarehouses(limit = 10) {
     });
   });
 }
+function createRetailers(limit = 10) {
+  console.log("Creating retailers ....");
 
+  const promises: Promise<any>[] = [];
+  Object.entries(retailerAccounts).forEach(([key, retailer], idx) => {
+    if (idx >= limit) return;
+    const promise = new Promise((resolve, reject) => {
+      GetWarehouse(retailer.address)
+        .then((response) => {
+          console.log(
+            `${idx}. ${key} Retailer already registered: `,
+            response
+          );
+          reject(response);
+        })
+        .catch((err) => {
+          {
+            console.log(
+              `${idx}. ${key} Retailer not registered, Creating ... `,
+              retailer.address
+            );
+            const truckDetails =
+              retailer.trucks?.map((truck) => truck.truckLicensPlate) || [];
+            const truckAddresses =
+              retailer.trucks?.map((truck) => truck.address) || [];
+            CreateWarehouseFn(
+              retailer.address,
+              retailer.name,
+              String(retailer.phone),
+              retailer.reg_no,
+              retailer.physicalAddress,
+              true,
+              truckAddresses,
+              truckDetails
+            ).then((receipt) => {
+              console.log(
+                `${idx}. Created Retailer ${key} with receipt: `,
+                receipt
+              );
+              return resolve(receipt);
+            });
+          }
+        });
+    });
+    promises.push(promise);
+  });
+
+  Promise.all(promises).then(function (results) {
+    console.log("Retailer setup complete ------", results);
+    console.log("Verification ");
+    Object.entries(retailerAccounts).forEach(([key, warehouse], idx) => {
+      new Promise((resolve, reject) => {
+        GetWarehouse(warehouse.address)
+          .then((response) => {
+            console.log(
+              `${idx}. ${key} Retailer registered `
+              // response
+            );
+            resolve(response);
+          })
+          .catch((err) => {
+            {
+              reject("Not registered");
+            }
+          });
+      });
+    });
+  });
+}
 async function generateTestAccounts(count = 10) {
   console.log("Generating test accounts ...");
 
@@ -371,21 +449,24 @@ async function createProducts() {
         humidityToUnits(product.humidity.max),
         product.timeLimit?.max || -1,
       ];
+      const imageURL = product.image || DEFAULT_PRODUCT_IMAGE;
+      const isPerishable = product.isPerishable ? true : false;
       console.log("Creation params", {
         add: producer.address,
         name: product.name,
         price: String(product.price),
-        DEFAULT_PRODUCT_IMAGE,
+        imageURL,
+        isPerishable,
         params,
         minValues,
         maxValues,
       });
-      const imageURL = product.image || DEFAULT_PRODUCT_IMAGE;
       const receipt = await InventProduct(
         producer.address,
         product.name,
         String(product.price),
         imageURL,
+        isPerishable,
         params,
         minValues,
         maxValues
@@ -539,6 +620,7 @@ export const SETUP_TOOL = {
   SourceTraceContract,
   createProducers,
   createWarehouses,
+  createRetailers,
   generateTestAccounts,
   createProducts,
   createProductLots,

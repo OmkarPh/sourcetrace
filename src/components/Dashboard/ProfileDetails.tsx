@@ -28,7 +28,12 @@ const ProfileDetails = () => {
     if(isProcessingLogin || !profile)
         return <Loader size={10} />
     
-    const profilePic = profile.role == Roles.PRODUCER ? '/icons/manufacturer.png' : '/icons/warehouse.png';
+    const ROLE_PICS = {
+        [Roles.PRODUCER]: '/icons/manufacturer.png',
+        [Roles.RETAILER]: '/icons/retailer.png',
+        [Roles.WAREHOUSE]: '/icons/warehouse.png',
+    }
+    const profilePic = ROLE_PICS[profile.role];
 
     return (
         <>

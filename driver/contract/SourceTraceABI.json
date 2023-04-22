@@ -257,6 +257,11 @@
 					},
 					{
 						"internalType": "string",
+						"name": "rejectedMessage",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
 						"name": "sourceFactoryName",
 						"type": "string"
 					},
@@ -310,6 +315,11 @@
 						"internalType": "string",
 						"name": "imageURL",
 						"type": "string"
+					},
+					{
+						"internalType": "bool",
+						"name": "isPerishable",
+						"type": "bool"
 					},
 					{
 						"internalType": "string[]",
@@ -434,6 +444,11 @@
 						"type": "string"
 					},
 					{
+						"internalType": "bool",
+						"name": "isPerishable",
+						"type": "bool"
+					},
+					{
 						"internalType": "string[]",
 						"name": "params",
 						"type": "string[]"
@@ -503,6 +518,11 @@
 						"internalType": "bool",
 						"name": "rejected",
 						"type": "bool"
+					},
+					{
+						"internalType": "string",
+						"name": "rejectedMessage",
+						"type": "string"
 					},
 					{
 						"internalType": "string",
@@ -882,6 +902,11 @@
 				"type": "string"
 			},
 			{
+				"internalType": "bool",
+				"name": "_isPerishable",
+				"type": "bool"
+			},
+			{
 				"internalType": "string[]",
 				"name": "_params",
 				"type": "string[]"
@@ -957,6 +982,11 @@
 				"internalType": "uint256",
 				"name": "reason",
 				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "_rejectedMessage",
+				"type": "string"
 			}
 		],
 		"name": "reject",

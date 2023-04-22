@@ -20,6 +20,10 @@ const Setup = () => {
         Create warehouse accounts
       </button>
       <br/><br/>
+      <button onClick={() => SETUP_TOOL.createRetailers()} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
+        Create retailer accounts
+      </button>
+      <br/><br/>
       <button onClick={() => SETUP_TOOL.createProducts()} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
         Create all products
       </button>

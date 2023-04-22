@@ -68,7 +68,7 @@ export default function App({ Component, pageProps }: AppProps) {
                 .then((response: any) => {
                   const parsedWarehouse: ProfileData = {
                     ...response,
-                    role: Roles.WAREHOUSE,
+                    role: response.isRetailer ? Roles.RETAILER : Roles.WAREHOUSE,
                     parsedTruckDetails: parseTruckData(
                       response.truckDetails,
                       response.trucks

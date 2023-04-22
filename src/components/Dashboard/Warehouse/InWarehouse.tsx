@@ -1,16 +1,21 @@
-import {
-  Button,
-  FormControl,
-  FormGroup,
-  TextField,
-} from "@mui/material";
+import { Button, FormControl, FormGroup, TextField } from "@mui/material";
 import axios from "axios";
 import React, { FormEvent, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { CreateCheckOut, CreateProductLot, GetAllProductsInfo } from "../../../apis/apis";
-import { useMetamaskAuth } from "../../../auth/authConfig";
+import {
+  CreateCheckOut,
+  CreateProductLot,
+  GetAllProductsInfo,
+} from "../../../apis/apis";
+import { Roles, useMetamaskAuth } from "../../../auth/authConfig";
 import { DRIVER_SERVER } from "../../../constants/endpoints";
-import { humidityToUnits, temperatureToUnits, timestampToDate, unitsToHumidity, unitsToTemperature } from "../../../utils/general";
+import {
+  humidityToUnits,
+  temperatureToUnits,
+  timestampToDate,
+  unitsToHumidity,
+  unitsToTemperature,
+} from "../../../utils/general";
 import Loader from "../../core/Loader";
 import { ProductLotWithCheckpoints, Scan } from "../productTypes";
 import ProductPreviewModal from "./ProductLotPrevieModal";
@@ -24,8 +29,10 @@ const InWarehouse = (props: InWarehouseProps) => {
   const { productLots, refresh } = props;
   const { profile, isProcessingLogin } = useMetamaskAuth();
   const [checkingOut, setCheckingOut] = useState(false);
-  const [previewProductLot, setPreviewProductLot] = useState<ProductLotWithCheckpoints | null>(null);
+  const [previewProductLot, setPreviewProductLot] =
+    useState<ProductLotWithCheckpoints | null>(null);
 
+  const isRetailer = profile?.role === Roles.RETAILER;
   async function scanDriver() {
     const res = await axios.get(`${DRIVER_SERVER}/driver/sensor`);
     return res.data as Scan;
@@ -52,9 +59,11 @@ const InWarehouse = (props: InWarehouseProps) => {
               <th className="w-1/6 py-3 px-4 text-left font-semibold">
                 Checkin params
               </th>
-              <th className="w-1/6 py-3 px-4 text-left font-semibold">
-                Action
-              </th>
+              {!isRetailer && (
+                <th className="w-1/6 py-3 px-4 text-left font-semibold">
+                  Action
+                </th>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -74,23 +83,34 @@ const InWarehouse = (props: InWarehouseProps) => {
                     {timestampToDate(productLot.createdAt).toLocaleDateString()}
                   </td> */}
                   <td className="py-3 px-4">
-                    {
-                      timestampToDate(productLot.checkpoints.find(checkpoint => checkpoint.warehouse.id == profile?.id)?.inTime || "").toLocaleDateString()
-                    }
+                    {timestampToDate(
+                      productLot.checkpoints.find(
+                        (checkpoint) => checkpoint.warehouse.id == profile?.id
+                      )?.inTime || ""
+                    ).toLocaleDateString()}
                   </td>
                   <td className="py-3 px-4">
-                    Temp: { unitsToTemperature(productLot.checkpoints[productLot.checkpoints.length-1].in_temperature) } °C
-                    <br/>
-                    Humidity: { unitsToHumidity(productLot.checkpoints[productLot.checkpoints.length-1].in_humidity) } %
+                    Temp:{" "}
+                    {unitsToTemperature(
+                      productLot.checkpoints[productLot.checkpoints.length - 1]
+                        .in_temperature
+                    )}{" "}
+                    °C
+                    <br />
+                    Humidity:{" "}
+                    {unitsToHumidity(
+                      productLot.checkpoints[productLot.checkpoints.length - 1]
+                        .in_humidity
+                    )}{" "}
+                    %
                   </td>
-                  <td className="py-3 px-4">
-                    <Button
-                      type="submit"
-                      variant="outlined"
-                    >
-                      Checkout
-                    </Button>
-                  </td>
+                  {!isRetailer && (
+                    <td className="py-3 px-4">
+                      <Button type="submit" variant="outlined">
+                        Checkout
+                      </Button>
+                    </td>
+                  )}
                 </tr>
               );
             })}

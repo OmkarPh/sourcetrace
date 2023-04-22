@@ -125,9 +125,19 @@ app.get("/coldStorageCompromised", (req, res) => {
   res.json({ message: "Success !", temperature, humidity });
 });
 
-const PERCENTAGE = 90;
+let poll_compliance_percentage = 95;
 const POLL_INTERVAL = 10 * 1000;
 
+app.get("/valid-polling", (req, res) => {
+  poll_compliance_percentage = 95;
+  console.log("Polling compliance:", poll_compliance_percentage);
+  res.json({ message: "Success !", poll_compliance_percentage });
+})
+app.get("/invalid-polling", (req, res) => {
+  poll_compliance_percentage = 65;
+  console.log("Polling compliance:", poll_compliance_percentage);
+  res.json({ message: "Success !", poll_compliance_percentage });
+})
 app.post("/start-polling", async (req, res) => {
   const {
     productLotId,
@@ -182,7 +192,7 @@ app.post("/start-polling", async (req, res) => {
     humidity = Math.floor(
       Math.random() * (maxHumidity - minHumidity + 1) + minHumidity
     );
-    if (Math.random() >= PERCENTAGE / 100) {
+    if (Math.random() >= poll_compliance_percentage / 100) {
       // generate values slightly outside the specified range for 15% probability
       const rangeSize = Math.max(
         maxTemperature - minTemperature,

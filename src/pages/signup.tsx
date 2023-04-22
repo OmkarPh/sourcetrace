@@ -27,8 +27,8 @@ function Signup() {
           </button>
         </div>
         <div className="rightSignupEntity">
-          <div className="labels">Warehouse</div>
-          <button className="card" onClick={() => goTo('/warehouseRegister')}>
+          <div className="labels">Warehouse / Retailer</div>
+          <button className="card" onClick={() => goTo('/entityRegister')}>
             <img src="/illustrations/Warehousecard.svg"></img>
           </button>
         </div>

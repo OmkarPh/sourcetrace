@@ -1,20 +1,28 @@
 import {
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   FormControl,
   FormGroup,
   InputLabel,
   MenuItem,
   Select,
+  TextField,
 } from "@mui/material";
 import axios from "axios";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
-import { CreateCheckIn, CreateCheckOut } from "../../../apis/apis";
-import { useMetamaskAuth } from "../../../auth/authConfig";
+import { CreateCheckIn, CreateCheckOut, Reject } from "../../../apis/apis";
+import { Roles, useMetamaskAuth } from "../../../auth/authConfig";
 import { DRIVER_SERVER } from "../../../constants/endpoints";
 import {
+  buildRejectionString,
   humidityToUnits,
   isCheckinPossible,
+  parseRejectionMessage,
   productLotDetailsToIdentifier,
   productTimeToDriverTimeLimit,
   temperatureToUnits,
@@ -36,10 +44,8 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 
 // import Dialog, { DialogProps } from '@mui/material/Dialog';
-const longtext = "svsd";
 // const [open, setOpen] = React.useState(false);
 // const [scroll, setScroll] = React.useState<DialogProps['scroll']>('paper');
 
@@ -68,42 +74,59 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
   const { profile } = useMetamaskAuth();
   const [processing, setProcessing] = useState(false);
   const [scan, setScan] = useState<Scan | null>(null);
-  const [expandedCheckpoints, setExpandedCheck] = useState<Set<number>>(
-    new Set()
-  );
+  const [rejectionReason, setRejectionReason] = useState("");
   const [selectedTruckAddress, setSelectedTruck] = useState(
     profile?.parsedTruckDetails?.length
       ? profile?.parsedTruckDetails[0].address
       : null
   );
-
-  function expandCheckpoint(checkpointIndex: number) {
-    setExpandedCheck((prevCheckpoints) =>
-      new Set(prevCheckpoints).add(checkpointIndex)
-    );
-  }
-  function collapseCheckpoint(checkpointIndex: number) {
-    setExpandedCheck((prevCheckpoints) => {
-      const newCheckpoints = new Set(prevCheckpoints);
-      newCheckpoints.delete(checkpointIndex);
-      return newCheckpoints;
-    });
-  }
+  const [isRejectDialogOpen, setIsRejectDialogOpen] = useState(false);
 
   const { productInfo, createdAt, quantity } = productLot;
-  console.log("Lot", productLot);
+  const isRetailer = profile?.role === Roles.RETAILER;
 
+  useEffect(() => {
+    console.log("Lot", productLot);
+    console.log("Details", {
+      isLotRejectable,
+      isLotTransitCompliant,
+      requiresCheckin,
+    });
+  }, [productLot]);
+
+  const isLotTransitCompliant = useMemo(() => {
+    for (const checkpoint of productLot.checkpoints) {
+      const transitCompliance = !checkpoint.validities.length
+        ? 100
+        : (checkpoint.validities.reduce((a, v) => (v === true ? a + 1 : a), 0) *
+            100) /
+          checkpoint.validities.length;
+      if (transitCompliance < 75) return false;
+    }
+    return true;
+  }, [productLot]);
+
+  console.log("Transit compliant ?", isLotTransitCompliant);
+  const isLotRejectable = useMemo(() => {
+    if (productLot.rejected) return false;
+    const lastCheckpoint =
+      productLot.checkpoints[productLot.checkpoints.length - 1];
+    if (Number(lastCheckpoint.outTime) == 0) return false;
+    return true;
+  }, [productLot]);
   const requiresCheckin = useMemo(
     () => isCheckinPossible(productLot),
     [productLot]
   );
   const canCheckIn = useMemo(() => {
+    if (!isLotTransitCompliant) return false;
     const lastCheckpoint =
       productLot.checkpoints[productLot.checkpoints.length - 1];
     if (Number(lastCheckpoint.outTime) == 0) return false;
     return true;
   }, [productLot]);
   const canCheckOut = useMemo(() => {
+    if (isRetailer) return false;
     const lastCheckpoint =
       productLot.checkpoints[productLot.checkpoints.length - 1];
     if (Number(lastCheckpoint.outTime) != 0) return false;
@@ -232,6 +255,35 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
         setProcessing(false);
       });
   }
+  async function reject() {
+    if (!profile) return;
+    if (!rejectionReason.length)
+      return toast.error("Please enter reason for rejection");
+    const rejectedMessage = buildRejectionString(profile.id, rejectionReason);
+    console.log("Rejection msg", rejectedMessage);
+    console.log("Parsed:", parseRejectionMessage(rejectedMessage));
+
+    setIsRejectDialogOpen(false);
+    setProcessing(true);
+    Reject(
+      profile.id,
+      productLot.producerAddress,
+      productLot.productLotId,
+      1,
+      rejectedMessage
+    )
+      .then(() => {
+        toast.success("Rejected successfuly !");
+        setProcessing(false);
+        setTimeout(() => {
+          closeModal();
+        }, 200);
+      })
+      .catch((err) => {
+        setProcessing(false);
+        toast.error("Please approve metamask tx !");
+      });
+  }
 
   const isTemperatureValid = scan
     ? unitsToTemperature(productInfo.minValues[0]) <= scan.temperature &&
@@ -259,6 +311,11 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                   <h3 className="text-3xl font-semibold">
                     {productLot.productInfo.name} Lot #{" "}
                     {productLot.productLotId}
+                    <span className="m-4 mb-2">
+                      {productLot.rejected && (
+                        <ValidityLabel valid={false} inValidText={`Rejected`} />
+                      )}
+                    </span>
                   </h3>
                   <button
                     className="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
@@ -319,26 +376,28 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                           (idx === 0
                             ? productLot.sourceFactoryName
                             : checkpoint.warehouse.name) + postTitle;
-                        const isExpanded = expandedCheckpoints.has(idx);
-                        const verified = true;
                         const isCheckedOut = Number(checkpoint.outTime) != 0;
-                        const transitCompliance = (
-                          (checkpoint.validities.reduce(
-                            (a, v) => (v === true ? a + 1 : a),
-                            0
-                          ) *
-                            100) /
-                          checkpoint.validities.length
-                        ).toFixed();
+                        const transitCompliance = !checkpoint.validities.length
+                          ? 100
+                          : (
+                              (checkpoint.validities.reduce(
+                                (a, v) => (v === true ? a + 1 : a),
+                                0
+                              ) *
+                                100) /
+                              checkpoint.validities.length
+                            ).toFixed();
                         const isTransitComplianceValid =
                           Number(transitCompliance) >= 75;
+                        const isRetailer = checkpoint.warehouse.isRetailer;
 
                         return (
                           <li key={checkpoint.inTime + idx}>
-                            {verified}
                             {/* #{idx}  */}
                             <div className="w-[500px] ">
-                              <Accordion>
+                              <Accordion
+                                defaultExpanded={!isTransitComplianceValid}
+                              >
                                 <AccordionSummary
                                   expandIcon={<ExpandMoreIcon />}
                                   aria-controls="panel1a-content"
@@ -348,9 +407,23 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                                   // }}
                                 >
                                   <Typography>
-                                    {verified ? "✅ " : "!!"} &nbsp;
+                                    {isTransitComplianceValid ? (
+                                      "✅"
+                                    ) : (
+                                      <ValidityLabel
+                                        valid={isTransitComplianceValid}
+                                        inValidText={`!!`}
+                                      />
+                                    )}
+                                    &nbsp;&nbsp;
+                                    {/* {isTransitComplianceValid ? "✅ " : "!!"} &nbsp; */}
                                     {title} &nbsp;
-                                    {!isCheckedOut && <>( Stored )</>}
+                                    {!isCheckedOut && (
+                                      <>
+                                        ({isRetailer ? "At retailer" : "Stored"}
+                                        )
+                                      </>
+                                    )}
                                   </Typography>
                                 </AccordionSummary>
                                 <AccordionDetails style={{ padding: 5 }}>
@@ -373,7 +446,7 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                                         <span className="ml-1">
                                           {/* In */}
                                           ⬇️{" "}
-                                          {unitsToTemperature(
+                                          {/* {unitsToTemperature(
                                             Number(productInfo.minValues[0]) <=
                                               Number(
                                                 checkpoint.in_temperature
@@ -386,16 +459,16 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                                                 )
                                               ? checkpoint.in_temperature
                                               : productInfo.maxValues[0]
-                                          )}{" "}
-                                          {/* {unitsToTemperature(
-                                            checkpoint.in_temperature
                                           )}{" "} */}
+                                          {unitsToTemperature(
+                                            checkpoint.in_temperature
+                                          )}{" "}
                                           °C
                                         </span>
                                         <span className="ml-4">
                                           {/* Out */}
                                           ⬆️{" "}
-                                          {unitsToTemperature(
+                                          {/* {unitsToTemperature(
                                             Number(productInfo.minValues[0]) <=
                                               Number(
                                                 checkpoint.out_temperature
@@ -408,10 +481,10 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                                                 )
                                               ? checkpoint.out_temperature
                                               : productInfo.maxValues[0]
-                                          )}{" "}
-                                          {/* {unitsToTemperature(
-                                            checkpoint.out_temperature
                                           )}{" "} */}
+                                          {unitsToTemperature(
+                                            checkpoint.out_temperature
+                                          )}{" "}
                                           °C
                                         </span>
                                       </div>
@@ -422,7 +495,7 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                                         <span className="ml-1">
                                           {/* In */}
                                           ⬇️{" "}
-                                          {unitsToHumidity(
+                                          {/* {unitsToHumidity(
                                             Number(productInfo.minValues[1]) <=
                                               Number(checkpoint.in_humidity) &&
                                               Number(
@@ -431,16 +504,16 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                                                 Number(checkpoint.in_humidity)
                                               ? checkpoint.in_humidity
                                               : productInfo.minValues[1]
-                                          )}{" "}
-                                          {/* {unitsToHumidity(
-                                            checkpoint.in_humidity
                                           )}{" "} */}
+                                          {unitsToHumidity(
+                                            checkpoint.in_humidity
+                                          )}{" "}
                                           %
                                         </span>
                                         <span className="ml-4">
                                           {/* Out */}
                                           ⬆️{" "}
-                                          {unitsToHumidity(
+                                          {/* {unitsToHumidity(
                                             Number(productInfo.minValues[1]) <=
                                               Number(checkpoint.out_humidity) &&
                                               Number(
@@ -449,10 +522,10 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                                                 Number(checkpoint.out_humidity)
                                               ? checkpoint.out_humidity
                                               : productInfo.minValues[1]
-                                          )}{" "}
-                                          {/* {unitsToHumidity(
-                                            checkpoint.out_humidity
                                           )}{" "} */}
+                                          {unitsToHumidity(
+                                            checkpoint.out_humidity
+                                          )}{" "}
                                           %
                                         </span>
                                       </div>
@@ -461,25 +534,11 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                                 </AccordionDetails>
                               </Accordion>
                             </div>
-
-                            {/* 
-                            <Tooltip title={longtext} placement="right" leaveDelay={1000} arrow >
-                                <Button>more info</Button>
-                            </Tooltip> */}
-
-                            {/* <Button onClick={handleClickOpen('paper')}>scroll=paper</Button> */}
-
-                            {/* &nbsp;&nbsp;&nbsp; */}
-                            {/* {isExpanded ? (
-                              <span>I am Expanded</span>
-                            ) : (
-                              <span>I am collapsed</span>
-                            )} */}
                           </li>
                         );
                       })}
                     </ul>
-                    {canCheckOut && (
+                    {!isRetailer && canCheckOut && (
                       <>
                         <br />
                         <FormControl fullWidth>
@@ -544,13 +603,18 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                 </div>
                 {/*footer*/}{" "}
                 <CustomModalFooter>
-                  <button
-                    className="text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                    type="button"
-                    onClick={closeModal}
-                  >
-                    Close
-                  </button>
+                  {isLotRejectable && (
+                    <Button
+                      className="m-2"
+                      color="error"
+                      variant="outlined"
+                      disabled={!isLotRejectable}
+                      onClick={() => setIsRejectDialogOpen(true)}
+                    >
+                      Reject
+                    </Button>
+                  )}
+                  &nbsp;&nbsp;
                   {!noActions && (
                     <FormControl>
                       {requiresCheckin ? (
@@ -562,7 +626,8 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                             disabled={
                               !canCheckIn ||
                               !isTemperatureValid ||
-                              !isHumidityValid
+                              !isHumidityValid ||
+                              !isLotTransitCompliant
                             }
                           >
                             Checkin
@@ -570,28 +635,58 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                         </>
                       ) : (
                         <>
-                          <Button
-                            type="submit"
-                            variant="outlined"
-                            onClick={CheckOut}
-                            disabled={
-                              !canCheckOut ||
-                              !isTemperatureValid ||
-                              !isHumidityValid
-                            }
-                          >
-                            Checkout
-                          </Button>
+                          {!isRetailer && (
+                            <Button
+                              type="submit"
+                              variant="outlined"
+                              onClick={CheckOut}
+                              disabled={
+                                !canCheckOut ||
+                                !isTemperatureValid ||
+                                !isHumidityValid
+                              }
+                            >
+                              Checkout
+                            </Button>
+                          )}
                         </>
                       )}
-                      {/* <button
-                      className="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                      type="submit"
-                    >
-                      Create
-                    </button> */}
                     </FormControl>
                   )}
+                  <Dialog
+                    open={isRejectDialogOpen}
+                    fullWidth
+                    onClose={() => setIsRejectDialogOpen(false)}
+                  >
+                    <DialogTitle>Reject</DialogTitle>
+                    <DialogContent>
+                      <DialogContentText>
+                        Please explain reason for rejection
+                      </DialogContentText>
+                      <TextField
+                        autoFocus
+                        margin="dense"
+                        label="Rejection reason"
+                        type="text"
+                        fullWidth
+                        value={rejectionReason}
+                        onChange={(e) => setRejectionReason(e.target.value)}
+                        name="rejection_reason"
+                        variant="standard"
+                      />
+                    </DialogContent>
+                    <DialogActions>
+                      <Button onClick={() => setIsRejectDialogOpen(false)}>
+                        Cancel
+                      </Button>
+                      <Button
+                        className="text-red-500 background-transparent font-bold"
+                        onClick={reject}
+                      >
+                        Reject
+                      </Button>
+                    </DialogActions>
+                  </Dialog>
                 </CustomModalFooter>
               </CustomModal>
             )}

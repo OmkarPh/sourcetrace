@@ -4,7 +4,7 @@ export interface ProductInfo {
   name: string;
   price: string;
   params: string[];
-  perishable: boolean;
+  isPerishable: boolean;
   imageURL: string;
   minValues: number[];
   maxValues: number[];

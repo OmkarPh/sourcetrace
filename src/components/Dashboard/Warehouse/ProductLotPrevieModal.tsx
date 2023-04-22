@@ -351,7 +351,10 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                         {timestampToDate(createdAt).toLocaleDateString()})
                       </span>
                     </h3>
-                    <h3 className="text-lg font-medium mb-1">Parameters</h3>
+                    <h3 className="text-lg font-medium mb-1">
+                      Parameters
+                      { productLot.productInfo.isPerishable && " (Perishable Product)"}
+                    </h3>
                     <div>
                       <div className="flex flex-row">
                         <div className="w-1/2">

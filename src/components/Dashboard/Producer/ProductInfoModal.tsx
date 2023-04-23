@@ -8,10 +8,12 @@ import {
   Typography,
 } from "@mui/material";
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 import { unitsToHumidity, unitsToTemperature } from "../../../utils/general";
 import { ProductInfo } from "../productTypes";
 import CustomModal, { CustomModalFooter, CustomModalHeader } from "./CustomModal";
+// import Dialog from '@mui/material/Dialog';
+import SimpleDialogDemo from "./Qr";
 
 interface ProductInfoModalProps {
   productInfo: ProductInfo;
@@ -20,6 +22,8 @@ interface ProductInfoModalProps {
 const ProductInfoModal = (props: ProductInfoModalProps) => {
   const { productInfo, closeModal } = props;
   console.log("Preview product", productInfo);
+
+  const [show, setShow] = useState(false);
 
   const {
     imageURL,
@@ -46,8 +50,23 @@ const ProductInfoModal = (props: ProductInfoModalProps) => {
             src={imageURL}
             alt={name}
           />
+          <br/>
+          <div className=" flex justify-center">
+              {/* <h3 className="text-lg font-medium mb-2">QR code</h3> */}
+              <div>
+              <SimpleDialogDemo/>
+
+              </div>
+
+              {/* <button onClick={()=>setShow(!show)} className=" bg-blue-100 pt-1 pb-1 pl-4 pr-4 rounded-md hover:bg-blue-400"></button>
+              {
+                show && <p className=" w-10">showwwwmbbbvmbmnvnvvhjyfufy<br/>dkfsghjgjbjkgktserastyuiopiuytfdghjkhnvbn,bvn</p>
+              } */}
+              {/* </SimpleDialogDemo> */}
+              </div>
+
         </div>
-        <div className="w-max h-64 rounded-r-lg p-4 ml-3 min-w-max" style={{ minWidth: "350px" }}>
+        <div className="w-max  rounded-r-lg p-4 ml-3 min-w-max" style={{ minWidth: "350px" }}>
           <h2 className="text-xl font-bold mb-2">{name}</h2>
               <ul className="list-disc list-inside mb-4">
                 <li>Price: {price}</li>
@@ -64,6 +83,11 @@ const ProductInfoModal = (props: ProductInfoModalProps) => {
               <div>
                 Transit time limit: { maxValues[2] / 60 } hours
               </div>
+              <br/>
+              
+              
+
+            
         </div>
       </div>
 

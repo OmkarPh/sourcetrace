@@ -33,6 +33,8 @@ import CustomModal, {
 } from "./CustomModal";
 import ValidityLabel from "../../core/ValidityLabel";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import LotQR from "../LotQR";
+import { Phone } from "@mui/icons-material";
 
 interface ProductLotModalProps {
   productLot: ProductLotWithCheckpoints;
@@ -61,12 +63,17 @@ const ProductLotModal = (props: ProductLotModalProps) => {
     quantity,
   } = productLot;
 
-
-  const isAtRetailer = productLot.checkpoints[productLot.checkpoints.length-1].warehouse.isRetailer;
-  const lastCheckpointEntity = productLot.checkpoints[productLot.checkpoints.length-1];
-  const isInWarehouse = lastCheckpointEntity.warehouse.id !== "0x0000000000000000000000000000000000000000" && lastCheckpointEntity.outTime == "0";
+  const isAtRetailer =
+    productLot.checkpoints[productLot.checkpoints.length - 1].warehouse
+      .isRetailer;
+  const lastCheckpointEntity =
+    productLot.checkpoints[productLot.checkpoints.length - 1];
+  const isInWarehouse =
+    lastCheckpointEntity.warehouse.id !==
+      "0x0000000000000000000000000000000000000000" &&
+    lastCheckpointEntity.outTime == "0";
   const noActions = isAtRetailer || isInWarehouse;
-  console.log({ isAtRetailer, lastCheckpointEntity, isInWarehouse, noActions});
+  console.log({ isAtRetailer, lastCheckpointEntity, isInWarehouse, noActions });
 
   const canCheckOut = useMemo(() => {
     const lastCheckpoint =
@@ -201,6 +208,9 @@ const ProductLotModal = (props: ProductLotModalProps) => {
                 width={300}
                 src={productInfo.imageURL}
                 alt={productInfo.name}
+              />
+              <LotQR
+                text={`${productLot.producerAddress}_${productLot.productLotId}`}
               />
             </div>
             <div
@@ -408,16 +418,18 @@ const ProductLotModal = (props: ProductLotModalProps) => {
               {productLot.rejection?.rejectedByWarehouse && (
                 <>
                   <br />
-                  Rejected by
-                  <h5>{productLot.rejection.rejectedByWarehouse.name}</h5>
                   <br />
-                  <h5>{productLot.rejection.rejectedByWarehouse.phone}</h5>
+                  <h3 className="text-lg">Rejected by</h3>
+                  <h5>
+                    {productLot.rejection.rejectedByWarehouse.name}
+                    &nbsp;&nbsp;&nbsp;
+                    <Phone /> {productLot.rejection.rejectedByWarehouse.phone}
+                  </h5>
                 </>
               )}
-              <br />
-              <br />
               {!productLot.rejected && !noActions && (
                 <>
+                  <br />
                   <FormControl fullWidth>
                     {selectedTruckAddress ? (
                       <>
@@ -479,8 +491,7 @@ const ProductLotModal = (props: ProductLotModalProps) => {
             </div>
           </div>
 
-          {
-            !noActions &&
+          {!noActions && (
             <CustomModalFooter>
               <button
                 className="text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
@@ -499,7 +510,7 @@ const ProductLotModal = (props: ProductLotModalProps) => {
                 Checkout
               </Button>
             </CustomModalFooter>
-          }
+          )}
         </form>
       )}
     </CustomModal>

@@ -3,6 +3,7 @@ import Getstarted from '../components/landingpage/getstarted';
 import Producerrole from '../components/landingpage/producerrole';
 import Warehouserole from '../components/landingpage/warehouserole';
 import Footer from '../components/landingpage/footer';
+import Retailerrole from '../components/landingpage/retailerrole';
 
 
 export default function Home() {
@@ -11,6 +12,7 @@ export default function Home() {
       <Getstarted/>
       <Producerrole/>
       <Warehouserole/>
+      <Retailerrole/>
       <Footer/>
 
       {/* <div>

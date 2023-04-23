@@ -5,6 +5,7 @@ import { timestampToDate } from "../../../utils/general";
 import Loader from "../../core/Loader";
 import { ProductLotWithCheckpoints } from "../productTypes";
 import ProductPreviewModal from "./ProductLotPrevieModal";
+import ValidityLabel from "../../core/ValidityLabel";
 
 interface PastWarehouseProps {
   productLots: ProductLotWithCheckpoints[];
@@ -13,7 +14,8 @@ interface PastWarehouseProps {
 const PastWarehouse = (props: PastWarehouseProps) => {
   const { productLots } = props;
   const { profile, isProcessingLogin } = useMetamaskAuth();
-  const [previewProductLot, setPreviewProductLot] = useState<ProductLotWithCheckpoints | null>(null);
+  const [previewProductLot, setPreviewProductLot] =
+    useState<ProductLotWithCheckpoints | null>(null);
 
   if (isProcessingLogin) return <Loader size={50} />;
 
@@ -34,10 +36,10 @@ const PastWarehouse = (props: PastWarehouseProps) => {
                 Production Date
               </th>
               <th className="w-1/4 py-3 px-4 text-left font-semibold">
-                Factory location
+                Current status
               </th>
               <th className="w-1/4 py-3 px-4 text-left font-semibold">
-                Checked out 
+                Checked out
               </th>
             </tr>
           </thead>
@@ -46,6 +48,8 @@ const PastWarehouse = (props: PastWarehouseProps) => {
               const isInFactory =
                 productLot.checkpoints.length == 1 &&
                 Number(productLot.checkpoints[0].outTime) == 0;
+              const lastCheckpoint =
+                productLot.checkpoints[productLot.checkpoints.length - 1];
               return (
                 <tr
                   key={productLot.producerAddress + productLot.productLotId}
@@ -58,12 +62,34 @@ const PastWarehouse = (props: PastWarehouseProps) => {
                     {timestampToDate(productLot.createdAt).toLocaleDateString()}
                   </td>
                   <td className="py-3 px-4">
-                    {productLot.sourceFactoryLocation}
+                    {productLot.rejected && productLot.rejection ? (
+                      <>
+                        Rejected by{" "}
+                        {productLot.rejection.rejectedByWarehouse?.name}
+                      </>
+                    ) : (
+                      <>
+                        At{" "}
+                        {
+                          productLot.checkpoints[
+                            productLot.checkpoints.length - 1
+                          ].warehouse.name
+                        }
+                      </>
+                    )}
                   </td>
                   <td className="py-3 px-4">
-                    {
-                      timestampToDate(productLot.checkpoints.find(checkpoint => checkpoint.warehouse.id == profile?.id)?.outTime || "").toLocaleDateString()
-                    }
+                    {timestampToDate(
+                      productLot.checkpoints.find(
+                        (checkpoint) => checkpoint.warehouse.id == profile?.id
+                      )?.outTime || ""
+                    ).toLocaleDateString()}
+                    {productLot.rejected && (
+                      <>
+                        <br />
+                        <ValidityLabel valid={false} inValidText={`Rejected`} />
+                      </>
+                    )}
                   </td>
                 </tr>
               );

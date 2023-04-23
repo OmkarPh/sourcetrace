@@ -44,6 +44,8 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import LotQR from "../LotQR";
+import { Phone } from "@mui/icons-material";
 
 // import Dialog, { DialogProps } from '@mui/material/Dialog';
 // const [open, setOpen] = React.useState(false);
@@ -269,7 +271,7 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
       profile.id,
       productLot.producerAddress,
       productLot.productLotId,
-      1,
+      isLotTransitCompliant ? 1 : 2,
       rejectedMessage
     )
       .then(() => {
@@ -313,7 +315,13 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                     {productLot.productLotId}
                     <span className="m-4 mb-2">
                       {productLot.rejected && (
-                        <ValidityLabel valid={false} inValidText={`Rejected`} />
+                        <>
+                          <ValidityLabel
+                            valid={false}
+                            inValidText={`Rejected: ${productLot.rejection?.reason}`}
+                          />
+                          <br />
+                        </>
                       )}
                     </span>
                   </h3>
@@ -335,6 +343,10 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                       src={productInfo.imageURL}
                       alt={productInfo.name}
                     />
+                    <br />
+                    <LotQR
+                      text={`${productLot.producerAddress}_${productLot.productLotId}`}
+                    />
                   </div>
                   <div
                     className="w-max rounded-r-lg p-4 ml-3"
@@ -353,7 +365,8 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                     </h3>
                     <h3 className="text-lg font-medium mb-1">
                       Parameters
-                      { productLot.productInfo.isPerishable && " (Perishable Product)"}
+                      {productLot.productInfo.isPerishable &&
+                        " (Perishable Product)"}
                     </h3>
                     <div>
                       <div className="flex flex-row">
@@ -541,6 +554,17 @@ const ProductPreviewModal = (props: ProductPreviewModalrops) => {
                         );
                       })}
                     </ul>
+                    {productLot.rejection?.rejectedByWarehouse && (
+                      <>
+                        <br />
+                        <br />
+                        <h3 className="text-lg">Rejected by</h3>
+                        <h5>{productLot.rejection.rejectedByWarehouse.name}
+                        &nbsp;&nbsp;&nbsp;
+                         <Phone /> {productLot.rejection.rejectedByWarehouse.phone}
+                        </h5>
+                      </>
+                    )}
                     {!isRetailer && canCheckOut && (
                       <>
                         <br />

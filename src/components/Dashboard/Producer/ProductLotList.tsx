@@ -63,15 +63,21 @@ const ProductLotList = () => {
           )) as Checkpoint[];
 
           // @TODO- fetch warehouse which rejected this here ...
-          const rejection = lot.rejected ? parseRejectionMessage(lot.rejectedMessage) : null;
-          
-          const rejectedByWarehouse = 
+          const rejection = lot.rejected
+            ? parseRejectionMessage(lot.rejectedMessage)
+            : null;
+
           newProductLots.push({
             ...lot,
-            rejection: lot.rejected && rejection ? {
-              ...rejection,
-              rejectedByWarehouse: (await GetWarehouse(rejection.rejectedByAddress)) as Warehouse,
-            } : null,
+            rejection:
+              lot.rejected && rejection
+                ? {
+                    ...rejection,
+                    rejectedByWarehouse: (await GetWarehouse(
+                      rejection.rejectedByAddress
+                    )) as Warehouse,
+                  }
+                : null,
             productInfo: ProductInfoMap.get(lot.productId) as ProductInfo,
             checkpoints,
           });
@@ -107,7 +113,7 @@ const ProductLotList = () => {
                 Production Date
               </th>
               <th className="w-1/4 py-3 px-4 text-left font-semibold">
-                Factory location
+                Current status
               </th>
               <th className="w-1/4 py-3 px-4 text-left font-semibold">
                 Action
@@ -116,10 +122,18 @@ const ProductLotList = () => {
           </thead>
           <tbody className="overflow-scroll" style={{ maxHeight: "40vh" }}>
             {productLots.map((productLot) => {
-              const isAtRetailer = productLot.checkpoints[productLot.checkpoints.length-1].warehouse.isRetailer;
+              const isAtRetailer =
+                productLot.checkpoints[productLot.checkpoints.length - 1]
+                  .warehouse.isRetailer;
               const isInFactory =
                 productLot.checkpoints.length == 1 &&
                 Number(productLot.checkpoints[0].outTime) == 0;
+              const lastCheckpoint =
+                productLot.checkpoints[productLot.checkpoints.length - 1];
+                console.log("last chckpoint",lastCheckpoint);
+              const outFromFactory = 
+              productLot.checkpoints.length == 1 &&
+              Number(productLot.checkpoints[0].outTime) !== 0;
               return (
                 <tr
                   key={productLot.producerAddress + productLot.productLotId}
@@ -132,14 +146,29 @@ const ProductLotList = () => {
                     {timestampToDate(productLot.createdAt).toLocaleDateString()}
                   </td>
                   <td className="py-3 px-4">
-                    {productLot.sourceFactoryLocation}
+                    {productLot.rejected && productLot.rejection ? (
+                      <>
+                        Rejected by{" "}
+                        {productLot.rejection.rejectedByWarehouse?.name}
+                      </>
+                    ) : isInFactory ? (
+                      <>
+                        Holding
+                      </>
+                    ) : outFromFactory ? (
+                      <>Out from factory</>
+                    ) : Number(lastCheckpoint.outTime) !== 0 ? (
+                      <>Transit from {lastCheckpoint.warehouse.name}</>
+                    ) : (
+                      <>At {lastCheckpoint.warehouse.name}</>
+                    )}
                   </td>
                   <td className="py-3 px-4">
                     {productLot.rejected ? (
                       <ValidityLabel valid={false} inValidText="Rejected" />
                     ) : isAtRetailer ? (
                       <>On Shelf</>
-                      ) : isInFactory ? (
+                    ) : isInFactory ? (
                       <Button
                         type="submit"
                         variant="outlined"
@@ -149,7 +178,11 @@ const ProductLotList = () => {
                         Checkout from factory
                       </Button>
                     ) : (
-                      <>In transit</>
+                      <>
+                        {
+                          Number(lastCheckpoint.outTime) === 0 ? "Stored" : "In transit"
+                        }
+                      </>
                     )}
                   </td>
                 </tr>

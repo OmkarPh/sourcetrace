@@ -20,7 +20,7 @@ const PastWarehouse = (props: PastWarehouseProps) => {
   if (isProcessingLogin) return <Loader size={50} />;
 
   return (
-    <div className="container mx-auto pt-4">
+    <div className="container mx-auto">
       {/* <h1 className="text-2xl font-bold mb-5">Product List</h1> */}
       <div className="bg-white rounded-lg shadow">
         <table className="w-full table-fixed">
@@ -50,6 +50,8 @@ const PastWarehouse = (props: PastWarehouseProps) => {
                 Number(productLot.checkpoints[0].outTime) == 0;
               const lastCheckpoint =
                 productLot.checkpoints[productLot.checkpoints.length - 1];
+              const isWarehouseLast = lastCheckpoint.warehouse.id === profile?.id;
+
               return (
                 <tr
                   key={productLot.producerAddress + productLot.productLotId}
@@ -87,7 +89,11 @@ const PastWarehouse = (props: PastWarehouseProps) => {
                     {productLot.rejected && (
                       <>
                         <br />
-                        <ValidityLabel valid={false} inValidText={`Rejected`} />
+                        {
+                          isWarehouseLast ?
+                          <ValidityLabel valid={false} inValidText={`Rejected`} />
+                          : "Returned"
+                        }
                       </>
                     )}
                   </td>

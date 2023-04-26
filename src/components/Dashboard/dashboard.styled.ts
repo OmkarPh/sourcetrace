@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 export const Container = styled.div`
     width: 100%;
-    height: calc(100vh - 55px);
+    height: calc(100vh - 80px);
     display: flex;
     flex-direction: row;
 `
@@ -22,5 +22,5 @@ export const RightContainer = styled.div`
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
-    padding: 0px 30px 25px 15px;
+    padding: 0px 30px 5px 15px;
 `

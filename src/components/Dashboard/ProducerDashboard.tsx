@@ -37,7 +37,7 @@ const ProducerDashboard = () => {
       </Head>
       {/* <h1 className="text-2xl font-bold">Dashboard</h1> */}
       <br/>
-      <div className="flex flex-row h-[calc(100vh-55px)] overflow-hidden box-borderr">
+      <div className="flex flex-row h-[calc(100vh-80px)] overflow-hidden box-borderr">
         <Container>
           <LeftContainer>
             <AccountInfo />
@@ -69,7 +69,7 @@ const ProducerDashboard = () => {
                   })
                 }
               </div>
-              <div className="w-[100%] h-auto max-h-[calc(100vh-199px)] rounded-xl overflow-auto">
+              <div className="w-[100%] h-auto max-h-[calc(100vh-150px)] rounded-xl overflow-auto" style={{ marginTop: "18px"}}>
                   {
                       selectedSection == SECTIONS.PRODUCTS ?
                           <ProductList />

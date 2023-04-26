@@ -38,7 +38,7 @@ export default function App({ Component, pageProps }: AppProps) {
     use();
   }, []);
 
-  const TestProps: MetamaskAuthProviderProps = {
+  const AuthProps: MetamaskAuthProviderProps = {
     hasAccount: (address: string) => {
       return new Promise((resolve, reject) => {
         console.log(`Checking if ${address} has an account ....`);
@@ -112,7 +112,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <MetamaskAuthProvider {...TestProps}>
+      <MetamaskAuthProvider {...AuthProps}>
         <Navbar />
         <Component {...pageProps} />
       </MetamaskAuthProvider>

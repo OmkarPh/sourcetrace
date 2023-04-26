@@ -135,7 +135,7 @@ const WarehouseDashboard = () => {
       </Head>
       {/* <h1 className="text-2xl font-bold">Dashboard</h1> */}
       <br />
-      <div className="flex flex-row h-[calc(100vh-55px)] overflow-hidden box-borderr">
+      <div className="flex flex-row h-[calc(100vh-80px)] overflow-hidden box-border">
         <Container>
           <LeftContainer className="mt-5">
             <AccountInfo />
@@ -152,7 +152,7 @@ const WarehouseDashboard = () => {
           </LeftContainer>
           <RightContainer>
             <div className="w-[100%] h-[100%] overflow-hidden">
-              <div className="flex flex-row bg-[#fafeff] w-fit self-center m-auto rounded-md cursor-pointer ">
+              <div className="flex flex-row bg-[#fafeff] w-fit self-center m-auto rounded-md cursor-pointer">
                 {[
                   {
                     name: `In ${
@@ -184,7 +184,7 @@ const WarehouseDashboard = () => {
                   );
                 })}
               </div>
-              <div className="w-[100%] h-auto max-h-[calc(100vh-199px)] rounded-xl overflow-auto">
+              <div className="w-[100%] h-auto max-h-[calc(100vh-150px)] rounded-xl overflow-auto" style={{ marginTop: "30px"}}>
                 {selectedSection == SECTIONS.IN_WAREHOUSE ? (
                   <InWarehouse
                     productLots={inWarehouseLots}

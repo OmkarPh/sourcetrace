@@ -108,6 +108,7 @@ export const GetWarehouseProductLotsWithCheckpoints = async (
     productLots.push(await GetProductLotWithCheckpoints(producer, id));
     console.log("Warehouse lot", await GetProductLotCheckpoints(producer, id));
   }
+  // productLots.push(await GetProductLotWithCheckpoints('0xabd8EeD5b630578F72eEB06c637dB7179576A811',  3));
   return productLots;
 };
 

@@ -41,7 +41,7 @@ const InWarehouse = (props: InWarehouseProps) => {
   if (isProcessingLogin || checkingOut) return <Loader size={50} />;
 
   return (
-    <div className="container mx-auto pt-4">
+    <div className="container mx-auto">
       {/* <h1 className="text-2xl font-bold mb-5">Product List</h1> */}
       <div className="bg-white rounded-lg shadow">
         <table className="w-full table-fixed">

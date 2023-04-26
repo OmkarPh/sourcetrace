@@ -144,6 +144,9 @@ export function createMetamaskAuth<CustomProfile>(routerInfo: RoutingConfig){
   
     const connect = () => {
       if (!getAccounts) return;
+
+      if(authState.isLoggedIn)
+        return onLoggedIn();
   
       getAccounts().then((accounts) => {
         if(accounts && accounts.length) {

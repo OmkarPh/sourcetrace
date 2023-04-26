@@ -97,7 +97,7 @@ const ProductLotList = () => {
     return <Loader size={50} />;
 
   return (
-    <div className="container mx-auto pt-4">
+    <div className="container mx-auto">
       {/* <h1 className="text-2xl font-bold mb-5">Product List</h1> */}
       <div className="bg-white rounded-lg shadow">
         <table className="w-full table-fixed">
@@ -130,10 +130,13 @@ const ProductLotList = () => {
                 Number(productLot.checkpoints[0].outTime) == 0;
               const lastCheckpoint =
                 productLot.checkpoints[productLot.checkpoints.length - 1];
-                console.log("last chckpoint",lastCheckpoint);
-              const outFromFactory = 
-              productLot.checkpoints.length == 1 &&
-              Number(productLot.checkpoints[0].outTime) !== 0;
+              const outFromFactory =
+                productLot.checkpoints.length == 1 &&
+                Number(productLot.checkpoints[0].outTime) !== 0;
+              const isFactoryIsLast =
+                lastCheckpoint.warehouse.id ===
+                "0x0000000000000000000000000000000000000000";
+
               return (
                 <tr
                   key={productLot.producerAddress + productLot.productLotId}
@@ -152,9 +155,7 @@ const ProductLotList = () => {
                         {productLot.rejection.rejectedByWarehouse?.name}
                       </>
                     ) : isInFactory ? (
-                      <>
-                        Holding
-                      </>
+                      <>Holding</>
                     ) : outFromFactory ? (
                       <>Out from factory</>
                     ) : Number(lastCheckpoint.outTime) !== 0 ? (
@@ -165,7 +166,9 @@ const ProductLotList = () => {
                   </td>
                   <td className="py-3 px-4">
                     {productLot.rejected ? (
+                      isFactoryIsLast ?
                       <ValidityLabel valid={false} inValidText="Rejected" />
+                      : "Returned"
                     ) : isAtRetailer ? (
                       <>On Shelf</>
                     ) : isInFactory ? (
@@ -179,9 +182,9 @@ const ProductLotList = () => {
                       </Button>
                     ) : (
                       <>
-                        {
-                          Number(lastCheckpoint.outTime) === 0 ? "Stored" : "In transit"
-                        }
+                        {Number(lastCheckpoint.outTime) === 0
+                          ? "Stored"
+                          : "In transit"}
                       </>
                     )}
                   </td>

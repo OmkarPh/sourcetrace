@@ -38,7 +38,7 @@ import { CreateCheckIn,
  */
 
 export function getProducer(producerAddress:string){
-  return GetProducer(producerAddress, producerName, producerPhoneno, producerRegno);
+  return GetProducer(producerAddress);
 }
 
 /**
@@ -47,7 +47,7 @@ export function getProducer(producerAddress:string){
  * @returns {Object} An object containing the warehouse's name, phone number, and registration number.
  */
 export function getWarehouse(warehouseAddress: string){
-  return GetWarehouse(warehouseAddress, warenameName, warehousePhoneno, warehouseRegno);
+  return GetWarehouse(warehouseAddress);
 }
 
 /**
@@ -56,7 +56,7 @@ export function getWarehouse(warehouseAddress: string){
  * @returns {Array} An array of objects, each containing information about a product produced by the given producer.
  */
 export function getAllProductsInfo(produceraddress: string){
-  return GetAllProductsInfo(productsInfo);
+  return GetAllProductsInfo(produceraddress);
 }
 
 /**
@@ -65,7 +65,7 @@ export function getAllProductsInfo(produceraddress: string){
  * @returns {Object} An object containing information about the product, including its name, ID, temperature, and humidity requirements.
  */
 export function getProductsInfo(produceraddress: string){
-  return GetProductInfo(produceraddress, productName, productId, productTemp, productHum);
+  return GetProductInfo(produceraddress);
 }
 
 /**
@@ -74,7 +74,7 @@ export function getProductsInfo(produceraddress: string){
  * @returns {Array} An array of objects, each containing information about a product lot produced by the given producer.
  */
 export function getAllProductsLotInfo(produceraddress: string){
-  return GetAllProductLots(productLots);
+  return GetAllProductLots(produceraddress);
 }
 
 /**
@@ -84,7 +84,7 @@ export function getAllProductsLotInfo(produceraddress: string){
  * @returns {Object} An object containing information about the product lot, including its ID, product name, and quantity.
  */
 export function getProductLotInfo(producerAddress:string, productLotID: number){
-  return GetProductLot(productLot)
+  return GetProductLot(producerAddress,productLotID)
 }
 
 /**
@@ -94,7 +94,7 @@ export function getProductLotInfo(producerAddress:string, productLotID: number){
  * @returns {Array} An array of objects, each containing information about a checkpoint associated with the given product lot.
  */
 export function getProductLotCheckpoints(producerAddress:string,productLotID: number){
-  return GetProductLotCheckpoints(productCheckpoints)
+  return GetProductLotCheckpoints(producerAddress,productLotID)
 }
 
 /**
@@ -104,7 +104,7 @@ export function getProductLotCheckpoints(producerAddress:string,productLotID: nu
  * @returns {Object} An object containing information about the checkpoint, including its ID, location, and timestamp.
  */
 export function getProductLotCheckpoint(producerAddress:string, productLotID: number){
-  return GetProductLotCheckpoint(productCheckpoint)
+  return GetProductLotCheckpoint(producerAddress,productLotID)
 }
 
 /**
@@ -203,7 +203,7 @@ export const AddTruck = SenderFactory(SourceTraceContract, "addTruck", false);
  */
 
 export function getWarehouseProductLots(warehouseAddress: string,){
-  return GetWarehouseProductLots(WarehouseProductLots);
+  return GetWarehouseProductLots(warehouseAddress);
 }
 
 export const GetWarehouseProductLotsWithCheckpoints = async (

@@ -23,8 +23,8 @@ export const GetProducer = CallerFactory(
   false
 );
 
-export function getProducer(producerName: string, producerPhone:number, producerRegno:number, producerLocation:string){
-  return GetProducer(producerName, producerPhone, producerRegno, producerLocation);
+export function getProducer(producerAddress:string, producerName: string, producerPhone:number, producerRegno:number){
+  return GetProducer(producerAddress, producerName, producerPhone, producerRegno);
 }
 
 export const GetWarehouse = CallerFactory(
@@ -33,8 +33,8 @@ export const GetWarehouse = CallerFactory(
   false
 );
 
-export function getWarehouse(warehouseName: string, warehousePhone:number, warehouseRegno:number, warehouseLocation:string){
-  return GetWarehouse(warehouseName, warehousePhone, warehouseRegno, warehouseLocation);
+export function getWarehouse(warehouseAddress: string, warehouseName: string, warehousePhone:number, warehouseRegno:number){
+  return GetWarehouse(warehouseAddress, warehouseName, warehousePhone, warehouseRegno);
 }
 
 export const GetAllProductsInfo = CallerFactory(
@@ -42,14 +42,19 @@ export const GetAllProductsInfo = CallerFactory(
   "getAllProductsInfo",
   false
 );
+
+export function getAllProductsInfo(produceraddress: string, products: string[]){
+  return GetAllProductsInfo(produceraddress, products);
+}
+
 export const GetProductInfo = CallerFactory(
   SourceTraceContract,
   "getProductInfo",
   false
 );
 
-export function getProductsInfo(productName: string, productId:number, productloc: string, productTemp:number, productHum:number){
-  return GetProductInfo(productName, productId, productTemp, productHum);
+export function getProductsInfo(produceraddress: string, productName: string, productId:number, productloc: string, productTemp:number, productHum:number){
+  return GetProductInfo(produceraddress, productName, productId, productTemp, productHum);
 }
 
 export const GetAllProductLots = CallerFactory(
@@ -57,13 +62,18 @@ export const GetAllProductLots = CallerFactory(
   "getAllProductLots",
   false
 );
+
+export function getAllProductsLotInfo(productName: string, quantity: number, productId:number, productloc: string, productTemp:number, productHum:number){
+  return GetAllProductLots(productName, quantity, productId, productTemp, productHum);
+}
+
 export const GetProductLot = CallerFactory(
   SourceTraceContract,
   "getProductLot",
   false
 );
 
-export function getAllProductsInfo(productName: string, quantity: number, productId:number, productloc: string, productTemp:number, productHum:number){
+export function getProductsLotInfo(productName: string, quantity: number, productId:number, productloc: string, productTemp:number, productHum:number){
   return GetProductLot(productName, quantity, productId, productTemp, productHum);
 }
 
@@ -72,11 +82,20 @@ export const GetProductLotCheckpoints = CallerFactory(
   "getProductLotCheckpoints",
   false
 );
+
+export function getProductLotCheckpoints(productLotID: number, productCheckpoints: string[]){
+  return GetProductLotCheckpoints(productLotID, productCheckpoints)
+}
+
 export const GetProductLotCheckpoint = CallerFactory(
   SourceTraceContract,
   "getProductLotCheckpoint",
   false
 );
+
+export function getProductLotCheckpoint(productLotID: number, productCheckpoint: string){
+  return GetProductLotCheckpoint(productLotID, productCheckpoint)
+}
 
 export const CreateProducerFn = SenderFactory(
   SourceTraceContract,
@@ -149,6 +168,11 @@ export const GetWarehouseProductLots = CallerFactory(
   "getWarehouseProductLots",
   false
 );
+
+export function getWarehouseProductLots(myAdrress: string, productLotID: number, productTemp: number, productHum: number){
+  return GetWarehouseProductLots(myAdrress, productLotID, productTemp, productHum);
+}
+
 export const GetWarehouseProductLotsWithCheckpoints = async (
   warehouse: string
 ) => {

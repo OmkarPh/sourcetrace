@@ -7,37 +7,36 @@ import {
   ProductInfo,
   Checkpoint,
 } from "../components/Dashboard/productTypes";
-import { CallerFactory, SenderFactory } from "./factory";
-import SourceTraceContract from "./SourceTraceContract";
 import {
   parseRejectionMessage,
   productIdentifierToDetails,
 } from "../utils/general";
-import exp from "constants";
-import { CreateCheckIn, 
-  CreateCheckOut, 
-  CreateProducerFn, 
-  CreateProductLot, 
-  CreateWarehouseFn, 
-  GetAllProductLots, 
-  GetAllProductsInfo, 
-  GetProducer, 
-  GetProductInfo, 
-  GetProductLot, 
-  GetProductLotCheckpoint, 
-  GetProductLotCheckpoints, 
-  GetWarehouse, 
-  GetWarehouseProductLots, 
-  InventProduct } from "./apis";
-
+import {
+  AddTruck,
+  CreateCheckIn,
+  CreateCheckOut,
+  CreateProducerFn,
+  CreateProductLot,
+  CreateWarehouseFn,
+  GetAllProductLots,
+  GetAllProductsInfo,
+  GetProducer,
+  GetProductInfo,
+  GetProductLot,
+  GetProductLotCheckpoints,
+  GetProductLotWithCheckpoints,
+  GetWarehouse,
+  GetWarehouseProductLots,
+  InventProduct,
+  Reject,
+} from "./apis";
 
 /**
  * Returns information about a producer associated with the given address.
  * @param {string} producerAddress - The address of the producer.
  * @returns {Object} An object containing the producer's name, phone number, and registration number.
  */
-
-export function getProducer(producerAddress:string){
+export function getProducer(producerAddress: string) {
   return GetProducer(producerAddress);
 }
 
@@ -46,7 +45,7 @@ export function getProducer(producerAddress:string){
  * @param {string} warehouseAddress - The address of the warehouse.
  * @returns {Object} An object containing the warehouse's name, phone number, and registration number.
  */
-export function getWarehouse(warehouseAddress: string){
+export function getWarehouse(warehouseAddress: string) {
   return GetWarehouse(warehouseAddress);
 }
 
@@ -55,7 +54,7 @@ export function getWarehouse(warehouseAddress: string){
  * @param {string} producerAddress - The address of the producer.
  * @returns {Array} An array of objects, each containing information about a product produced by the given producer.
  */
-export function getAllProductsInfo(produceraddress: string){
+export function getAllProductsInfo(produceraddress: string) {
   return GetAllProductsInfo(produceraddress);
 }
 
@@ -64,7 +63,7 @@ export function getAllProductsInfo(produceraddress: string){
  * @param {string} producerAddress - The address of the producer.
  * @returns {Object} An object containing information about the product, including its name, ID, temperature, and humidity requirements.
  */
-export function getProductsInfo(produceraddress: string){
+export function getProductInfo(produceraddress: string) {
   return GetProductInfo(produceraddress);
 }
 
@@ -73,7 +72,7 @@ export function getProductsInfo(produceraddress: string){
  * @param {string} producerAddress - The address of the producer.
  * @returns {Array} An array of objects, each containing information about a product lot produced by the given producer.
  */
-export function getAllProductsLotInfo(produceraddress: string){
+export function getAllProductLots(produceraddress: string) {
   return GetAllProductLots(produceraddress);
 }
 
@@ -83,8 +82,11 @@ export function getAllProductsLotInfo(produceraddress: string){
  * @param {number} productLotID - The ID of the product lot.
  * @returns {Object} An object containing information about the product lot, including its ID, product name, and quantity.
  */
-export function getProductLotInfo(producerAddress:string, productLotID: number){
-  return GetProductLot(producerAddress,productLotID)
+export function getProductLot(
+  producerAddress: string,
+  productLotID: number | string
+) {
+  return GetProductLot(producerAddress, productLotID);
 }
 
 /**
@@ -93,18 +95,11 @@ export function getProductLotInfo(producerAddress:string, productLotID: number){
  * @param {number} productLotID - The ID of the product lot.
  * @returns {Array} An array of objects, each containing information about a checkpoint associated with the given product lot.
  */
-export function getProductLotCheckpoints(producerAddress:string,productLotID: number){
-  return GetProductLotCheckpoints(producerAddress,productLotID)
-}
-
-/**
- * Returns information about a specific checkpoint associated with a specific product lot.
- * @param {string} producerAddress - The address of the producer.
- * @param {number} productLotID - The ID of the product lot.
- * @returns {Object} An object containing information about the checkpoint, including its ID, location, and timestamp.
- */
-export function getProductLotCheckpoint(producerAddress:string, productLotID: number){
-  return GetProductLotCheckpoint(producerAddress,productLotID)
+export function getProductLotCheckpoints(
+  producerAddress: string,
+  productLotID: number | string
+) {
+  return GetProductLotCheckpoints(producerAddress, productLotID);
 }
 
 /**
@@ -116,20 +111,40 @@ export function getProductLotCheckpoint(producerAddress:string, productLotID: nu
  * @param {string} producerLocation - The location of the producer.
  * @returns {any} The result of the CreateProducerFn function.
 */
-export function CrateProducer(producerName: string, producerPhone:number, producerRegno:number, producerLocation:string){
-  return CreateProducerFn(producerName, producerPhone, producerRegno, producerLocation);
+export function createProducer(
+  producerName: string,
+  producerPhone: number,
+  producerRegno: number,
+  producerLocation: string
+) {
+  return CreateProducerFn(
+    producerName,
+    producerPhone,
+    producerRegno,
+    producerLocation
+  );
 }
 
-/** 
+/**
  * Creates a new warehouse with the given name, phone number, registration number, and location.
  * @param {string} warehouseName - The name of the warehouse.
  * @param {number} warehousePhone - The phone number of the warehouse.
  * @param {number} warehouseRegno - The registration number of the warehouse.
  * @param {string} warehouseLocation - The location of the warehouse.
  * @returns {any} The result of the CreateWarehouseFn function.
-*/
-export function CreateWarehouse(warehouseName: string, warehousePhone:number, warehouseRegno:number, warehouseLocation:string){
-  return CreateWarehouseFn(warehouseName, warehousePhone, warehouseRegno, warehouseLocation);
+ */
+export function createWarehouse(
+  warehouseName: string,
+  warehousePhone: number,
+  warehouseRegno: number,
+  warehouseLocation: string
+) {
+  return CreateWarehouseFn(
+    warehouseName,
+    warehousePhone,
+    warehouseRegno,
+    warehouseLocation
+  );
 }
 
 /**
@@ -144,8 +159,24 @@ Creates a new product with the given name, price, image URL, perishable flag, pa
  * @param {number[]} maxValues - The maximum values of the product parameters.
  * @returns {any} The result of the InventProduct function.
 */
-export function Invent(name:any, price: number, imgURL: string, isPerishable:any, params: string[], minValues: number[], maxValues: number[]){
-  return InventProduct(name, price, imgURL, isPerishable, params, minValues, maxValues)
+export function Invent(
+  name: any,
+  price: number,
+  imgURL: string,
+  isPerishable: any,
+  params: string[],
+  minValues: number[],
+  maxValues: number[]
+) {
+  return InventProduct(
+    name,
+    price,
+    imgURL,
+    isPerishable,
+    params,
+    minValues,
+    maxValues
+  );
 }
 
 /**
@@ -159,12 +190,24 @@ Creates a new product lot with the given product name, quantity, product ID, loc
  * @param {number} productHum - The humidity of the product lot.
  * @returns {any} The result of the CreateProductLot function.
 */
-export function Productlot( productName: string, quantity: number, productId:number, productloc: string, productTemp:number, productHum:number){
-  return CreateProductLot(productName, quantity, productId, productTemp, productHum);
+export function createProductLot(
+  productName: string,
+  quantity: number,
+  productId: number,
+  productloc: string,
+  productTemp: number,
+  productHum: number
+) {
+  return CreateProductLot(
+    productName,
+    quantity,
+    productId,
+    productTemp,
+    productHum
+  );
 }
 
 /**
-
 Creates a new check-in record with the given producer address, product lot ID, temperature, and humidity.
  * @param {string} myAddress - The address of the producer.
  * @param {number} productLotID - The ID of the product lot.
@@ -172,12 +215,16 @@ Creates a new check-in record with the given producer address, product lot ID, t
  * @param {number} productHum - The humidity of the product lot at check-in.
  * @returns {any} The result of the CreateCheckIn function.
 */
-export function CheckIn(myAdrress: string, productLotID: number, productTemp: number, productHum: number){
+export function checkIn(
+  myAdrress: string,
+  productLotID: number | string,
+  productTemp: number,
+  productHum: number
+) {
   return CreateCheckIn(myAdrress, productLotID, productTemp, productHum);
 }
 
 /**
-
 Creates a new check-out record with the given producer address, product lot ID, temperature, and humidity.
  * @param {string} myAddress - The address of the producer.
  * @param {number} productLotID - The ID of the product lot.
@@ -185,28 +232,77 @@ Creates a new check-out record with the given producer address, product lot ID, 
  * @param {number} productHum - The humidity of the product lot at check-out.
  * @returns {any} The result of the CreateCheckOut function.
 */
-export function CheckOut(myAdrress: string, productLotID: number, productTemp: number, productHum: number){
+export function checkOut(
+  myAdrress: string,
+  productLotID: number | string,
+  productTemp: number,
+  productHum: number
+) {
   return CreateCheckOut(myAdrress, productLotID, productTemp, productHum);
 }
-export const Reject = SenderFactory(SourceTraceContract, "reject", true);
-export const AddTruck = SenderFactory(SourceTraceContract, "addTruck", false);
-// export const  = SenderFactory(SourceTraceContract, '', false);
 
+/** Rejects a product lot.
+*
+* @param {string} myAddress - The address of the caller.
+* @param {string} producerAddress - The address of the producer.
+* @param {number} productLotID - The ID of the product lot.
+* @param {number} reason - The reason for rejection.
+* @param {string} rejectedMessage - The message for the rejected product.
+* @returns {any} - The result of the rejection operation.
+*/
+export function rejectLot(
+  myAddress: string,
+  producerAddress: string,
+  productLotID: number,
+  reason: number,
+  rejectedMessage: string
+) {
+  return Reject(
+    myAddress,
+    producerAddress,
+    productLotID,
+    reason,
+    rejectedMessage
+  );
+}
 
+/**
+* Adds a truck.
+*
+* @param {string} myAddress - The address of the caller.
+* @param {string} truckAddress - The address of the truck.
+* @param {string} truckLicense - The license of the truck.
+* @param {number} truckRole - The role of the truck.
+* @returns {any} - The result of the truck addition operation.
+*/
+export function addTruck(
+  myAddress: string,
+  truckAddress: number,
+  truckLicense: string,
+  truckRole: number
+) {
+  return AddTruck(myAddress, truckAddress, truckLicense, truckRole);
+}
 
-// Public API functions
 /**
  * Retrieves all the product lots stored in a warehouse.
- * 
+ *
  * @param {string} warehouseAddress - The address of the warehouse to retrieve product lots from.
  * @returns {Array} - An array of product lots stored in the specified warehouse.
  */
-
-export function getWarehouseProductLots(warehouseAddress: string,){
+export function getWarehouseProductLots(warehouseAddress: string) {
   return GetWarehouseProductLots(warehouseAddress);
 }
 
-export const GetWarehouseProductLotsWithCheckpoints = async (
+/**
+ * Retrieves an array of ProductLotWithCheckpoints objects for a given warehouse.
+ *
+ * @async
+ * @function GetWarehouseProductLotsWithCheckpoints
+ * @param {string} warehouse - The warehouse identifier.
+ * @returns {Promise<ProductLotWithCheckpoints[]>} - An array of ProductLotWithCheckpoints objects.
+ */
+export const getWarehouseProductLotsWithCheckpoints = async (
   warehouse: string
 ) => {
   const lots = (await GetWarehouseProductLots(warehouse)) as string[];
@@ -218,7 +314,17 @@ export const GetWarehouseProductLotsWithCheckpoints = async (
   }
   return productLots;
 };
-export const GetProductLotWithCheckpoints = async (
+
+/**
+ * Retrieves a ProductLotWithCheckpoints object for a given producer and lot ID.
+ *
+ * @async
+ * @function GetProductLotWithCheckpoints
+ * @param {string} producer - The producer identifier.
+ * @param {number} id - The lot ID.
+ * @returns {Promise<ProductLotWithCheckpoints>} - A ProductLotWithCheckpoints object.
+ */
+export const getProductLotWithCheckpoints = async (
   producer: string,
   id: number
 ) => {
